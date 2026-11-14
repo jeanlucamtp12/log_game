@@ -587,10 +587,11 @@ export const MISSIONS = [
     title: "Missão 01",
     requiredCount: 1,
     intro: [
-      "Tripulante LUNA-07, você despertou na nave.",
-      "O Arquivo Lunar está fragmentado.",
-      "Para esta primeira missão, localize e catalogue 1 objeto. Ele pode estar na Lua ou em Marte.",
-      "Escolha o objeto em Missão, use o Terminal para dicas e digite a coordenada no navegador do painel.",
+      "Olá, Alex! Que bom que despertou.",
+      "Você tem uma missão, e designamos Neil como seu assistente.",
+      "O objetivo de vocês será localizar e resgatar objetos perdidos no espaço.",
+      "Siga o manual de instruções, comunique-se com seu assistente e encontre as coordenadas dos objetos.",
+      "Esta primeira missão será um treinamento. Conclua-a para receber as próximas instruções.",
     ],
     outro: [
       "Primeiro contato confirmado. O arquivo começa a se recompor.",
@@ -602,9 +603,11 @@ export const MISSIONS = [
     title: "Missão 02",
     requiredCount: 3,
     intro: [
-      "Sinais múltiplos detectados no setor.",
-      "Agora você precisa catalogar 3 objetos, espalhados entre a Lua e Marte.",
-      "Lembre-se: cada dica no Terminal reduz sua XP (500 por dica; abaixo de 2000 XP elas ficam mais claras, mas custam 1000). Digite as coordenadas no navegador do painel.",
+      "Parabéns! Vocês concluíram a primeira missão!",
+      "Mas estamos apenas no começo desta aventura espacial.",
+      "Nesta próxima etapa, vocês encontrarão múltiplos objetos perdidos.",
+      "Analisem as decisões e concluam a próxima etapa da forma mais eficiente possível.",
+      "Para isso, consultem a seção 'Eficiência' no manual de instruções.",
     ],
     outro: [
       "Três assinaturas recuperadas. O vazio devolve o que foi esquecido.",

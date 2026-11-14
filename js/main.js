@@ -24,9 +24,8 @@ const SAVE_VERSION = 2; // saves de versões anteriores (objetos fixos por miss�
 const TOTAL_REQUIRED = MISSIONS.reduce((sum, m) => sum + m.requiredCount, 0);
 const SPACE = "espaco";
 const SURFACE_IMAGES = {
-  Lua: "https://images-assets.nasa.gov/image/art002e012673/art002e012673~large.jpg?w=1920&h=1280&fit=clip&crop=faces%2Cfocalpoint",
-  Marte:
-    "https://images-assets.nasa.gov/image/PIA00612/PIA00612~orig.jpg",
+  Lua: "./img/lua.png",
+  Marte: "./img/marte.png",
 };
 const YEAR_MIN = Math.min(...RELICS.map((r) => Number(r.fields.ano)));
 const YEAR_MAX = Math.max(...RELICS.map((r) => Number(r.fields.ano)));
@@ -698,7 +697,7 @@ function renderRadar() {
   el.scanPromptText.textContent = relic ? `Rastreando: ${relic.name}` : "AGUARDANDO OBJETIVO";
   if (relic) {
     el.waypointTitle.textContent = `Alvo: ${relic.name}`;
-    el.waypointSub.textContent = `Local: ${relic.location}`;
+    //el.waypointSub.textContent = `Local: ${relic.location}`;
   }
   el.waypointLabel.hidden = !relic;
 }
@@ -1533,12 +1532,13 @@ function renderObjectives() {
       return `
         <button type="button" class="objective-row${selected ? " is-selected" : ""}${done ? " is-done" : ""}" data-select="${id}" ${done ? "disabled" : ""}>
           <img src="${escapeHtml(imgSrc(relic))}" alt="" />
-          <span><b>${escapeHtml(relic.name)}</b><small>${escapeHtml(relic.location)}</small></span>
+          <span><b>${escapeHtml(relic.name)}</b><small></small></span>
           <em>${done ? "Concluído" : selected ? "Alvo" : "Selecionar"}</em>
         </button>`;
     })
     .join("");
 }
+//{escapeHtml(relic.location)}
 
 // ===== Rendering =====
 function renderIntegrity() {
