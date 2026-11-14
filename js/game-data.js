@@ -584,7 +584,7 @@ export const HINT_COMMANDS = {
 export const MISSIONS = [
   {
     id: 1,
-    title: "Missão 01 — Primeiro Contato",
+    title: "Missão 01",
     requiredCount: 1,
     intro: [
       "Tripulante LUNA-07, você despertou na nave.",
@@ -599,7 +599,7 @@ export const MISSIONS = [
   },
   {
     id: 2,
-    title: "Missão 02 — Assinaturas Perdidas",
+    title: "Missão 02",
     requiredCount: 3,
     intro: [
       "Sinais múltiplos detectados no setor.",
@@ -613,7 +613,7 @@ export const MISSIONS = [
   },
   {
     id: 3,
-    title: "Missão 03 — Ecos de Dois Mundos",
+    title: "Missão 03",
     requiredCount: 5,
     intro: [
       "Os sinais ficaram mais fortes e mais numerosos.",
@@ -627,7 +627,7 @@ export const MISSIONS = [
   },
   {
     id: 4,
-    title: "Missão 04 — Sinais Cruzados",
+    title: "Missão 04",
     requiredCount: 5,
     intro: [
       "Há interferência nos registros.",
@@ -641,7 +641,7 @@ export const MISSIONS = [
   },
   {
     id: 5,
-    title: "Missão 05 — Arquivo Central",
+    title: "Missão 05",
     requiredCount: 6,
     intro: [
       "Última varredura.",

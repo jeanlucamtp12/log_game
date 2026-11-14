@@ -674,11 +674,7 @@ function selectObjective(id) {
   state.selectedId = id;
   saveState();
   const relic = relicById(id);
-  el.scanPrompt.classList.add("is-tracking");
-  el.scanPromptText.textContent = `Rastreando: ${relic.name}`;
-  el.waypointTitle.textContent = `Alvo: ${relic.name}`;
-  el.waypointSub.textContent = `Local: ${relic.location}`;
-  el.waypointLabel.hidden = false;
+  renderRadar();
   resetCoordForm();
   closeMonitor(SIDE.objectives);
   render();
@@ -692,9 +688,19 @@ function selectObjective(id) {
 function clearSelection() {
   state.selectedId = null;
   hideTarget();
-  el.scanPrompt.classList.remove("is-tracking");
-  el.scanPromptText.textContent = "AGUARDANDO OBJETIVO";
-  el.waypointLabel.hidden = true;
+  renderRadar();
+}
+
+// Radar do vidro: alvo rastreado (também restaurado ao recarregar o jogo)
+function renderRadar() {
+  const relic = relicById(state.selectedId);
+  el.scanPrompt.classList.toggle("is-tracking", !!relic);
+  el.scanPromptText.textContent = relic ? `Rastreando: ${relic.name}` : "AGUARDANDO OBJETIVO";
+  if (relic) {
+    el.waypointTitle.textContent = `Alvo: ${relic.name}`;
+    el.waypointSub.textContent = `Local: ${relic.location}`;
+  }
+  el.waypointLabel.hidden = !relic;
 }
 
 // ===== Coordinates =====
@@ -1641,6 +1647,7 @@ function renderCoordinate() {
 function render() {
   setScene(state.location);
   renderStatus();
+  renderRadar();
   renderIntegrity();
   renderCoordinate();
   renderBadges();
@@ -1764,7 +1771,7 @@ function bindEvents() {
 function fitConsole() {
   const mobile = window.innerWidth <= 760;
   const fits = [1, window.innerWidth / (mobile ? 390 : 1000)];
-  if (!mobile) fits.push(Math.max(window.innerHeight, 560) / 660); // o visor tem altura mínima de 560px
+  if (!mobile) fits.push(Math.max(window.innerHeight, 560) / 660);
   const scale = Math.max(0.5, Math.min(...fits));
   const width = mobile ? window.innerWidth / scale : Math.min(960, (window.innerWidth * 0.96) / scale);
   const root = document.documentElement.style;

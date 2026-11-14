@@ -1,0 +1,697 @@
+/* =========================================================
+   L.O.G - CAMADA HÍBRIDA (tela + mesa)
+   ---------------------------------------------------------
+   Carregue DEPOIS do index.css.
+   Ideia: a TELA é vidro, brilho e fonte de terminal (ciano).
+   A MESA é papel, tinta e fonte serifada (laranja).
+   ========================================================= */
+
+:root {
+    /* digital (nave) */
+    --nave: #40767a;
+    --nave-escura: #12303a;
+    --nave-clara: #8fd0d6;
+    --ciano: #43dcff;
+    --lima: #c6f03a;
+
+    /* físico (mesa e cartas) */
+    --papel: #e8e0cc;
+    --tinta: #1d2a2c;
+    --laranja: #c97b4a;
+    --mesa: #0b1a1e;
+
+    --altura-logo: clamp(110px, 24vh, 240px);
+    --altura-opcao: clamp(40px, 6.8vh, 72px);
+
+    --fonte-tela: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, monospace;
+    --fonte-papel: Georgia, "Times New Roman", serif;
+}
+
+/* ---------- TELA: linhas de varredura + vinheta ---------- */
+.tela-scan {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(180deg, rgba(143, 208, 214, 0.05) 0 1px, transparent 1px 4px),
+        radial-gradient(120% 100% at 50% 40%, transparent 55%, rgba(18, 48, 58, 0.55) 100%);
+}
+
+/* =========================================================
+   CARTAS (usadas no lema e na tela de História)
+   ========================================================= */
+.carta {
+    --larg: 4rem;
+    position: relative;
+    display: block;
+    flex: none;
+    width: var(--larg);
+    aspect-ratio: 5 / 7;
+    border-radius: calc(var(--larg) * 0.09);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        0 8px 14px rgba(0, 0, 0, 0.55);
+}
+
+/* verso: azul da nave, margem de papel, estrela do menu */
+.carta.verso {
+    border: calc(var(--larg) * 0.06) solid var(--papel);
+    background:
+        radial-gradient(circle at 50% 50%, var(--nave-escura) 0 18%, transparent 19%),
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.09) 0 2px, transparent 2px 8px),
+        var(--nave);
+}
+
+.carta.verso::after,
+.carta.frente i {
+    content: "";
+    background: var(--laranja);
+    clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+}
+
+.carta.verso::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 34%;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+}
+
+/* frente: papel impresso (conteúdo de exemplo) */
+.carta.frente {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10%;
+    font: 600 calc(var(--larg) * 0.13) / 1.1 var(--fonte-papel);
+    color: var(--tinta);
+    background: var(--papel);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.carta.frente i {
+    width: 34%;
+    aspect-ratio: 1;
+}
+
+.carta.frente b {
+    font-family: var(--fonte-tela);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--nave);
+}
+
+/* =========================================================
+   LEMA: uma frase, duas vozes, uma cartinha em cada ponta
+   ========================================================= */
+.lema {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.9rem;
+    margin: 0;
+    font-size: clamp(0.8rem, 1.7vh, 0.98rem);
+    animation: surgir-fade 0.8s ease 0.8s backwards;
+}
+
+/* os dois textos quebram entre si; as cartas ficam sempre nas pontas */
+.lema-texto {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem 0.9rem;
+}
+
+/* cartinhas do lema: tamanho fixo, sem texto dentro */
+.lema .carta {
+    --larg: 1.9rem;
+    width: 1.1rem;
+    height: 1.6rem;
+    min-width: 0;
+    aspect-ratio: auto;
+    padding: 0;
+    overflow: hidden;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        0 5px 9px rgba(0, 0, 0, 0.5);
+}
+
+.lema .carta { transform: rotate(10deg); }
+
+/* nave em miniatura, com o fogo animado */
+.lema .nave-mini {
+    flex: none;
+    width: 1.3rem;
+    margin-top: 0.3rem;
+    filter: drop-shadow(0 0 8px rgba(67, 220, 255, 0.8));
+}
+
+.lema .carta.frente {
+    justify-content: center;
+    border-width: 1px;
+}
+
+.lema .carta.frente i {
+    width: 46%;
+}
+
+.lema-digital {
+    font-family: var(--fonte-tela);
+    letter-spacing: 0.04em;
+    color: var(--nave-clara);
+    text-shadow: 0 0 10px rgba(67, 220, 255, 0.45);
+}
+
+.lema-fisico {
+    padding: 0.12em 0.7em 0.16em;
+    font-family: var(--fonte-papel);
+    font-style: italic;
+    color: var(--tinta);
+    background: var(--papel);
+    border-radius: 3px;
+    transform: rotate(-1.6deg);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.55), 0 6px 12px rgba(0, 0, 0, 0.35);
+}
+
+/* =========================================================
+   HISTÓRIA: tela dividida meio a meio
+   ========================================================= */
+.historia {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    visibility: hidden;
+    pointer-events: none;
+    transition: grid-template-columns 0.5s var(--mola), visibility 0s 0.6s;
+}
+
+.historia.aberta {
+    visibility: visible;
+    pointer-events: auto;
+    transition: grid-template-columns 0.5s var(--mola), visibility 0s;
+}
+
+.historia:has(.lado-tela:hover) { grid-template-columns: 1.14fr 0.86fr; }
+.historia:has(.lado-mesa:hover) { grid-template-columns: 0.86fr 1.14fr; }
+
+.lado {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.7rem, 2.2vh, 1.4rem);
+    padding: 2rem clamp(1.2rem, 4vw, 4rem) 5.5rem;
+    text-align: center;
+    opacity: 0;
+    transition: transform 0.6s var(--mola), opacity 0.4s ease;
+}
+
+.lado-tela { transform: translateX(-100%); }
+.lado-mesa { transform: translateX(100%); }
+
+.historia.aberta .lado {
+    opacity: 1;
+    transform: none;
+}
+
+.lado h2 {
+    margin: 0;
+    font-size: clamp(1.7rem, 4.6vh, 3rem);
+    line-height: 1.05;
+}
+
+.lado p {
+    margin: 0;
+    max-width: 34ch;
+    font-size: clamp(0.86rem, 1.9vh, 1.05rem);
+    line-height: 1.55;
+}
+
+.selo {
+    font-size: clamp(0.7rem, 1.5vh, 0.82rem);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+/* ---------- LADO DA TELA ---------- */
+.lado-tela {
+    font-family: var(--fonte-tela);
+    color: var(--nave-clara);
+    background:
+        repeating-linear-gradient(180deg, rgba(143, 208, 214, 0.06) 0 1px, transparent 1px 4px),
+        radial-gradient(90% 70% at 50% 45%, rgba(67, 220, 255, 0.16), transparent 70%),
+        linear-gradient(160deg, #0f2a33 0%, #081a21 100%);
+    box-shadow: inset -1px 0 0 rgba(143, 208, 214, 0.35);
+    cursor: pointer;
+}
+
+/* cantoneiras de interface */
+.lado-tela::before,
+.lado-tela::after {
+    content: "";
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border: 2px solid var(--ciano);
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.lado-tela::before { top: 1.2rem; left: 1.2rem; border-right: 0; border-bottom: 0; }
+.lado-tela::after  { bottom: 5rem; left: 1.2rem; border-right: 0; border-top: 0; }
+
+.lado-tela .selo { color: var(--ciano); }
+
+.lado-tela h2 {
+    color: #fff;
+    text-shadow: 0 0 18px rgba(67, 220, 255, 0.55);
+}
+
+/* nave feita só com CSS */
+.nave {
+    position: relative;
+    width: clamp(70px, 14vh, 130px);
+    aspect-ratio: 1;
+    filter: drop-shadow(0 0 14px rgba(67, 220, 255, 0.8));
+}
+
+.nave::before,
+.nave::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: rotate(-30deg);
+}
+
+.nave::before {
+    background: linear-gradient(180deg, var(--nave-clara), var(--ciano));
+    clip-path: polygon(50% 0, 100% 92%, 50% 74%, 0 92%);
+}
+
+.nave::after {
+    inset: 62% 18% -14% 62%;
+    background: linear-gradient(180deg, var(--lima), transparent);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    animation: pulsar 0.5s ease-in-out infinite alternate;
+}
+
+
+/* ---------- LADO DA MESA ---------- */
+.lado-mesa {
+    font-family: var(--fonte-papel);
+    color: var(--papel);
+    background:
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 3px),
+        radial-gradient(90% 70% at 50% 45%, rgba(201, 123, 74, 0.2), transparent 70%),
+        linear-gradient(200deg, #17383f 0%, var(--mesa) 70%);
+    cursor: pointer;
+}
+
+.lado-mesa .selo {
+    padding: 0.3em 0.9em 0.36em;
+    font-style: italic;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: none;
+    color: var(--tinta);
+    background: var(--papel);
+    border-radius: 2px;
+    transform: rotate(-2.5deg);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+.lado-mesa h2 {
+    font-style: italic;
+    color: var(--papel);
+}
+
+/* leque de cartas sobre a mesa */
+.leque {
+    --larg: clamp(56px, 10vh, 92px);
+    position: relative;
+    width: calc(var(--larg) * 2.8);
+    height: calc(var(--larg) * 1.55);
+}
+
+.leque .carta {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    margin-left: calc(var(--larg) / -2);
+    transform-origin: 50% 115%;
+    transition: transform 0.45s var(--mola);
+    transform: translateX(var(--dx)) rotate(var(--giro));
+}
+
+.leque .carta:nth-child(1) { --dx: -78%; --giro: -20deg; }
+.leque .carta:nth-child(2) { --dx: -26%; --giro: -7deg; }
+.leque .carta:nth-child(3) { --dx: 26%;  --giro: 6deg; }
+.leque .carta:nth-child(4) { --dx: 78%;  --giro: 19deg; }
+
+.lado-mesa:hover .leque .carta:nth-child(1) { --dx: -100%; --giro: -26deg; }
+.lado-mesa:hover .leque .carta:nth-child(2) { --dx: -34%;  --giro: -9deg; }
+.lado-mesa:hover .leque .carta:nth-child(3) { --dx: 34%;   --giro: 8deg; }
+.lado-mesa:hover .leque .carta:nth-child(4) { --dx: 100%;  --giro: 24deg; }
+
+/* ---------- CENTRO: o encontro das duas metades ---------- */
+.historia-centro {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: clamp(44px, 7vh, 64px);
+    aspect-ratio: 1;
+    font: 700 clamp(1.3rem, 3.4vh, 2rem) / 1 var(--fonte-tela);
+    color: var(--tinta);
+    background: var(--papel);
+    border: 3px solid var(--ciano);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    box-shadow: 0 0 22px rgba(67, 220, 255, 0.55), 0 6px 14px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    transition: transform 0.5s var(--mola) 0.35s, left 0.5s var(--mola);
+}
+
+/* acompanha a divisória quando uma metade se alarga (1.14fr / 0.86fr) */
+.historia:has(.lado-tela:hover) .historia-centro { left: 57%; }
+.historia:has(.lado-mesa:hover) .historia-centro { left: 43%; }
+
+.historia.aberta .historia-centro {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* ---------- BOTÃO VOLTAR (útil no toque, onde não há ESC) ---------- */
+.btn-voltar {
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    z-index: 10;
+    appearance: none;
+    padding: 0.4rem 1rem;
+    font: inherit;
+    font-size: 0.85rem;
+    color: var(--texto);
+    background: rgba(5, 6, 15, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
+    cursor: pointer;
+    transform: translateX(-50%);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s 0.3s;
+}
+
+.historia.aberta ~ .btn-voltar {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease 0.3s, visibility 0s;
+}
+
+.btn-voltar:hover,
+.btn-voltar:focus-visible {
+    border-color: var(--azul-gelo);
+    outline: none;
+}
+
+/* ---------- ATALHO: continua visível, inclusive sobre a História ---------- */
+.atalho-menu {
+    z-index: 10;
+    background: rgba(5, 6, 15, 0.55);
+    border-color: rgba(232, 224, 204, 0.18);
+}
+
+.atalho-menu .simbolo {
+    color: var(--laranja);
+}
+
+.atalho-menu kbd {
+    border-bottom-color: var(--nave);
+}
+
+/* ---------- RESPONSIVO ---------- */
+@media (max-width: 760px) {
+    .historia,
+    .historia:has(.lado-tela:hover),
+    .historia:has(.lado-mesa:hover) {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+
+    .lado { padding: 3.2rem 1.2rem 1rem; gap: 0.5rem; }
+    .lado-mesa { padding-bottom: 4.6rem; }
+    .lado-tela { transform: translateY(-100%); }
+    .lado-mesa { transform: translateY(100%); }
+    .lado-tela::after { display: none; }
+    .historia:has(.lado-tela:hover) .historia-centro,
+    .historia:has(.lado-mesa:hover) .historia-centro { left: 50%; }
+    .lado-mesa .leque { --larg: clamp(40px, 7vh, 60px); }
+    .lado p { font-size: 0.82rem; line-height: 1.4; }
+}
+
+@media (max-height: 560px) {
+    :root {
+        --altura-logo: 24vh;
+        --altura-opcao: 10vh;
+    }
+    .lema { display: none; }
+    .lado p { display: none; }
+    .lado { padding-bottom: 3rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lema,
+    .nave,
+    .nave::after {
+        animation: none;
+    }
+    .lado,
+    .historia,
+    .historia-centro,
+    .leque .carta {
+        transition: none;
+    }
+}
+
+/* =========================================================
+   CRÉDITOS: janela de terminal que desce do topo
+   Os códigos ao lado de cada nome são comandos secretos
+   do terminal do jogo (easter egg).
+   ========================================================= */
+.creditos {
+    position: fixed;
+    inset: 0;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1rem 4.2rem; /* espaço para o atalho ESC no rodapé */
+    overflow-y: auto;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-100%);
+    /* sem fundo: só a janela de terminal aparece e o menu continua visível atrás */
+    background: none;
+    transition: transform 0.6s var(--mola), visibility 0s 0.6s;
+}
+
+.creditos.aberta {
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+    transition: transform 0.6s var(--mola), visibility 0s;
+}
+
+.creditos-janela {
+    width: min(100%, 560px);
+    margin: auto;
+    font-family: var(--fonte-tela);
+    color: var(--nave-clara);
+    background: rgba(6, 19, 24, 0.94);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(67, 220, 255, 0.45);
+    border-radius: 10px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 0 34px rgba(67, 220, 255, 0.18), 0 18px 40px rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+}
+
+/* barra de título */
+.creditos-barra {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.55rem 0.8rem;
+    background: rgba(67, 220, 255, 0.08);
+    border-bottom: 1px solid rgba(67, 220, 255, 0.3);
+}
+
+.creditos-pontos { display: flex; gap: 0.35rem; }
+
+.creditos-pontos i {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: var(--laranja);
+    opacity: 0.85;
+}
+
+.creditos-pontos i:nth-child(2) { background: var(--lima); }
+.creditos-pontos i:nth-child(3) { background: var(--ciano); }
+
+.creditos-titulo {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--nave-clara);
+}
+
+.creditos-fechar {
+    appearance: none;
+    display: grid;
+    place-items: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    padding: 0;
+    font: inherit;
+    font-size: 0.9rem;
+    line-height: 1;
+    color: var(--nave-clara);
+    background: transparent;
+    border: 1px solid rgba(143, 208, 214, 0.4);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.creditos-fechar:hover,
+.creditos-fechar:focus-visible {
+    color: #fff;
+    background: rgba(67, 220, 255, 0.15);
+    border-color: var(--ciano);
+    outline: none;
+}
+
+/* corpo */
+.creditos-corpo {
+    display: grid;
+    gap: clamp(0.8rem, 2.4vh, 1.4rem);
+    padding: clamp(1rem, 3vh, 1.6rem) clamp(1rem, 4vw, 1.8rem) clamp(1.1rem, 3.4vh, 1.8rem);
+}
+
+.linha-cmd {
+    margin: 0;
+    font-size: clamp(0.82rem, 1.9vh, 0.95rem);
+    color: var(--nave-clara);
+}
+
+.prompt {
+    margin-right: 0.35em;
+    font-weight: 700;
+    color: var(--lima);
+}
+
+.devs {
+    display: grid;
+    gap: clamp(0.55rem, 1.8vh, 0.95rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.dev {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.2rem 0.6rem;
+}
+
+.dev-nome {
+    font-family: var(--fonte-papel);
+    font-size: clamp(1.05rem, 2.6vh, 1.3rem);
+    font-weight: 600;
+    color: var(--papel);
+}
+
+/* pontilhado ligando o nome ao código */
+.dev-liga {
+    flex: 1 1 1.5rem;
+    min-width: 1rem;
+    align-self: center;
+    border-bottom: 1px dotted rgba(143, 208, 214, 0.4);
+}
+
+.dev-codigo {
+    padding: 0.14em 0.6em 0.18em;
+    font-family: var(--fonte-tela);
+    font-size: clamp(0.8rem, 1.9vh, 0.95rem);
+    letter-spacing: 0.04em;
+    color: var(--ciano);
+    background: rgba(67, 220, 255, 0.08);
+    border: 1px solid rgba(67, 220, 255, 0.3);
+    border-radius: 4px;
+    text-shadow: 0 0 10px rgba(67, 220, 255, 0.5);
+}
+
+.dev-codigo .prompt { margin-right: 0.3em; }
+
+.linha-dica { color: rgba(143, 208, 214, 0.55); font-size: clamp(0.74rem, 1.7vh, 0.85rem); }
+.linha-dica .prompt { color: rgba(198, 240, 58, 0.6); }
+
+.cursor {
+    display: inline-block;
+    width: 0.55em;
+    height: 1em;
+    margin-left: 0.25em;
+    vertical-align: text-bottom;
+    background: var(--ciano);
+    animation: creditos-piscar 1s steps(1) infinite;
+}
+
+/* entrada: as linhas aparecem uma a uma depois que a janela desce */
+.creditos.aberta .linha-cmd,
+.creditos.aberta .dev {
+    animation: creditos-linha 0.45s ease calc(0.5s + var(--i, 0) * 0.14s) backwards;
+}
+
+.creditos.aberta .linha-dica { --i: 7; }
+
+@keyframes creditos-linha {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes creditos-piscar {
+    50% { opacity: 0; }
+}
+
+@media (max-width: 420px) {
+    .dev-liga { display: none; }
+    .dev { justify-content: space-between; }
+}
+
+@media (max-height: 560px) {
+    .creditos { align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .creditos { transition: none; }
+    .creditos.aberta .linha-cmd,
+    .creditos.aberta .dev,
+    .cursor { animation: none; }
+}

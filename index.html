@@ -2,489 +2,186 @@
 <html lang="pt-BR">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arquivo de Dejectos — Nave</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@400;500;600&display=swap"
-    rel="stylesheet" />
-  <link rel="stylesheet" href="./css/styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L.O.G</title>
+    <link rel="stylesheet" href="./home/index.css">
+    <link rel="stylesheet" href="./home/hibrido.css">
 </head>
 
 <body>
-  <main class="ship-shell">
-    <section class="viewport" id="viewport" aria-label="Visor da nave">
-      <div class="space-scene" aria-hidden="true">
-        <div class="space-nebula"></div>
-        <canvas class="space-stars" id="space-stars"></canvas>
-      </div>
-      <div class="lunar-track">
-        <img class="lunar-image" id="surface-img-a" src="" alt="Superfície lunar" />
-        <img class="lunar-image" id="surface-img-b" src="" alt="" aria-hidden="true" />
-        <img class="lunar-image" id="surface-img-c" src="" alt="" aria-hidden="true" />
-      </div>
-      <canvas class="surface-dust" id="surface-dust" aria-hidden="true"></canvas>
-      <div class="space-haze"></div>
-      <div class="sky-bloom"></div>
-      <div class="viewport-grid"></div>
-      <div class="crosshair horizontal"></div>
-      <div class="crosshair vertical"></div>
-      <div class="cockpit-frame" aria-hidden="true"></div>
-      <div class="glass-damage" aria-hidden="true">
-        <svg class="glass-cracks" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <g class="crack crack-1">
-            <path pathLength="100" d="M78 30 L74.5 25 L75.5 19 L72 12"/>
-            <path pathLength="100" d="M78 30 L83 26 L82 20 L87 14"/>
-            <path pathLength="100" d="M78 30 L84 33.5 L90 32 L96 36"/>
-            <path pathLength="100" d="M78 30 L76 36 L80 42 L78 50"/>
-            <path pathLength="100" d="M78 30 L71 32 L66 30 L60 35"/>
-            <path pathLength="100" d="M75.5 19 L80 16"/>
-            <path pathLength="100" d="M82 20 L86 22"/>
-            <path pathLength="100" d="M80 42 L85 46"/>
-            <path pathLength="100" d="M66 30 L64 25"/>
-          </g>
-          <g class="crack crack-2">
-            <path pathLength="100" d="M22 40 L26 34 L24 27 L28 20"/>
-            <path pathLength="100" d="M22 40 L16 36 L11 38 L6 33"/>
-            <path pathLength="100" d="M22 40 L18 46 L20 52 L15 58"/>
-            <path pathLength="100" d="M22 40 L29 43 L33 41 L40 46"/>
-            <path pathLength="100" d="M22 40 L25 47 L24 54"/>
-            <path pathLength="100" d="M24 27 L20 24"/>
-            <path pathLength="100" d="M11 38 L9 43"/>
-            <path pathLength="100" d="M33 41 L36 36"/>
-          </g>
-          <g class="crack crack-3">
-            <path pathLength="100" d="M50 18 L46 14 L47 9"/>
-            <path pathLength="100" d="M50 18 L55 22 L53 28 L57 34 L55 42"/>
-            <path pathLength="100" d="M50 18 L44 22 L45 29 L41 35 L43 44"/>
-            <path pathLength="100" d="M50 18 L58 15 L64 17 L70 13"/>
-            <path pathLength="100" d="M50 18 L42 16 L36 19 L30 16"/>
-            <path pathLength="100" d="M53 28 L59 27"/>
-            <path pathLength="100" d="M45 29 L39 28"/>
-            <path pathLength="100" d="M64 17 L66 22"/>
-          </g>
-        </svg>
-        <div class="hit-flash"></div>
-      </div>
-      <div class="canopy" aria-hidden="true">
-        <div class="ring-box ring-glow"></div>
-        <div class="ring-box ring-body"></div>
-        <div class="ring-box ring-edge-out"></div>
-        <div class="ring-box ring-groove-a"></div>
-        <div class="ring-box ring-groove-b"></div>
-        <div class="ring-box ring-edge-in"></div>
-        <span class="canopy-lamps"><i></i><i></i><i></i></span>
-      </div>
+    <!-- MENU INICIAL -->
+    <div id="menuInicial" class="menu-inicial">
 
-      <div class="scan-prompt" id="scan-prompt">
-        <span class="scan-dot"></span>
-        <span id="scan-prompt-text">AGUARDANDO OBJETIVO</span>
-      </div>
+        <!-- TELA: linhas de varredura -->
+        <div class="tela-scan" aria-hidden="true"></div>
 
-      <div class="waypoint-label" id="waypoint-label" hidden>
-        <span class="waypoint-orb"></span>
-        <div>
-          <b id="waypoint-title"></b>
-          <small id="waypoint-sub"></small>
+        <!-- LOGO -->
+        <div class="logo-menu">
+            <img src="./home/img/logo.png" alt="L.O.G">
         </div>
-      </div>
 
-      <div class="target-view" id="target-view" hidden>
-        <div class="target-frame">
-          <img id="target-image" src="" alt="" />
-          <span class="target-corner corner-tl"></span>
-          <span class="target-corner corner-tr"></span>
-          <span class="target-corner corner-bl"></span>
-          <span class="target-corner corner-br"></span>
-        </div>
-      </div>
+        <!-- LEMA: uma cartinha em cada ponta -->
+        <p class="lema">
+            <span class="nave nave-mini" aria-hidden="true"></span>
+            <span class="lema-texto">
+                <span class="lema-digital">Alex controla a nave.</span>
+                <span class="lema-fisico">Neil tem as cartas-chave.</span>
+            </span>
+            <span class="carta verso" aria-hidden="true"></span>
+        </p>
 
-      <div class="monitor-overlay side-left" id="monitor-left" hidden>
-        <div class="monitor-screen">
-          <header class="monitor-header">
-            <span class="eyebrow"></span>
-            <button class="icon-button" data-monitor-close="left" type="button" aria-label="Fechar painel">
-              <span data-icon="close" data-size="16"></span>
+        <!-- OPCOES -->
+        <div class="opcoes-menu">
+
+            <button type="button" id="btnHistoria" class="opcao-menu">
+                <img src="./home/img/historia.png" alt="História">
             </button>
-          </header>
 
-          <section class="monitor-body" data-screen="objectives" hidden>
-            <div class="objectives-list" id="objectives-list"></div>
-          </section>
-
-          <section class="monitor-body terminal-body" data-screen="terminal" hidden>
-            <div class="terminal-output" id="terminal-output">
-              <div id="terminal-lines"></div>
-            </div>
-            <form class="terminal-form" id="terminal-form" autocomplete="off">
-              <label for="mission-command">&gt;</label>
-              <input id="mission-command" type="text" placeholder="digite um comando" />
-            </form>
-          </section>
-        </div>
-      </div>
-
-      <div class="monitor-overlay side-right" id="monitor-right" hidden>
-        <div class="monitor-screen">
-          <header class="monitor-header">
-            <span class="eyebrow"></span>
-            <button class="icon-button" data-monitor-close="right" type="button" aria-label="Fechar painel">
-              <span data-icon="close" data-size="16"></span>
+            <button type="button" class="opcao-menu">
+                <img src="./home/img/catalogo.png" alt="Catálogo">
             </button>
-          </header>
 
-          <section class="monitor-body" data-screen="messages" hidden>
-            <div class="thread-list" id="thread-list"></div>
-            <div class="thread-view" id="thread-view" hidden>
-              <div class="thread-head">
-                <button class="thread-back" id="thread-back" type="button" aria-label="Voltar para as conversas"><span data-icon="back" data-size="14"></span><span>Conversas</span></button>
-                <b class="thread-title" id="thread-title"></b>
-              </div>
-              <div class="chat-log" id="chat-log" aria-live="polite"></div>
-            </div>
-          </section>
-        </div>
-      </div>
-
-      <div class="monitor-overlay side-center" id="monitor-center" hidden>
-        <div class="monitor-screen">
-          <header class="monitor-header">
-            <span class="eyebrow"></span>
-            <button class="icon-button" data-monitor-close="center" type="button" aria-label="Fechar painel">
-              <span data-icon="close" data-size="16"></span>
+            <button type="button" class="opcao-menu">
+                <img src="./home/img/linguagem.png" alt="Linguagem">
             </button>
-          </header>
 
-          <section class="monitor-body" data-screen="reports" hidden>
-            <div class="report-list" id="report-list"></div>
-          </section>
+            <button type="button" id="btnCreditos" class="opcao-menu">
+                <img src="./home/img/credito.png" alt="Créditos">
+            </button>
 
-          <section class="monitor-body report-view" data-screen="report" hidden>
-            <div id="report-content"></div>
-            <div class="report-actions">
-              <button class="primary-button" id="btn-report-close" type="button">Continuar</button>
+        </div>
+
+        <!-- HISTÓRIA: tela dividida meio a meio -->
+        <section id="historia" class="historia" aria-hidden="true" inert aria-label="Como jogar">
+
+            <!-- metade 1: a tela -->
+            <div class="lado lado-tela">
+                <span class="selo">Alex</span>
+                <div class="nave" aria-hidden="true"></div>
+                <h2>Pilote a nave</h2>
+                <p>Assuma o comando na tela. Desvie dos perigos, cuide da integridade da nave e leve a missão até o fim.</p>
             </div>
-          </section>
 
-          <section class="monitor-body" data-screen="catalog" hidden>
-            <div class="catalog-browse" id="catalog-browse">
-              <div class="catalog-filters">
-                <div class="filter-group">
-                  <span class="console-label">Tipo</span>
-                  <div class="type-filters" id="type-filters"></div>
+            <!-- metade 2: a mesa -->
+            <div class="lado lado-mesa">
+                <span class="selo">Neil</span>
+                <div class="leque" aria-hidden="true">
+                    <span class="carta verso"></span>
+                    <span class="carta verso"></span>
+                    <span class="carta verso"></span>
+                    <span class="carta frente"><span>Sinal 07</span><i></i><b>X 214</b></span>
                 </div>
-                <div class="filter-group">
-                  <span class="console-label">Local</span>
-                  <div class="type-filters" id="location-filters"></div>
+                <h2>Jogue com as cartas</h2>
+                <p>Fora da tela, as cartas físicas estão nas suas mãos. Leia os sinais, decifre os códigos e guie o piloto.</p>
+            </div>
+
+            <div class="historia-centro" aria-hidden="true">+</div>
+        </section>
+
+        <!-- CRÉDITOS: janela de terminal que desce do topo -->
+        <section id="creditos" class="creditos" aria-hidden="true" inert aria-label="Créditos">
+            <div class="creditos-janela">
+                <header class="creditos-barra">
+                    <span class="creditos-pontos" aria-hidden="true"><i></i><i></i><i></i></span>
+                    <span class="creditos-titulo">log@nave:~/equipe</span>
+                    <button type="button" id="btnFecharCreditos" class="creditos-fechar" aria-label="Fechar créditos" tabindex="-1">✕</button>
+                </header>
+
+                <div class="creditos-corpo">
+                    <p class="linha-cmd"><span class="prompt" aria-hidden="true">$</span> cat equipe_l.o.g.</p>
+
+                    <ul class="devs">
+                        <li class="dev" style="--i: 0">
+                            <span class="dev-nome">Jeanluca Martins</span>
+                            <i class="dev-liga" aria-hidden="true"></i>
+                            <code class="dev-codigo"><span class="prompt" aria-hidden="true">&gt;</span> jean_rs</code>
+                        </li>
+                        <li class="dev" style="--i: 1">
+                            <span class="dev-nome">Leo Marquionei</span>
+                            <i class="dev-liga" aria-hidden="true"></i>
+                            <code class="dev-codigo"><span class="prompt" aria-hidden="true">&gt;</span> leo_marq</code>
+                        </li>
+                        <li class="dev" style="--i: 2">
+                            <span class="dev-nome">Caio</span>
+                            <i class="dev-liga" aria-hidden="true"></i>
+                            <code class="dev-codigo"><span class="prompt" aria-hidden="true">&gt;</span> caio</code>
+                        </li>
+                        <li class="dev" style="--i: 3">
+                            <span class="dev-nome">Gabriel</span>
+                            <i class="dev-liga" aria-hidden="true"></i>
+                            <code class="dev-codigo"><span class="prompt" aria-hidden="true">&gt;</span> gabriel</code>
+                        </li>
+                        <li class="dev" style="--i: 4">
+                            <span class="dev-nome">Luis</span>
+                            <i class="dev-liga" aria-hidden="true"></i>
+                            <code class="dev-codigo"><span class="prompt" aria-hidden="true">&gt;</span> luis</code>
+                        </li>
+                        <li class="dev" style="--i: 5">
+                            <span class="dev-nome">Helen Nayara</span>
+                            <i class="dev-liga" aria-hidden="true"></i>
+                            <code class="dev-codigo"><span class="prompt" aria-hidden="true">&gt;</span> nay</code>
+                        </li>
+                    </ul>
+
+                    <p class="linha-cmd linha-dica"><span class="prompt" aria-hidden="true">$</span> <span class="dica-texto">// </span><span class="cursor" aria-hidden="true"></span></p>
                 </div>
-                <div class="year-filter">
-                  <div class="year-filter-head">
-                    <span>Ano</span>
-                    <b id="year-readout"></b>
-                  </div>
-                  <div class="year-track" id="year-track">
-                    <div class="year-fill" id="year-fill"></div>
-                    <input type="range" id="year-from" aria-label="Ano inicial" />
-                    <input type="range" id="year-to" aria-label="Ano final" />
-                  </div>
-                </div>
-                <span class="catalog-count" id="catalog-count"></span>
-              </div>
-              <div class="catalog-list" id="catalog-list"></div>
             </div>
-            <div class="catalog-detail" id="catalog-detail" hidden>
-              <button class="catalog-back" id="catalog-back" type="button">Voltar ao catálogo</button>
-              <div id="catalog-detail-card"></div>
-            </div>
-          </section>
+        </section>
 
-          <section class="monitor-body" data-screen="manual" hidden>
-            <div class="manual-grid">
-              <article class="manual-block">
-                <h3>Passo a passo</h3>
-                <ol class="manual-steps">
-                  <li><b>Escolha um objetivo.</b> Aperte <em>Missão</em> e selecione um dos objetos da missão atual. Ele passa a ser o seu alvo.</li>
-                  <li><b>Veja o alvo.</b> Aperte <em>Alvo</em> para abrir a imagem do objeto procurado.</li>
-                  <li><b>Peça dicas.</b> No <em>Terminal</em>, digite comandos como <code>peso_objeto</code> ou <code>ano_perda</code>. Acima de 2000 XP as dicas são difíceis e custam 500 XP; a partir de 2000 XP ficam fáceis, mas custam 1000 XP.</li>
-                  <li><b>Informe a coordenada.</b> No <em>Navegador</em>, preencha X, Y e Z do objeto e aperte <em>Ir</em>.</li>
-                  <li><b>Viaje.</b> Se o objeto estiver na Lua ou em Marte e a nave estiver em outro local, ela salta até lá. Depois de chegar, a nave fica no local até você ir para outro.</li>
-                  <li><b>Catalogue.</b> Quando o objeto for encontrado, aperte <em>Catalogar objeto</em>. Ele entra no <em>Catálogo</em>.</li>
-                  <li><b>Conclua a missão.</b> Catalogue todos os objetos da missão para avançar.</li>
-                </ol>
-                <p class="manual-note">Cada coordenada errada custa 1 ponto de integridade. Com a integridade em zero, a missão falha e recomeça.</p>
+        <button type="button" id="btnVoltar" class="btn-voltar" tabindex="-1">‹ Voltar</button>
 
-                <h3 id="manual-erros">Erros de sincronização</h3>
-                <p class="manual-note">De tempos em tempos a ANSA perde o sinal da nave. É comum e não é culpa sua. Um alerta vermelho pisca no centro do visor com um código de erro, por exemplo <code>ERRO-3000</code>. Enquanto ele durar, só o <em>Terminal</em> e o <em>Manual</em> ficam liberados e o cronômetro fica pausado.</p>
-                <ol class="manual-steps">
-                  <li><b>Anote o código do erro</b> que está piscando no visor.</li>
-                  <li><b>Peça ao Jogador 2.</b> Ele procura nas cartas coringa a carta desse erro e lê para você o código de sincronização escrito nela.</li>
-                  <li><b>Abra o Terminal.</b> Durante o alerta ele só aceita o código de sincronização. Qualquer outra coisa é recusada.</li>
-                  <li><b>Digite o código.</b> Se estiver certo, o alerta some e o relatório da ANSA abre no visor.</li>
-                </ol>
-                <p class="manual-note">Cada erro tem a sua carta: o código de outro erro não serve.</p>
-              </article>
-
-              <article class="manual-block">
-                <h3>Botões da nave</h3>
-                <dl class="manual-keys">
-                  <div><dt><span data-icon="guide" data-size="18"></span>Missão</dt><dd>Lista os objetos da missão atual e define qual deles é o alvo.</dd></div>
-                  <div><dt><span data-icon="terminal" data-size="18"></span>Terminal</dt><dd>Pede dicas sobre o alvo. Abre no lado esquerdo do visor. Durante um erro de sincronização, é onde se digita o código.</dd></div>
-                  <div><dt><span data-icon="catalog" data-size="18"></span>Catálogo</dt><dd>Mostra os objetos já catalogados. Filtre por tipo, local e ano.</dd></div>
-                  <div><dt><span data-icon="message" data-size="18"></span>Msgs</dt><dd>Transmissões da ANSA. O ponto vermelho indica mensagem nova.</dd></div>
-                  <div><dt><span data-icon="report" data-size="18"></span>Relat.</dt><dd>Relatórios da ANSA já liberados. Cada um abre no visor depois que você resolve um erro de sincronização.</dd></div>
-                  <div><dt><span data-icon="crosshair" data-size="18"></span>Alvo</dt><dd>Mostra a imagem do objeto selecionado, no lado direito do visor.</dd></div>
-                  <div><dt><span data-icon="manual" data-size="18"></span>Manual</dt><dd>Abre este guia.</dd></div>
-                </dl>
-
-                <h3>Painel</h3>
-                <dl class="manual-keys">
-                  <div><dt>Integridade do Nave</dt><dd>Suas vidas. Cada coordenada errada tira uma.</dd></div>
-                  <div><dt>Experiência</dt><dd>Sua pontuação. Dica difícil (acima de 2000 XP): −500. Dica fácil (2000 XP ou menos): −1000.</dd></div>
-                  <div><dt>Navegador</dt><dd>Campos X, Y e Z. Só ficam ativos quando há um alvo selecionado.</dd></div>
-                  <div><dt>Tempo</dt><dd>Cronômetro da missão atual.</dd></div>
-                  <div><dt>Luz da cabine</dt><dd>A chave ao lado do botão <em>Missão</em> apaga e acende a luz da nave. É só ambiente.</dd></div>
-                  <div><dt>Vidro da nave</dt><dd>Cada coordenada errada trinca o vidro. É só visual: o vidro se recupera quando a integridade volta.</dd></div>
-                </dl>
-
-                <h3>Comandos do terminal</h3>
-                <dl class="manual-keys">
-                  <div><dt><code>peso_objeto</code> <code>altura_objeto</code> <code>ano_perda</code> <code>categoria_objeto</code> <code>missao_origem</code></dt><dd>Dicas sobre o alvo. Custam XP.</dd></div>
-                  <div><dt><code>help</code> <code>scan</code> <code>status</code> <code>clear</code></dt><dd>Gratuitos. Listam comandos, mostram o status e limpam a tela.</dd></div>
-                </dl>
-              </article>
-            </div>
-          </section>
-        </div>
-      </div>
-
-      <!-- Alerta do computador de navegação: aparece no vidro quando um vetor é rejeitado -->
-      <div class="nav-alert" id="nav-alert" role="alert" hidden>
-        <div class="nav-alert-head">
-          <span data-icon="alert" data-size="15"></span>
-          <b>Computador de navegação</b>
-          <i class="nav-alert-hull" id="nav-alert-hull"></i>
-        </div>
-        <strong class="nav-alert-code" id="nav-alert-code"></strong>
-        <p class="nav-alert-text" id="nav-alert-text"></p>
-      </div>
-
-      <!-- Alerta de sincronização: fica no centro do vidro até o código ser digitado no terminal -->
-      <div class="sync-warning" id="sync-warning" role="alert" hidden>
-        <div class="sync-warning-head">
-          <span data-icon="alert" data-size="16"></span>
-          <b>Interferência de sincronização</b>
-        </div>
-        <strong class="sync-warning-code" id="sync-warning-code">ERRO-0000</strong>
-        <p class="sync-warning-text">Sinal da ANSA instável. Abra o <em>Manual</em> e procure a seção <em>Erros</em>. Depois informe o código no <em>Terminal</em>.</p>
-        <p class="sync-warning-note" id="sync-warning-note" hidden>Erros de sincronização são mais corriqueiros do que você imagina.</p>
-      </div>
-
-      <!-- Objeto encontrado: aparece no vidro e só sai quando o jogador cataloga -->
-      <div class="monitor-overlay side-modal hidden" id="object-found-modal" role="dialog" aria-label="Objeto encontrado">
-        <div class="monitor-screen found-card">
-          <header class="monitor-header">
-            <span class="eyebrow">Objeto encontrado</span>
-            <span class="glass-tag"><i></i>Varredura concluída</span>
-          </header>
-          <div class="monitor-body found-body">
-            <div class="found-image-wrap">
-              <img id="found-image" src="" alt="" />
-              <span class="target-corner corner-tl"></span>
-              <span class="target-corner corner-tr"></span>
-              <span class="target-corner corner-bl"></span>
-              <span class="target-corner corner-br"></span>
-              <span class="found-scanline"></span>
-            </div>
-            <div class="found-info">
-              <h3 id="found-name"></h3>
-              <p id="found-description"></p>
-              <dl class="found-specs">
-                <div><dt>Peso</dt><dd id="found-weight"></dd></div>
-                <div><dt>Altura</dt><dd id="found-height"></dd></div>
-                <div><dt>Categoria</dt><dd id="found-category"></dd></div>
-                <div><dt>Local</dt><dd id="found-location"></dd></div>
-              </dl>
-              <div class="found-actions">
-                <button class="primary-button" id="btn-catalog-confirm" type="button">
-                  <span data-icon="check" data-size="16"></span>Catalogar objeto
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Missão concluída: também no vidro, até o jogador continuar -->
-      <div class="monitor-overlay side-modal hidden" id="mission-end-modal" role="dialog" aria-label="Missão concluída">
-        <div class="monitor-screen mission-end-card">
-          <header class="monitor-header">
-            <span class="eyebrow" id="end-eyebrow"></span>
-            <span class="glass-tag"><i></i>Relatório final</span>
-          </header>
-          <div class="monitor-body end-body">
-            <h3 id="end-title"></h3>
-            <div class="mission-summary" id="mission-summary"></div>
-            <div class="found-actions">
-              <button class="primary-button" id="btn-next-mission" type="button">Continuar</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="warp-layer" id="warp-layer" aria-hidden="true">
-        <div class="warp-tunnel"></div>
-        <canvas class="warp-stars" id="warp-stars"></canvas>
-        <div class="warp-flash"></div>
-        <div class="warp-vignette"></div>
-        <div class="warp-readout">
-          <span id="warp-title">Viagem em velocidade da luz</span>
-          <b id="warp-coord">--</b>
-          <div class="warp-bar"><i></i></div>
-        </div>
-      </div>
-
-      <div class="cabin-dark" aria-hidden="true"></div>
-    </section>
-
-    <div class="ship-console">
-      <div class="console-deck">
-        <!-- Pod esquerdo: integridade + botões de missão -->
-        <div class="console-pod console-left">
-          <div class="integrity-block" id="integrity-block">
-            <div class="integrity-top">
-              <span class="console-label">Integridade do Nave</span>
-              <strong id="integrity-readout">03 / 03</strong>
-            </div>
-            <div class="integrity-cells" id="integrity-cells">
-              <div class="integrity-cell is-on"></div>
-              <div class="integrity-cell is-on"></div>
-              <div class="integrity-cell is-on"></div>
-            </div>
-          </div>
-
-          <div class="button-row">
-            <button class="light-switch" id="btn-light" type="button" aria-pressed="true" aria-label="Apagar a luz da cabine" title="Apagar a luz da cabine">
-              <span class="light-switch-plate"><span class="light-switch-lever"></span></span>
-              <span class="light-switch-label">LUZ</span>
-            </button>
-            <button class="ship-btn" id="btn-mission" type="button" aria-pressed="false">
-              <span class="ship-btn-bezel">
-                <span class="ship-btn-led" aria-hidden="true"></span>
-                <span class="ship-btn-icon" data-icon="guide" data-size="20"></span>
-                <span class="ship-btn-label">Missão</span>
-              </span>
-            </button>
-            <button class="ship-btn" id="btn-terminal" type="button" aria-pressed="false">
-              <span class="ship-btn-bezel">
-                <span class="ship-btn-led" aria-hidden="true"></span>
-                <span class="ship-btn-icon" data-icon="terminal" data-size="20"></span>
-                <span class="ship-btn-label">Term</span>
-              </span>
-            </button>
-            <button class="ship-btn" id="btn-catalog" type="button" aria-pressed="false">
-              <span class="ship-btn-bezel">
-                <span class="ship-btn-led" aria-hidden="true"></span>
-                <span class="ship-btn-icon" data-icon="catalog" data-size="20"></span>
-                <span class="ship-btn-label">Catálogo</span>
-              </span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Display central: status da missão + navegador -->
-        <div class="console-center">
-          <div class="status-monitor">
-            <span class="status-mission" id="hud-mission-name">MISSÃO ATIVA</span>
-            <b class="status-value" id="hud-status">EM ORBITA</b>
-            <div class="chrono">
-              <span>Tempo</span>
-              <b id="mission-timer">00:00</b>
-            </div>
-          </div>
-
-          <form class="coord-monitor" id="coord-form" autocomplete="off">
-            <span class="console-label">Navegador</span>
-            <div class="coord-row">
-              <div class="coord-fields">
-                <label class="coord-axis"><span>X</span><input id="coord-x" type="text" inputmode="numeric" aria-label="Coordenada X" disabled /></label>
-                <label class="coord-axis"><span>Y</span><input id="coord-y" type="text" inputmode="numeric" aria-label="Coordenada Y" disabled /></label>
-                <label class="coord-axis"><span>Z</span><input id="coord-z" type="text" inputmode="numeric" aria-label="Coordenada Z" disabled /></label>
-              </div>
-              <button class="coord-submit" id="coord-submit" type="submit" disabled>
-                <span class="coord-key">Ir</span>
-              </button>
-            </div>
-            <p class="coord-feedback" id="coord-feedback" aria-live="polite"></p>
-          </form>
-        </div>
-
-        <!-- Pod direito: varredura + botões de comunicação -->
-        <div class="console-pod console-right">
-          <div class="integrity-block scan-block" id="xp-block">
-            <div class="integrity-top">
-              <span class="console-label">Experiência · <i id="xp-rank">Comandante</i></span>
-              <strong id="xp-readout">5000 XP</strong>
-            </div>
-            <div class="integrity-cells xp-cells" id="xp-cells"></div>
-          </div>
-
-          <div class="button-row">
-            <button class="ship-btn" id="btn-messages" type="button" aria-pressed="false">
-              <span class="ship-btn-bezel">
-                <span class="ship-btn-led" aria-hidden="true"></span>
-                <span class="ship-btn-icon" data-icon="message" data-size="20"></span>
-                <span class="btn-badge" id="messages-badge" hidden></span>
-                <span class="ship-btn-label">Msgs</span>
-              </span>
-            </button>
-            <button class="ship-btn" id="btn-target" type="button" disabled aria-pressed="false">
-              <span class="ship-btn-bezel">
-                <span class="ship-btn-led" aria-hidden="true"></span>
-                <span class="ship-btn-icon" data-icon="crosshair" data-size="20"></span>
-                <span class="ship-btn-label">Alvo</span>
-              </span>
-            </button>
-            <button class="ship-btn" id="btn-reports" type="button" aria-pressed="false">
-              <span class="ship-btn-bezel">
-                <span class="ship-btn-led" aria-hidden="true"></span>
-                <span class="ship-btn-icon" data-icon="report" data-size="20"></span>
-                <span class="ship-btn-label">Relat.</span>
-              </span>
-            </button>
-            <button class="ship-btn" id="btn-manual" type="button" aria-pressed="false">
-              <span class="ship-btn-bezel">
-                <span class="ship-btn-led" aria-hidden="true"></span>
-                <span class="ship-btn-icon" data-icon="manual" data-size="20"></span>
-                <span class="ship-btn-label">Manual</span>
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
+        <span class="atalho-menu">
+            <span class="simbolo">›</span> Pressione <kbd>ESC</kbd> para voltar ao menu!
+        </span>
     </div>
 
-    <div class="modal hidden" id="game-over-modal" role="dialog" aria-label="Fim de jogo">
-      <div class="mission-end-card">
-        <span class="eyebrow">Missão falhou</span>
-        <h3>Integridade da nave esgotada</h3>
-        <p class="modal-text">A nave perdeu contato com o setor. Os objetos catalogados nesta missão foram perdidos e você volta ao início dela.</p>
-        <button class="primary-button" id="btn-restart" type="button">Recomeçar missão</button>
-      </div>
-    </div>
-    <div class="wake-layer" id="wake-layer" aria-hidden="true">
-      <div class="wake-blur"></div>
-      <div class="wake-lid wake-lid-top"></div>
-      <div class="wake-lid wake-lid-bottom"></div>
-      <p class="wake-readout">Visor do operador<span>iniciando…</span></p>
-      <p class="wake-skip">Clique para pular</p>
-    </div>
-  </main>
-  <script type="module" src="./js/game-data.js"></script>
-  <script type="module" src="./js/main.js"></script>
-  <script type="module" src="./js/icons.js"></script>
-  <script type="module" src="./js/icons.js"></script>
+    <script>
+        (function () {
+            var historia = document.getElementById('historia');
+            var abrir = document.getElementById('btnHistoria');
+            var voltar = document.getElementById('btnVoltar');
+
+            var creditos = document.getElementById('creditos');
+            var abrirCreditos = document.getElementById('btnCreditos');
+            var fecharCreditos = document.getElementById('btnFecharCreditos');
+            var opcoes = document.querySelector('.opcoes-menu');
+
+            function alternar(aberta) {
+                historia.classList.toggle('aberta', aberta);
+                historia.toggleAttribute('inert', !aberta);
+                historia.setAttribute('aria-hidden', String(!aberta));
+                voltar.tabIndex = aberta ? 0 : -1;
+                (aberta ? voltar : abrir).focus({ preventScroll: true });
+            }
+
+            function alternarCreditos(aberta) {
+                creditos.classList.toggle('aberta', aberta);
+                creditos.toggleAttribute('inert', !aberta);
+                creditos.setAttribute('aria-hidden', String(!aberta));
+                // o menu atrás da janela não deve receber foco enquanto ela está aberta
+                opcoes.toggleAttribute('inert', aberta);
+                fecharCreditos.tabIndex = aberta ? 0 : -1;
+                (aberta ? fecharCreditos : abrirCreditos).focus({ preventScroll: true });
+            }
+
+            abrir.addEventListener('click', function () { alternar(true); });
+            voltar.addEventListener('click', function () { alternar(false); });
+            abrirCreditos.addEventListener('click', function () { alternarCreditos(true); });
+            fecharCreditos.addEventListener('click', function () { alternarCreditos(false); });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key !== 'Escape') return;
+                if (creditos.classList.contains('aberta')) {
+                    alternarCreditos(false);
+                } else if (historia.classList.contains('aberta')) {
+                    alternar(false);
+                }
+            });
+        })();
+    </script>
+
+    <script type="module" src="./home/home.js"></script>
+    
 </body>
-
 </html>

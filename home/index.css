@@ -1,0 +1,864 @@
+/* =========================================================
+   MENU INICIAL - L.O.G
+   ---------------------------------------------------------
+   Estrelas feitas só com CSS (::before / ::after do .menu-inicial).
+   Ajuste cores, tamanhos e velocidades nas variáveis abaixo.
+   ========================================================= */
+
+:root {
+    --fundo: #05060f;
+    --magenta: #c80fd0;          /* cor de dentro das letras */
+    --azul-gelo: #8aa0c4;        /* contorno das letras */
+    --texto: #e9ecff;
+    --texto-suave: #9aa3cf;
+
+    --altura-logo: clamp(120px, 27vh, 250px);
+    --altura-opcao: clamp(44px, 7.5vh, 76px);
+
+    --vel-estrelas-pequenas: 80s;   /* menor = mais rápido */
+    --vel-estrelas-medias: 40s;
+
+    --mola: cubic-bezier(0.2, 1.25, 0.35, 1);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    height: 100%;
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: "Trebuchet MS", "Verdana", system-ui, sans-serif;
+}
+
+/* ---------- TELA ---------- */
+.menu-inicial {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.25rem, 4.5vh, 3rem);
+    padding: 2rem 1.25rem 4.5rem;
+    background:
+        radial-gradient(55% 45% at 15% 18%, rgba(160, 30, 200, 0.30), transparent 70%),
+        radial-gradient(60% 50% at 88% 84%, rgba(50, 90, 210, 0.26), transparent 70%),
+        radial-gradient(40% 35% at 70% 12%, rgba(90, 50, 190, 0.18), transparent 70%),
+        radial-gradient(120% 90% at 50% 50%, #0b0d28 0%, var(--fundo) 72%);
+}
+
+/* ---------- ESTRELAS (2 camadas com parallax) ---------- */
+.menu-inicial::before,
+.menu-inicial::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    background: transparent;
+    pointer-events: none;
+    will-change: transform;
+}
+
+/* atrás: pequenas e lentas */
+.menu-inicial::before {
+    width: 1px;
+    height: 1px;
+    opacity: 0.85;
+    box-shadow:
+        45.2vw 1146px #a9b8ff,
+        45.2vw 1751px #d7e2ff,
+        18.5vw 1048px #a9b8ff,
+        63.0vw 1624px #d7e2ff,
+        9.4vw 621px #d7e2ff,
+        9.1vw 1658px #ffffff,
+        59.5vw 811px #a9b8ff,
+        65.4vw 1260px #d7e2ff,
+        62.3vw 1703px #ffffff,
+        6.0vw 389px #d7e2ff,
+        60.0vw 1593px #a9b8ff,
+        32.6vw 1210px #d7e2ff,
+        51.9vw 1311px #ffe6f7,
+        50.0vw 1356px #ffffff,
+        45.7vw 569px #a9b8ff,
+        99.8vw 1908px #ffffff,
+        70.8vw 645px #d7e2ff,
+        51.3vw 60px #ffffff,
+        56.3vw 221px #a9b8ff,
+        10.8vw 595px #a9b8ff,
+        6.7vw 34px #ffffff,
+        21.4vw 1898px #ffffff,
+        47.0vw 1451px #a9b8ff,
+        42.0vw 1159px #d7e2ff,
+        77.9vw 552px #ffe6f7,
+        8.7vw 681px #ffffff,
+        96.4vw 1552px #ffffff,
+        13.5vw 1447px #ffffff,
+        1.1vw 952px #a9b8ff,
+        17.8vw 1145px #d7e2ff,
+        44.7vw 390px #d7e2ff,
+        41.9vw 785px #ffffff,
+        39.5vw 435px #ffffff,
+        27.0vw 1988px #ffe6f7,
+        99.8vw 40px #d7e2ff,
+        18.7vw 1749px #ffffff,
+        4.2vw 299px #d7e2ff,
+        44.2vw 19px #ffe6f7,
+        83.0vw 790px #ffffff,
+        7.4vw 427px #d7e2ff,
+        1.6vw 755px #ffe6f7,
+        62.2vw 260px #a9b8ff,
+        83.2vw 277px #a9b8ff,
+        18.3vw 315px #ffe6f7,
+        90.8vw 1674px #d7e2ff,
+        72.5vw 324px #d7e2ff,
+        68.7vw 795px #a9b8ff,
+        60.4vw 863px #ffffff,
+        10.4vw 79px #ffe6f7,
+        23.8vw 1442px #a9b8ff,
+        25.7vw 1686px #a9b8ff,
+        29.3vw 359px #ffffff,
+        12.6vw 981px #ffffff,
+        28.0vw 1878px #d7e2ff,
+        74.9vw 141px #ffe6f7,
+        41.1vw 510px #ffffff,
+        4.7vw 577px #ffe6f7,
+        53.1vw 1992px #d7e2ff,
+        9.2vw 283px #a9b8ff,
+        98.0vw 1345px #d7e2ff,
+        59.0vw 1891px #ffffff,
+        47.5vw 732px #ffe6f7,
+        96.3vw 43px #ffffff,
+        48.2vw 1496px #ffe6f7,
+        31.9vw 148px #ffffff,
+        45.3vw 753px #ffffff,
+        90.0vw 1509px #d7e2ff,
+        79.3vw 1873px #ffe6f7,
+        35.2vw 1403px #a9b8ff,
+        90.1vw 1784px #a9b8ff,
+        94.4vw 61px #a9b8ff,
+        57.3vw 1279px #a9b8ff,
+        37.9vw 25px #ffffff,
+        8.0vw 1309px #ffffff,
+        99.3vw 1801px #a9b8ff,
+        72.8vw 795px #a9b8ff,
+        44.1vw 1716px #ffffff,
+        51.9vw 1053px #ffffff,
+        31.0vw 179px #a9b8ff,
+        2.2vw 1960px #ffffff,
+        49.7vw 1258px #a9b8ff,
+        25.6vw 23px #ffe6f7,
+        30.1vw 1388px #d7e2ff,
+        51.8vw 1543px #ffe6f7,
+        66.0vw 905px #a9b8ff,
+        89.2vw 669px #a9b8ff,
+        66.6vw 406px #a9b8ff,
+        80.4vw 1545px #d7e2ff,
+        88.0vw 787px #d7e2ff,
+        58.3vw 648px #d7e2ff,
+        13.6vw 1016px #ffe6f7,
+        83.7vw 1738px #ffffff,
+        71.1vw 1945px #ffe6f7,
+        82.2vw 231px #a9b8ff,
+        47.1vw 1895px #d7e2ff,
+        83.1vw 783px #a9b8ff,
+        67.2vw 1466px #a9b8ff,
+        32.0vw 1697px #ffffff,
+        27.8vw 1244px #ffffff,
+        67.8vw 575px #ffe6f7,
+        30.9vw 1621px #ffffff,
+        64.1vw 829px #a9b8ff,
+        19.0vw 1575px #ffe6f7,
+        23.7vw 288px #ffffff,
+        98.4vw 236px #a9b8ff,
+        10.9vw 1096px #ffe6f7,
+        95.8vw 1401px #d7e2ff,
+        19.9vw 973px #ffe6f7,
+        17.9vw 22px #a9b8ff,
+        53.5vw 74px #d7e2ff,
+        22.6vw 1594px #ffe6f7,
+        54.0vw 1939px #d7e2ff,
+        39.4vw 1621px #d7e2ff,
+        8.7vw 1909px #a9b8ff,
+        13.0vw 928px #d7e2ff,
+        62.6vw 1863px #ffffff,
+        37.7vw 1164px #ffe6f7,
+        46.4vw 1333px #d7e2ff,
+        9.9vw 1773px #ffffff,
+        21.3vw 1843px #a9b8ff,
+        98.0vw 634px #ffe6f7,
+        26.2vw 1471px #ffffff,
+        34.9vw 169px #ffffff,
+        44.1vw 1127px #a9b8ff,
+        76.8vw 998px #ffffff,
+        21.8vw 1776px #ffffff,
+        42.9vw 71px #d7e2ff,
+        53.3vw 1406px #d7e2ff,
+        47.1vw 1057px #a9b8ff,
+        94.6vw 1008px #ffffff,
+        75.8vw 899px #ffe6f7,
+        83.1vw 1150px #d7e2ff,
+        52.3vw 1727px #ffe6f7,
+        31.2vw 780px #d7e2ff,
+        30.4vw 289px #ffe6f7,
+        57.3vw 411px #a9b8ff,
+        53.6vw 1030px #ffffff,
+        60.5vw 56px #ffffff,
+        51.6vw 820px #ffffff,
+        49.1vw 1415px #d7e2ff,
+        6.6vw 1103px #a9b8ff,
+        41.4vw 1959px #a9b8ff,
+        26.9vw 969px #a9b8ff,
+        12.7vw 888px #a9b8ff,
+        52.5vw 222px #d7e2ff,
+        42.0vw 60px #ffe6f7,
+        12.9vw 1595px #ffffff,
+        3.6vw 318px #d7e2ff,
+        1.2vw 581px #ffe6f7,
+        72.4vw 500px #a9b8ff,
+        10.5vw 1496px #ffffff,
+        85.2vw 1276px #ffe6f7,
+        71.8vw 1436px #a9b8ff,
+        2.3vw 1296px #a9b8ff,
+        82.5vw 1261px #d7e2ff,
+        53.8vw 1769px #d7e2ff,
+        53.0vw 1743px #d7e2ff,
+        23.3vw 1517px #ffe6f7,
+        90.3vw 646px #ffe6f7,
+        89.1vw 398px #d7e2ff,
+        77.8vw 398px #ffffff,
+        13.4vw 490px #d7e2ff,
+        72.7vw 531px #a9b8ff,
+        9.7vw 1704px #a9b8ff,
+        54.3vw 1443px #d7e2ff,
+        20.1vw 1286px #ffffff,
+        9.6vw 1167px #ffe6f7,
+        91.1vw 1983px #ffe6f7,
+        11.5vw 1035px #ffe6f7,
+        50.3vw 1404px #d7e2ff,
+        80.3vw 987px #ffffff,
+        2.4vw 1560px #a9b8ff,
+        14.7vw 377px #ffffff,
+        20.4vw 1720px #d7e2ff,
+        99.0vw 1898px #ffffff,
+        58.0vw 275px #a9b8ff,
+        7.8vw 198px #ffe6f7,
+        39.1vw 873px #ffe6f7,
+        43.0vw 1230px #ffe6f7,
+        1.3vw 1435px #ffffff,
+        84.4vw 371px #a9b8ff,
+        45.4vw 1514px #ffe6f7,
+        40.5vw 399px #d7e2ff,
+        9.5vw 1622px #ffffff,
+        32.4vw 173px #a9b8ff,
+        57.0vw 391px #ffe6f7,
+        80.5vw 528px #ffe6f7,
+        91.1vw 1524px #d7e2ff,
+        81.5vw 830px #d7e2ff,
+        89.7vw 1801px #ffe6f7,
+        76.7vw 1567px #d7e2ff,
+        40.6vw 1479px #d7e2ff,
+        7.1vw 699px #ffe6f7,
+        46.9vw 21px #ffe6f7,
+        99.1vw 1848px #ffffff,
+        23.2vw 1934px #ffe6f7,
+        33.8vw 1351px #a9b8ff,
+        57.0vw 1091px #ffffff,
+        39.0vw 1019px #d7e2ff,
+        70.1vw 1560px #a9b8ff,
+        45.2vw 3146px #a9b8ff,
+        45.2vw 3751px #d7e2ff,
+        18.5vw 3048px #a9b8ff,
+        63.0vw 3624px #d7e2ff,
+        9.4vw 2621px #d7e2ff,
+        9.1vw 3658px #ffffff,
+        59.5vw 2811px #a9b8ff,
+        65.4vw 3260px #d7e2ff,
+        62.3vw 3703px #ffffff,
+        6.0vw 2389px #d7e2ff,
+        60.0vw 3593px #a9b8ff,
+        32.6vw 3210px #d7e2ff,
+        51.9vw 3311px #ffe6f7,
+        50.0vw 3356px #ffffff,
+        45.7vw 2569px #a9b8ff,
+        99.8vw 3908px #ffffff,
+        70.8vw 2645px #d7e2ff,
+        51.3vw 2060px #ffffff,
+        56.3vw 2221px #a9b8ff,
+        10.8vw 2595px #a9b8ff,
+        6.7vw 2034px #ffffff,
+        21.4vw 3898px #ffffff,
+        47.0vw 3451px #a9b8ff,
+        42.0vw 3159px #d7e2ff,
+        77.9vw 2552px #ffe6f7,
+        8.7vw 2681px #ffffff,
+        96.4vw 3552px #ffffff,
+        13.5vw 3447px #ffffff,
+        1.1vw 2952px #a9b8ff,
+        17.8vw 3145px #d7e2ff,
+        44.7vw 2390px #d7e2ff,
+        41.9vw 2785px #ffffff,
+        39.5vw 2435px #ffffff,
+        27.0vw 3988px #ffe6f7,
+        99.8vw 2040px #d7e2ff,
+        18.7vw 3749px #ffffff,
+        4.2vw 2299px #d7e2ff,
+        44.2vw 2019px #ffe6f7,
+        83.0vw 2790px #ffffff,
+        7.4vw 2427px #d7e2ff,
+        1.6vw 2755px #ffe6f7,
+        62.2vw 2260px #a9b8ff,
+        83.2vw 2277px #a9b8ff,
+        18.3vw 2315px #ffe6f7,
+        90.8vw 3674px #d7e2ff,
+        72.5vw 2324px #d7e2ff,
+        68.7vw 2795px #a9b8ff,
+        60.4vw 2863px #ffffff,
+        10.4vw 2079px #ffe6f7,
+        23.8vw 3442px #a9b8ff,
+        25.7vw 3686px #a9b8ff,
+        29.3vw 2359px #ffffff,
+        12.6vw 2981px #ffffff,
+        28.0vw 3878px #d7e2ff,
+        74.9vw 2141px #ffe6f7,
+        41.1vw 2510px #ffffff,
+        4.7vw 2577px #ffe6f7,
+        53.1vw 3992px #d7e2ff,
+        9.2vw 2283px #a9b8ff,
+        98.0vw 3345px #d7e2ff,
+        59.0vw 3891px #ffffff,
+        47.5vw 2732px #ffe6f7,
+        96.3vw 2043px #ffffff,
+        48.2vw 3496px #ffe6f7,
+        31.9vw 2148px #ffffff,
+        45.3vw 2753px #ffffff,
+        90.0vw 3509px #d7e2ff,
+        79.3vw 3873px #ffe6f7,
+        35.2vw 3403px #a9b8ff,
+        90.1vw 3784px #a9b8ff,
+        94.4vw 2061px #a9b8ff,
+        57.3vw 3279px #a9b8ff,
+        37.9vw 2025px #ffffff,
+        8.0vw 3309px #ffffff,
+        99.3vw 3801px #a9b8ff,
+        72.8vw 2795px #a9b8ff,
+        44.1vw 3716px #ffffff,
+        51.9vw 3053px #ffffff,
+        31.0vw 2179px #a9b8ff,
+        2.2vw 3960px #ffffff,
+        49.7vw 3258px #a9b8ff,
+        25.6vw 2023px #ffe6f7,
+        30.1vw 3388px #d7e2ff,
+        51.8vw 3543px #ffe6f7,
+        66.0vw 2905px #a9b8ff,
+        89.2vw 2669px #a9b8ff,
+        66.6vw 2406px #a9b8ff,
+        80.4vw 3545px #d7e2ff,
+        88.0vw 2787px #d7e2ff,
+        58.3vw 2648px #d7e2ff,
+        13.6vw 3016px #ffe6f7,
+        83.7vw 3738px #ffffff,
+        71.1vw 3945px #ffe6f7,
+        82.2vw 2231px #a9b8ff,
+        47.1vw 3895px #d7e2ff,
+        83.1vw 2783px #a9b8ff,
+        67.2vw 3466px #a9b8ff,
+        32.0vw 3697px #ffffff,
+        27.8vw 3244px #ffffff,
+        67.8vw 2575px #ffe6f7,
+        30.9vw 3621px #ffffff,
+        64.1vw 2829px #a9b8ff,
+        19.0vw 3575px #ffe6f7,
+        23.7vw 2288px #ffffff,
+        98.4vw 2236px #a9b8ff,
+        10.9vw 3096px #ffe6f7,
+        95.8vw 3401px #d7e2ff,
+        19.9vw 2973px #ffe6f7,
+        17.9vw 2022px #a9b8ff,
+        53.5vw 2074px #d7e2ff,
+        22.6vw 3594px #ffe6f7,
+        54.0vw 3939px #d7e2ff,
+        39.4vw 3621px #d7e2ff,
+        8.7vw 3909px #a9b8ff,
+        13.0vw 2928px #d7e2ff,
+        62.6vw 3863px #ffffff,
+        37.7vw 3164px #ffe6f7,
+        46.4vw 3333px #d7e2ff,
+        9.9vw 3773px #ffffff,
+        21.3vw 3843px #a9b8ff,
+        98.0vw 2634px #ffe6f7,
+        26.2vw 3471px #ffffff,
+        34.9vw 2169px #ffffff,
+        44.1vw 3127px #a9b8ff,
+        76.8vw 2998px #ffffff,
+        21.8vw 3776px #ffffff,
+        42.9vw 2071px #d7e2ff,
+        53.3vw 3406px #d7e2ff,
+        47.1vw 3057px #a9b8ff,
+        94.6vw 3008px #ffffff,
+        75.8vw 2899px #ffe6f7,
+        83.1vw 3150px #d7e2ff,
+        52.3vw 3727px #ffe6f7,
+        31.2vw 2780px #d7e2ff,
+        30.4vw 2289px #ffe6f7,
+        57.3vw 2411px #a9b8ff,
+        53.6vw 3030px #ffffff,
+        60.5vw 2056px #ffffff,
+        51.6vw 2820px #ffffff,
+        49.1vw 3415px #d7e2ff,
+        6.6vw 3103px #a9b8ff,
+        41.4vw 3959px #a9b8ff,
+        26.9vw 2969px #a9b8ff,
+        12.7vw 2888px #a9b8ff,
+        52.5vw 2222px #d7e2ff,
+        42.0vw 2060px #ffe6f7,
+        12.9vw 3595px #ffffff,
+        3.6vw 2318px #d7e2ff,
+        1.2vw 2581px #ffe6f7,
+        72.4vw 2500px #a9b8ff,
+        10.5vw 3496px #ffffff,
+        85.2vw 3276px #ffe6f7,
+        71.8vw 3436px #a9b8ff,
+        2.3vw 3296px #a9b8ff,
+        82.5vw 3261px #d7e2ff,
+        53.8vw 3769px #d7e2ff,
+        53.0vw 3743px #d7e2ff,
+        23.3vw 3517px #ffe6f7,
+        90.3vw 2646px #ffe6f7,
+        89.1vw 2398px #d7e2ff,
+        77.8vw 2398px #ffffff,
+        13.4vw 2490px #d7e2ff,
+        72.7vw 2531px #a9b8ff,
+        9.7vw 3704px #a9b8ff,
+        54.3vw 3443px #d7e2ff,
+        20.1vw 3286px #ffffff,
+        9.6vw 3167px #ffe6f7,
+        91.1vw 3983px #ffe6f7,
+        11.5vw 3035px #ffe6f7,
+        50.3vw 3404px #d7e2ff,
+        80.3vw 2987px #ffffff,
+        2.4vw 3560px #a9b8ff,
+        14.7vw 2377px #ffffff,
+        20.4vw 3720px #d7e2ff,
+        99.0vw 3898px #ffffff,
+        58.0vw 2275px #a9b8ff,
+        7.8vw 2198px #ffe6f7,
+        39.1vw 2873px #ffe6f7,
+        43.0vw 3230px #ffe6f7,
+        1.3vw 3435px #ffffff,
+        84.4vw 2371px #a9b8ff,
+        45.4vw 3514px #ffe6f7,
+        40.5vw 2399px #d7e2ff,
+        9.5vw 3622px #ffffff,
+        32.4vw 2173px #a9b8ff,
+        57.0vw 2391px #ffe6f7,
+        80.5vw 2528px #ffe6f7,
+        91.1vw 3524px #d7e2ff,
+        81.5vw 2830px #d7e2ff,
+        89.7vw 3801px #ffe6f7,
+        76.7vw 3567px #d7e2ff,
+        40.6vw 3479px #d7e2ff,
+        7.1vw 2699px #ffe6f7,
+        46.9vw 2021px #ffe6f7,
+        99.1vw 3848px #ffffff,
+        23.2vw 3934px #ffe6f7,
+        33.8vw 3351px #a9b8ff,
+        57.0vw 3091px #ffffff,
+        39.0vw 3019px #d7e2ff,
+        70.1vw 3560px #a9b8ff;
+    animation: estrelas-descendo var(--vel-estrelas-pequenas) linear infinite;
+}
+
+/* frente: maiores, mais rápidas, algumas com brilho */
+.menu-inicial::after {
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    box-shadow:
+        54.8vw 708px #ffd9f5,
+        84.5vw 591px #ffffff,
+        51.0vw 704px #cfdcff,
+        41.5vw 1994px #ffffff,
+        10.4vw 910px #ffd9f5,
+        22.5vw 715px #ffffff,
+        99.9vw 674px #ffd9f5,
+        54.2vw 1712px #ffd9f5,
+        19.9vw 349px #ffffff,
+        43.4vw 835px #ffd9f5,
+        79.3vw 1152px #ffd9f5,
+        19.6vw 1380px #cfdcff,
+        29.8vw 1048px #ffffff,
+        81.9vw 1963px #cfdcff,
+        51.6vw 1540px #cfdcff,
+        75.7vw 1202px #ffd9f5,
+        64.5vw 813px #ffd9f5,
+        84.8vw 1833px #ffffff,
+        73.1vw 1822px #cfdcff,
+        85.7vw 540px #ffffff,
+        68.9vw 1642px #ffffff,
+        55.2vw 334px #cfdcff,
+        62.5vw 872px #cfdcff,
+        28.1vw 1264px #ffd9f5,
+        15.6vw 1526px #ffd9f5,
+        97.3vw 1300px #ffd9f5,
+        73.1vw 1381px #ffffff,
+        67.2vw 31px #ffffff,
+        39.9vw 848px #ffd9f5,
+        13.6vw 308px #cfdcff,
+        91.6vw 1965px #ffffff,
+        72.5vw 1556px #ffd9f5,
+        30.8vw 15px #ffd9f5,
+        51.8vw 119px #ffffff,
+        51.5vw 17px #ffffff,
+        17.4vw 919px #cfdcff,
+        23.1vw 56px #ffd9f5,
+        19.3vw 1023px #ffffff,
+        12.7vw 230px #ffd9f5,
+        16.5vw 68px #ffd9f5,
+        78.4vw 1772px #ffffff,
+        20.2vw 1298px #ffd9f5,
+        24.4vw 682px #ffffff,
+        88.1vw 1560px #ffffff,
+        62.1vw 1625px #ffd9f5,
+        57.3vw 644px #ffffff,
+        68.5vw 1605px #ffffff,
+        89.3vw 843px #cfdcff,
+        57.6vw 334px #cfdcff,
+        40.8vw 237px #cfdcff,
+        5.3vw 841px #cfdcff,
+        78.7vw 55px #ffd9f5,
+        32.5vw 280px #ffffff,
+        17.0vw 1271px #cfdcff,
+        40.4vw 1051px #ffffff,
+        33.5vw 1925px 3px 1px rgba(150,180,255,.9),
+        88.6vw 907px 3px 1px rgba(255,150,240,.9),
+        58.3vw 1671px 3px 1px rgba(150,180,255,.9),
+        19.3vw 1327px 3px 1px rgba(255,255,255,.9),
+        64.3vw 342px 3px 1px rgba(255,150,240,.9),
+        5.9vw 1307px 3px 1px rgba(150,180,255,.9),
+        8.0vw 1123px 3px 1px rgba(255,255,255,.9),
+        46.6vw 639px 3px 1px rgba(255,150,240,.9),
+        13.0vw 618px 3px 1px rgba(255,150,240,.9),
+        33.1vw 239px 3px 1px rgba(255,150,240,.9),
+        69.0vw 1233px 3px 1px rgba(255,150,240,.9),
+        70.5vw 219px 3px 1px rgba(150,180,255,.9),
+        54.8vw 2708px #ffd9f5,
+        84.5vw 2591px #ffffff,
+        51.0vw 2704px #cfdcff,
+        41.5vw 3994px #ffffff,
+        10.4vw 2910px #ffd9f5,
+        22.5vw 2715px #ffffff,
+        99.9vw 2674px #ffd9f5,
+        54.2vw 3712px #ffd9f5,
+        19.9vw 2349px #ffffff,
+        43.4vw 2835px #ffd9f5,
+        79.3vw 3152px #ffd9f5,
+        19.6vw 3380px #cfdcff,
+        29.8vw 3048px #ffffff,
+        81.9vw 3963px #cfdcff,
+        51.6vw 3540px #cfdcff,
+        75.7vw 3202px #ffd9f5,
+        64.5vw 2813px #ffd9f5,
+        84.8vw 3833px #ffffff,
+        73.1vw 3822px #cfdcff,
+        85.7vw 2540px #ffffff,
+        68.9vw 3642px #ffffff,
+        55.2vw 2334px #cfdcff,
+        62.5vw 2872px #cfdcff,
+        28.1vw 3264px #ffd9f5,
+        15.6vw 3526px #ffd9f5,
+        97.3vw 3300px #ffd9f5,
+        73.1vw 3381px #ffffff,
+        67.2vw 2031px #ffffff,
+        39.9vw 2848px #ffd9f5,
+        13.6vw 2308px #cfdcff,
+        91.6vw 3965px #ffffff,
+        72.5vw 3556px #ffd9f5,
+        30.8vw 2015px #ffd9f5,
+        51.8vw 2119px #ffffff,
+        51.5vw 2017px #ffffff,
+        17.4vw 2919px #cfdcff,
+        23.1vw 2056px #ffd9f5,
+        19.3vw 3023px #ffffff,
+        12.7vw 2230px #ffd9f5,
+        16.5vw 2068px #ffd9f5,
+        78.4vw 3772px #ffffff,
+        20.2vw 3298px #ffd9f5,
+        24.4vw 2682px #ffffff,
+        88.1vw 3560px #ffffff,
+        62.1vw 3625px #ffd9f5,
+        57.3vw 2644px #ffffff,
+        68.5vw 3605px #ffffff,
+        89.3vw 2843px #cfdcff,
+        57.6vw 2334px #cfdcff,
+        40.8vw 2237px #cfdcff,
+        5.3vw 2841px #cfdcff,
+        78.7vw 2055px #ffd9f5,
+        32.5vw 2280px #ffffff,
+        17.0vw 3271px #cfdcff,
+        40.4vw 3051px #ffffff,
+        33.5vw 3925px 3px 1px rgba(150,180,255,.9),
+        88.6vw 2907px 3px 1px rgba(255,150,240,.9),
+        58.3vw 3671px 3px 1px rgba(150,180,255,.9),
+        19.3vw 3327px 3px 1px rgba(255,255,255,.9),
+        64.3vw 2342px 3px 1px rgba(255,150,240,.9),
+        5.9vw 3307px 3px 1px rgba(150,180,255,.9),
+        8.0vw 3123px 3px 1px rgba(255,255,255,.9),
+        46.6vw 2639px 3px 1px rgba(255,150,240,.9),
+        13.0vw 2618px 3px 1px rgba(255,150,240,.9),
+        33.1vw 2239px 3px 1px rgba(255,150,240,.9),
+        69.0vw 3233px 3px 1px rgba(255,150,240,.9),
+        70.5vw 2219px 3px 1px rgba(150,180,255,.9);
+    animation:
+        estrelas-descendo var(--vel-estrelas-medias) linear infinite,
+        cintilar 4s ease-in-out infinite alternate;
+}
+
+@keyframes estrelas-descendo {
+    from { transform: translateY(-2000px); }
+    to   { transform: translateY(0); }
+}
+
+@keyframes cintilar {
+    from { opacity: 1; }
+    to   { opacity: 0.55; }
+}
+
+/* ---------- LOGO ---------- */
+.logo-menu {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    justify-content: center;
+    animation: surgir-logo 0.9s var(--mola) backwards;
+}
+
+/* halo magenta pulsando atrás da logo */
+.logo-menu::before {
+    content: "";
+    position: absolute;
+    inset: -30% -18%;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(closest-side, rgba(200, 15, 208, 0.34), rgba(90, 70, 210, 0.14) 55%, transparent 78%);
+    filter: blur(10px);
+    animation: pulsar 5s ease-in-out infinite alternate;
+}
+
+.logo-menu img {
+    display: block;
+    height: var(--altura-logo);
+    width: auto;
+    max-width: min(82vw, 560px);
+    object-fit: contain;
+    filter:
+        drop-shadow(0 6px 0 rgba(12, 0, 34, 0.6))
+        drop-shadow(0 0 22px rgba(200, 15, 208, 0.45));
+    user-select: none;
+    -webkit-user-drag: none;
+    animation: flutuar 6s ease-in-out infinite alternate;
+}
+
+@keyframes flutuar {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-9px); }
+}
+
+@keyframes pulsar {
+    from { opacity: 0.6;  transform: scale(0.96); transform: rotate(-30deg); }
+    to   { opacity: 1;    transform: scale(1.07); transform: rotate(-30deg); }
+}
+
+/* ---------- OPÇÕES (vertical) ---------- */
+.opcoes-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.35rem, 1.6vh, 1rem);
+}
+
+.opcao-menu {
+    position: relative;
+    appearance: none;
+    margin: 0;
+    padding: 0.35rem 0.5rem;
+    background: none;
+    border: 0;
+    border-radius: 16px;
+    cursor: pointer;
+    line-height: 0;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.22s var(--mola);
+    animation: surgir-opcao 0.7s var(--mola) backwards;
+}
+
+.opcao-menu:nth-child(1) { animation-delay: 0.45s; }
+.opcao-menu:nth-child(2) { animation-delay: 0.55s; }
+.opcao-menu:nth-child(3) { animation-delay: 0.65s; }
+
+.opcao-menu img {
+    display: block;
+    height: var(--altura-opcao);
+    width: auto;
+    max-width: min(86vw, 640px);
+    object-fit: contain;
+    filter:
+        drop-shadow(0 3px 0 rgba(12, 0, 34, 0.65))
+        drop-shadow(0 0 0 rgba(200, 15, 208, 0));
+    transition: filter 0.22s ease;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* estrelinhas que aparecem nos lados da opção selecionada */
+.opcao-menu::before,
+.opcao-menu::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    margin-top: -9px;
+    background: radial-gradient(circle, #ffffff 0 25%, var(--azul-gelo) 70%);
+    clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+    opacity: 0;
+    transform: scale(0.2) rotate(-90deg);
+    transition: opacity 0.2s ease, transform 0.35s var(--mola);
+    pointer-events: none;
+}
+
+.opcao-menu::before { left: -12px; }
+.opcao-menu::after  { right: -12px; }
+
+.opcao-menu:hover,
+.opcao-menu:focus-visible {
+    transform: translateY(-3px) scale(1.06);
+}
+
+.opcao-menu:hover img,
+.opcao-menu:focus-visible img {
+    filter:
+        drop-shadow(0 5px 0 rgba(12, 0, 34, 0.65))
+        drop-shadow(0 0 16px rgba(200, 15, 208, 0.8))
+        brightness(1.1);
+}
+
+.opcao-menu:hover::before,
+.opcao-menu:hover::after,
+.opcao-menu:focus-visible::before,
+.opcao-menu:focus-visible::after {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+}
+
+.opcao-menu:active {
+    transform: translateY(0) scale(0.97);
+}
+
+.opcao-menu:focus-visible {
+    outline: 2px solid var(--azul-gelo);
+    outline-offset: 3px;
+}
+
+/* ---------- ATALHO ---------- */
+.atalho-menu {
+    position: absolute;
+    inset-inline: 0;
+    bottom: clamp(1rem, 4vh, 2rem);
+    margin-inline: auto;
+    width: max-content;
+    max-width: calc(100% - 2rem);
+    padding: 0.5rem 1.1rem;
+    font-size: 0.88rem;
+    text-align: center;
+    color: var(--texto-suave);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    animation: surgir-fade 0.8s ease 0.9s backwards;
+}
+
+.atalho-menu .simbolo {
+    margin-right: 0.2rem;
+    font-weight: 700;
+    color: var(--magenta);
+}
+
+.atalho-menu kbd {
+    display: inline-block;
+    min-width: 2.4em;
+    margin: 0 0.1em;
+    padding: 0.1em 0.5em;
+    font: inherit;
+    font-size: 0.85em;
+    color: var(--texto);
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-bottom: 3px solid var(--azul-gelo);
+    border-radius: 6px;
+}
+
+/* ---------- ENTRADA (uma vez, ao abrir) ---------- */
+@keyframes surgir-logo {
+    from { opacity: 0; transform: translateY(-26px) scale(0.86); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes surgir-opcao {
+    from { opacity: 0; transform: translateY(18px) scale(0.94); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes surgir-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ---------- TELAS BAIXAS (celular deitado) ---------- */
+@media (max-height: 560px) {
+    :root {
+        --altura-logo: 26vh;
+        --altura-opcao: 11vh;
+    }
+    .menu-inicial {
+        gap: 0.75rem;
+        padding-bottom: 1rem;
+    }
+}
+
+/* sem teclado (toque), o aviso do ESC não faz sentido */
+@media (hover: none) and (pointer: coarse) {
+    .atalho-menu {
+        display: none;
+    }
+}
+
+/* ---------- ACESSIBILIDADE: sem movimento ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .menu-inicial::before,
+    .menu-inicial::after,
+    .logo-menu,
+    .logo-menu::before,
+    .logo-menu img,
+    .opcao-menu,
+    .atalho-menu {
+        animation: none;
+    }
+    .opcao-menu,
+    .opcao-menu img,
+    .opcao-menu::before,
+    .opcao-menu::after {
+        transition: none;
+    }
+}
