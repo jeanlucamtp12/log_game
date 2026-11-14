@@ -18,12 +18,8 @@ import {
   HINT_EASY_THRESHOLD,
 } from "./game-data.js";
 import { iconSvg, mountIcons } from "./icons.js";
-import { SUPABASE_URL, SUPABASE_KEY } from "./config.js";
 
-const SAVE_TABLE_URL = `${SUPABASE_URL}/rest/v1/game_saves`;
-const SAVE_ID_KEY = "lunar07-save-id";
 const SAVE_KEY = "lunar07-save";
-const remoteEnabled = Boolean(SUPABASE_URL && SUPABASE_KEY);
 const SAVE_VERSION = 2; // saves de versões anteriores (objetos fixos por missão) são descartados
 const TOTAL_REQUIRED = MISSIONS.reduce((sum, m) => sum + m.requiredCount, 0);
 const SPACE = "espaco";
@@ -272,26 +268,7 @@ function ensureMissionRelics() {
   }
 }
 
-function saveId() {
-  let id = localStorage.getItem(SAVE_ID_KEY);
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem(SAVE_ID_KEY, id);
-  }
-  return id;
-}
-
-function remoteHeaders(extra = {}) {
-  return {
-    apikey: SUPABASE_KEY,
-    Authorization: `Bearer ${SUPABASE_KEY}`,
-    "Content-Type": "application/json",
-    ...extra,
-  };
-}
-
 let persistenceReady = false;
-let remoteOk = true; // se o carregamento remoto falhar, não sobrescrevemos o save remoto
 let saveTimer = null;
 
 function saveState() {
@@ -299,39 +276,16 @@ function saveState() {
   saveTimer = setTimeout(pushSave, 300);
 }
 
-async function pushSave() {
+function pushSave() {
   if (!persistenceReady) return;
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(state));
   } catch (error) {
     console.error("Falha ao salvar no navegador:", error);
   }
-  if (!remoteEnabled || !remoteOk) return;
-  try {
-    const res = await fetch(`${SAVE_TABLE_URL}?on_conflict=id`, {
-      method: "POST",
-      headers: remoteHeaders({ Prefer: "resolution=merge-duplicates,return=minimal" }),
-      body: JSON.stringify({
-        id: saveId(),
-        save: state,
-        updated_at: new Date().toISOString(),
-      }),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  } catch (error) {
-    console.error("Falha ao salvar progresso remoto:", error);
-  }
 }
 
-async function loadSaved() {
-  if (remoteEnabled) {
-    const res = await fetch(`${SAVE_TABLE_URL}?id=eq.${saveId()}&select=save`, {
-      headers: remoteHeaders(),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const rows = await res.json();
-    return Array.isArray(rows) && rows[0] ? rows[0].save : null;
-  }
+function loadSaved() {
   try {
     return JSON.parse(localStorage.getItem(SAVE_KEY));
   } catch {
@@ -339,23 +293,12 @@ async function loadSaved() {
   }
 }
 
-async function loadState() {
-  let saved = null;
-  let failed = false;
-  try {
-    saved = await loadSaved();
-  } catch (error) {
-    console.error("Falha ao carregar progresso:", error);
-    failed = true;
-  }
+function loadState() {
+  const saved = loadSaved();
   const valid = saved && saved.version === SAVE_VERSION;
   state = valid ? { ...defaultState(), ...saved } : defaultState();
   if (!Array.isArray(state.terminalLines)) state.terminalLines = defaultState().terminalLines;
   ensureMissionRelics();
-  if (failed) {
-    remoteOk = false;
-    state.terminalLines.push("Não foi possível carregar o progresso remoto. O progresso será salvo apenas neste navegador.");
-  }
   persistenceReady = true;
 }
 
@@ -1840,7 +1783,7 @@ async function init() {
   createFlyover(el.surfaceImgs);
   createSurfaceDust(el.surfaceDust);
   preloadSurfaces();
-  await loadState();
+  loadState();
   render();
   applyLights(false);
   tickTimer();
