@@ -307,8 +307,8 @@ const SCREEN_TITLES = {
   catalog: "Catálogo",
   manual: "Manual da nave",
   messages: "Mensagens",
-  reports: "Relatórios ANSA",
-  report: "Relatório ANSA",
+  reports: "Relatórios L.O.G.",
+  report: "Relatório L.O.G.",
   terminal: "Terminal",
 };
 
@@ -919,7 +919,7 @@ function confirmCatalog() {
   }
 }
 
-// ===== Checkpoints e relatórios da ANSA =====
+// ===== Checkpoints e relatórios da L.O.G. =====
 // A cada CHECKPOINT_EVERY objetos catalogados (no total) a nave sofre uma interferência:
 // um warning vermelho (ERRO-xxxx) fica no centro do vidro e o terminal só aceita o código de
 // sincronização da carta coringa desse erro. Com o código certo, o relatório abre no vidro.
@@ -938,7 +938,7 @@ function raiseSyncWarning() {
   const data = REPORTS[state.reports.length];
   if (data) {
     const lines = [
-      `ALERTA ${data.errorCode} · interferência de sincronização com a ANSA.`,
+      `ALERTA ${data.errorCode} · interferência de sincronização com a L.O.G..`,
       "Consulte o Manual, seção Erros. O terminal só aceita o código de sincronização.",
     ];
     if (state.reports.length === 0) {
@@ -994,7 +994,7 @@ function acceptSyncCode(card) {
   state.missionStartedAt += Date.now() - (state.pauseAt ?? Date.now()); // desconta o tempo pausado
   state.pauseAt = null;
   saveState();
-  appendTerminal("CÓDIGO ACEITO. Sincronização restabelecida. Abrindo relatório da ANSA…");
+  appendTerminal("CÓDIGO ACEITO. Sincronização restabelecida. Abrindo relatório da L.O.G.…");
   renderBadges();
   renderCoordinate();
   setTimeout(() => showReport(n, true), 900);
@@ -1044,7 +1044,7 @@ function showReport(n, fresh = false) {
       </section>
       <section class="report-side is-right">
         <h4>Analista de Campo</h4>
-        <small>Base ANSA · Jogador 2</small>
+        <small>Base L.O.G. · Jogador 2</small>
         <dl class="report-metrics">
           ${metric("Cartas processadas", n)}
           ${metric("Objetos verificados", s.found)}
@@ -1193,7 +1193,7 @@ function startClock() {
 }
 
 // ===== Mensagens (uma conversa por missão) =====
-const ROLE = "ANSA // Transmissão";
+const ROLE = "L.O.G. // Transmissão";
 const typingRuns = new WeakMap(); // cancela a digitação de um contêiner sem afetar os outros
 let openThread = null; // índice da missão cuja conversa está aberta (null = lista)
 
@@ -1593,7 +1593,7 @@ function renderExperience() {
 function renderBadges() {
   const story = isLocked(); // transmissão não lida
   const warn = isWarning(); // erro de sincronização
-  const storyMsg = "Leia as mensagens da ANSA primeiro";
+  const storyMsg = "Leia as mensagens da L.O.G. primeiro";
   const warnMsg = "Resolva o erro de sincronização primeiro";
   const modal = isGlassModalOpen(); // cartão aberto no vidro
   const modalMsg = "Responda ao aviso no visor primeiro";

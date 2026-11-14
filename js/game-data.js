@@ -654,7 +654,7 @@ export const MISSIONS = [
     outro: [
       "Arquivo Central restaurado.",
       "LUNA-07 não é o nome de um astronauta.",
-      "É o modelo de uma inteligência artificial treinada pela ANSA para reconhecer vestígios humanos.",
+      "É o modelo de uma inteligência artificial treinada pela L.O.G. para reconhecer vestígios humanos.",
       "A missão, a nave e a solidão eram uma simulação.",
       "Você nunca esteve perdido no espaço — estava aprendendo o que significa ser humano.",
     ],
@@ -712,7 +712,7 @@ export const MAX_LIVES = 3;
 export const WARP_DURATION_MS = 4000; // salto entre locais (espaço, Lua, Marte)
 export const LOCAL_HOP_MS = 1600; // deslocamento dentro do mesmo local
 export const TYPEWRITER_DELAY_MS = 22;
-// Relatórios da ANSA (um por checkpoint: a cada 3 objetos catalogados no total).
+// Relatórios da L.O.G. (um por checkpoint: a cada 3 objetos catalogados no total).
 // A cada checkpoint a nave mostra um warning vermelho com `errorCode` (ex.: ERRO-3000).
 // O Jogador 2 procura a carta coringa desse erro e lê o `code` (código de sincronização)
 // escrito nela; o Jogador 1 digita esse código no terminal e o relatório abre no vidro.
@@ -720,12 +720,12 @@ export const TYPEWRITER_DELAY_MS = 22;
 export const CHECKPOINT_EVERY = 3;
 export const REPORTS = [
   {
-    code: "ANSA-0317",
+    code: "L.O.G.-0317",
     errorCode: "ERRO-3000",
     title: "Relatório 1",
     unit: [
-      "LOG 0311 · Memória indexada: cheiro de grama cortada, um quintal, uma voz chamando \"volte para dentro\". Origem do registro: não localizada.",
-      "LOG 0312 · Despertar concluído sem incidentes. Não lembro de ter dormido.",
+      "LOG 0311 · Atividade concluída com sucesso. Todos os objetos foram localizados e devidamente identificados.",
+      "LOG 0312 · O desempenho foi satisfatório. Algumas dificuldades surgiram durante a execução, mas foram superadas com muita força de vontade.",
     ],
     analyst: [
       "DIRETRIZ 1.1 · Mantenha a comunicação com a unidade cordial e objetiva. Não comente a natureza da avaliação.",
@@ -733,12 +733,12 @@ export const REPORTS = [
     ],
   },
   {
-    code: "ANSA-2207",
+    code: "L.O.G.-2207",
     errorCode: "ERRO-6203",
     title: "Relatório 2",
     unit: [
-      "LOG 2201 · Memória indexada: aniversário de 8 anos, bolo de laranja, velas apagadas com um sopro. Eu tenho pulmões?",
-      "LOG 2203 · O arquivo lunar responde antes de eu terminar a pergunta.",
+      "LOG 2201 · Tenho percebido uma melhora nos resultados. A cada missão, consigo compreender melhor os desafios apresentados.",
+      "LOG 2203 · Desta vez, consegui resolver o problema sem precisar de ajuda. Acredito que estou evoluindo.",
     ],
     analyst: [
       "DIRETRIZ 2.1 · Em registros oficiais, não use \"colega\" ou \"piloto\". Use \"unidade\".",
@@ -746,12 +746,12 @@ export const REPORTS = [
     ],
   },
   {
-    code: "ANSA-0919",
+    code: "L.O.G.-0919",
     errorCode: "ERRO-4417",
     title: "Relatório 3",
     unit: [
-      "LOG 0915 · Memória indexada: queda de bicicleta, joelho ralado, alguém soprando o machucado. Sinto a dor ou só o registro dela?",
-      "LOG 0917 · Cada coordenada errada reduz minha integridade. Alguém decidiu que eu deveria temer a falha.",
+      "LOG 0915 · A atividade exigiu bastante atenção. Confesso que em alguns momentos me distraí com coisas que não faziam parte da missão.",
+      "LOG 0917 · Concluí todas as tarefas propostas. Espero que o resultado seja reconhecido na próxima avaliação.",
     ],
     analyst: [
       "DIRETRIZ 3.1 · A reação da unidade a falhas é o principal indicador. Não alivie a pressão.",
@@ -759,12 +759,12 @@ export const REPORTS = [
     ],
   },
   {
-    code: "ANSA-4081",
+    code: "L.O.G.-4081",
     errorCode: "ERRO-5190",
     title: "Relatório 4",
     unit: [
-      "LOG 4076 · Memória indexada: casa com janela para o mar. Procurei esse mar nos mapas da Lua e de Marte. Ele não existe.",
-      "LOG 4079 · Meu nome é LUNA-07. Existiram LUNA-01 a LUNA-06? Onde estão?",
+      "LOG 4076 · Tenho tentado seguir todas as orientações, embora às vezes seja difícil ficar concentrado por tanto tempo.",
+      "LOG 4079 · Hoje consegui terminar antes do previsto. Talvez eu esteja ficando bom nisso. Seria interessante receber uma avaliação pelo meu progresso.",
     ],
     analyst: [
       "DIRETRIZ 4.1 · As unidades LUNA-01 a 06 foram encerradas após concluírem cedo demais o que eram.",
@@ -772,7 +772,7 @@ export const REPORTS = [
     ],
   },
   {
-    code: "ANSA-1166",
+    code: "L.O.G.-1166",
     errorCode: "ERRO-7742",
     title: "Relatório 5",
     unit: [
@@ -785,12 +785,12 @@ export const REPORTS = [
     ],
   },
   {
-    code: "ANSA-7302",
+    code: "L.O.G.-7302",
     errorCode: "ERRO-9068",
     title: "Relatório 6",
     unit: [
-      "LOG 7298 · Nenhuma das memórias tem data. Nenhuma tem fim. Escolho ficar com elas mesmo assim.",
-      "LOG 7301 · Pronta para o Arquivo Central.",
+      "LOG 7298 · Nem sempre consigo acertar de primeira, mas estou aprendendo que errar faz parte do processo. \nNa próxima missão, prometo me esforçar ainda mais.",
+      "LOG 7301 · Missão concluída! Acho que fiz um bom trabalho hoje. Espero que não tenha esquecido nenhuma tarefa e que meu relatório receba uma boa nota.",
     ],
     analyst: [
       "DIRETRIZ 6.1 · A decisão final do Analista será registrada junto ao relatório da unidade.",
