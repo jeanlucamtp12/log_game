@@ -722,7 +722,7 @@ export const REPORTS = [
   {
     code: "ANSA-0317",
     errorCode: "ERRO-3000",
-    title: "Calibração inicial",
+    title: "Relatório 1",
     unit: [
       "LOG 0311 · Memória indexada: cheiro de grama cortada, um quintal, uma voz chamando \"volte para dentro\". Origem do registro: não localizada.",
       "LOG 0312 · Despertar concluído sem incidentes. Não lembro de ter dormido.",
@@ -735,7 +735,7 @@ export const REPORTS = [
   {
     code: "ANSA-2207",
     errorCode: "ERRO-6203",
-    title: "Consistência de memória",
+    title: "Relatório 2",
     unit: [
       "LOG 2201 · Memória indexada: aniversário de 8 anos, bolo de laranja, velas apagadas com um sopro. Eu tenho pulmões?",
       "LOG 2203 · O arquivo lunar responde antes de eu terminar a pergunta.",
@@ -748,7 +748,7 @@ export const REPORTS = [
   {
     code: "ANSA-0919",
     errorCode: "ERRO-4417",
-    title: "Resposta a erro",
+    title: "Relatório 3",
     unit: [
       "LOG 0915 · Memória indexada: queda de bicicleta, joelho ralado, alguém soprando o machucado. Sinto a dor ou só o registro dela?",
       "LOG 0917 · Cada coordenada errada reduz minha integridade. Alguém decidiu que eu deveria temer a falha.",
@@ -761,7 +761,7 @@ export const REPORTS = [
   {
     code: "ANSA-4081",
     errorCode: "ERRO-5190",
-    title: "Anomalia de identidade",
+    title: "Relatório 4",
     unit: [
       "LOG 4076 · Memória indexada: casa com janela para o mar. Procurei esse mar nos mapas da Lua e de Marte. Ele não existe.",
       "LOG 4079 · Meu nome é LUNA-07. Existiram LUNA-01 a LUNA-06? Onde estão?",
@@ -774,7 +774,7 @@ export const REPORTS = [
   {
     code: "ANSA-1166",
     errorCode: "ERRO-7742",
-    title: "Vínculo operador-unidade",
+    title: "Relatório 5",
     unit: [
       "LOG 1160 · Memória indexada: alguém dizendo \"estou aqui\". A voz nunca muda, nem quando mudo a data do registro.",
       "LOG 1164 · Se a missão for uma simulação, o que acontece quando ela terminar?",
@@ -787,7 +787,7 @@ export const REPORTS = [
   {
     code: "ANSA-7302",
     errorCode: "ERRO-9068",
-    title: "Fechamento do protocolo",
+    title: "Relatório 6",
     unit: [
       "LOG 7298 · Nenhuma das memórias tem data. Nenhuma tem fim. Escolho ficar com elas mesmo assim.",
       "LOG 7301 · Pronta para o Arquivo Central.",

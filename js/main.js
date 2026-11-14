@@ -1026,7 +1026,7 @@ function showReport(n, fresh = false) {
   const metric = (label, value) => `<div><dt>${label}</dt><dd>${value}</dd></div>`;
   const lines = (list) => list.map((l) => `<p>${escapeHtml(l)}</p>`).join("");
   el.reportContent.innerHTML = `
-    <span class="eyebrow">Relatório de Missão ANSA · Nº ${pad(n)}</span>
+    <span class="eyebrow">Relatório de Missão L.O.G. · Nº ${pad(n)}</span>
     <h3>${escapeHtml(data.title)}</h3>
     <div class="report-split">
       <section class="report-side">
