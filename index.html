@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LUNAR/07 — Arquivo de Dejectos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+    <meta property="og:image" content="https://bolt.new/static/og_default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
+  </head>
+  <body>
+    <main class="mission-shell">
+      <header class="topbar">
+        <div class="mission-id">
+          <span class="mission-mark">L</span>
+          <div>
+            <strong>LUNAR/07</strong>
+            <span id="mission-label">MISSÃO 01 — LUA</span>
+          </div>
+        </div>
+
+        <div class="system-status">
+          <span class="status-dot"></span>
+          SISTEMAS NOMINAIS
+        </div>
+
+        <div class="header-actions">
+          <button class="catalog-button objectives-button" id="btn-objectives" type="button">
+            <span data-icon="scan"></span>
+            <span>Objetivos</span>
+            <b id="objectives-count">01</b>
+          </button>
+          <button class="catalog-button" id="btn-catalog" type="button">
+            <span data-icon="catalog"></span>
+            <span>Catálogo</span>
+            <b id="catalog-count">00</b>
+          </button>
+        </div>
+      </header>
+
+      <section class="viewport-wrap" aria-label="Visor da superfície">
+        <div class="viewport" id="viewport">
+          <div class="lunar-track" id="lunar-track">
+            <img class="lunar-image" id="surface-img-a" src="" alt="Superfície" />
+            <img class="lunar-image" id="surface-img-b" src="" alt="" aria-hidden="true" />
+            <img class="lunar-image" id="surface-img-c" src="" alt="" aria-hidden="true" />
+          </div>
+          <div class="space-haze"></div>
+          <div class="sky-bloom"></div>
+          <div class="viewport-grid"></div>
+          <div class="canopy-arch" aria-hidden="true"><i></i></div>
+          <div class="crosshair horizontal"></div>
+          <div class="crosshair vertical"></div>
+
+          <div class="telemetry telemetry-top">
+            <span>CAM / EXO-03</span>
+            <span id="telemetry-lat">LAT 00.67408° N</span>
+          </div>
+          <div class="telemetry telemetry-bottom">
+            <span>ALT 12.4 M</span>
+            <span>AZ 274.6°</span>
+          </div>
+
+          <div class="scan-prompt" id="scan-prompt">
+            <span data-icon="scan" data-size="17"></span>
+            <span id="scan-prompt-text">AGUARDANDO OBJETIVO</span>
+          </div>
+
+          <div class="waypoint-label" id="waypoint-label" hidden>
+            <span class="waypoint-orb"></span>
+            <div>
+              <b id="waypoint-title">SETOR DO ARQUIVO</b>
+              <small id="waypoint-sub">CHEGADA EM 00:43</small>
+            </div>
+          </div>
+
+          <div class="cockpit-console" aria-hidden="true">
+            <div class="console-screen console-left">
+              <span>INTEGRIDADE DO EXOTRAJE</span>
+              <strong id="lives-readout">03 / 03</strong>
+              <div class="meter"><i></i></div>
+            </div>
+            <div class="console-radar">
+              <div class="radar-orbit orbit-a"></div>
+              <div class="radar-orbit orbit-b"></div>
+              <span></span>
+            </div>
+            <div class="console-screen console-right">
+              <span>ARRAY DE VARREDURA</span>
+              <strong id="scan-signals">00 SINAIS</strong>
+              <div class="signal-bars"><i></i><i></i><i></i><i></i></div>
+            </div>
+          </div>
+
+          <!-- Warp (viagem na velocidade da luz) overlay -->
+          <div class="warp-layer" id="warp-layer" aria-hidden="true">
+            <div class="warp-stars" id="warp-stars"></div>
+            <div class="warp-flash"></div>
+            <div class="warp-vignette"></div>
+            <div class="warp-readout">
+              <span>VIAGEM EM VELOCIDADE DA LUZ</span>
+              <b id="warp-coord">--</b>
+              <div class="warp-bar"><i id="warp-bar-fill"></i></div>
+            </div>
+          </div>
+        </div>
+        <div class="frame-corner corner-tl"></div>
+        <div class="frame-corner corner-tr"></div>
+        <div class="frame-corner corner-bl"></div>
+        <div class="frame-corner corner-br"></div>
+      </section>
+
+      <div class="life-display" id="life-display" aria-label="Vidas restantes">
+        <span>VIDA</span>
+        <i class="life-icon" data-icon="heart" data-size="18"></i>
+        <i class="life-icon" data-icon="heart" data-size="18"></i>
+        <i class="life-icon" data-icon="heart" data-size="18"></i>
+      </div>
+
+      <div class="bottom-readout">
+        <span data-icon="signal" data-size="16"></span>
+        <span>ENLACE</span>
+        <b>87%</b>
+        <i></i>
+        <span>TEMPO DE MISSÃO</span>
+        <b id="mission-timer">000:00:00</b>
+      </div>
+
+      <button class="mission-guide-launcher" id="btn-guide" type="button">
+        <span data-icon="guide" data-size="21"></span>
+        <span>Guia de missão</span>
+        <b class="guide-badge" id="guide-badge" hidden>!</b>
+      </button>
+
+      <button class="terminal-launcher" id="btn-terminal" type="button">
+        <span class="terminal-pulse"></span>
+        <span data-icon="terminal" data-size="22"></span>
+        <span>Terminal</span>
+        <kbd id="terminal-shortcut">Ctrl K</kbd>
+      </button>
+
+      <!-- Botão de coordenada — aparece quando um objetivo está selecionado -->
+      <button class="coord-launcher" id="btn-coordinate" type="button" hidden>
+        <span data-icon="crosshair" data-size="20"></span>
+        <span>Inserir coordenada</span>
+      </button>
+
+      <!-- Guia de missão — chat com digitação -->
+      <div class="guide-overlay" id="guide-overlay">
+        <button class="overlay-dismiss" type="button" data-close="guide" aria-label="Fechar guia"></button>
+        <aside class="guide-drawer">
+          <div class="guide-header">
+            <div class="guide-emblem">
+              <span data-icon="guide" data-size="28"></span>
+            </div>
+            <div>
+              <span class="eyebrow">ANSA // PROTOCOLO LUNA-07</span>
+              <h2>Guia de missão</h2>
+              <p>Canal de orientação do tripulante</p>
+            </div>
+            <button class="icon-button" type="button" data-close="guide" aria-label="Fechar">
+              <span data-icon="close"></span>
+            </button>
+          </div>
+
+          <div class="guide-chat" id="guide-chat" aria-live="polite"></div>
+
+          <div class="guide-progress">
+            <div>
+              <span>ARQUIVO</span>
+              <b id="archive-percent">0%</b>
+            </div>
+            <i><span id="archive-bar"></span></i>
+            <div class="mission-objective-readout">
+              <span>OBJETIVO DA MISSÃO</span>
+              <b id="mission-objective-text">Catalogar 0 / 0</b>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Objetivos — seleção de qual objeto procurar -->
+      <div class="objectives-overlay" id="objectives-overlay">
+        <button class="overlay-dismiss" type="button" data-close="objectives" aria-label="Fechar objetivos"></button>
+        <aside class="objectives-drawer">
+          <div class="drawer-header">
+            <div>
+              <span class="eyebrow">SELEÇÃO DE ALVO</span>
+              <h2>Objetivos</h2>
+              <p>Escolha qual objeto desta missão deseja procurar</p>
+            </div>
+            <button class="icon-button" type="button" data-close="objectives" aria-label="Fechar">
+              <span data-icon="close"></span>
+            </button>
+          </div>
+          <div class="found-panel">
+            <div class="found-heading">
+              <div>
+                <span class="eyebrow">ASSINATURAS</span>
+                <h2>Restantes</h2>
+              </div>
+              <strong id="objectives-progress">0<span>/0</span></strong>
+            </div>
+            <div class="objectives-list" id="objectives-list"></div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Catálogo -->
+      <div class="catalog-overlay" id="catalog-overlay">
+        <button class="overlay-dismiss" type="button" data-close="catalog" aria-label="Fechar catálogo"></button>
+        <aside class="catalog-drawer">
+          <div class="drawer-header">
+            <div>
+              <span class="eyebrow">ARQUIVO RECUPERADO</span>
+              <h2>Catálogo de objetos</h2>
+              <p>Vestígios materiais da exploração humana</p>
+            </div>
+            <button class="icon-button" type="button" data-close="catalog" aria-label="Fechar">
+              <span data-icon="close"></span>
+            </button>
+          </div>
+          <div class="catalog-list" id="catalog-list"></div>
+        </aside>
+      </div>
+
+      <!-- Terminal -->
+      <div class="terminal-window hidden" id="terminal-window" role="dialog" aria-label="Terminal de missão">
+        <div class="terminal-bar">
+          <div class="terminal-title">
+            <span data-icon="terminal" data-size="16"></span> TERMINAL DE COMANDO
+          </div>
+          <span>LOCAL / SEGURO</span>
+          <button type="button" data-close="terminal" aria-label="Fechar terminal">
+            <span data-icon="close" data-size="17"></span>
+          </button>
+        </div>
+        <div class="hint-bank">
+          <div class="hint-bank-copy">
+            <span>TOKENS DE DECRIPTAGEM</span>
+            <small>Gaste um para revelar uma pista do alvo selecionado</small>
+          </div>
+          <div class="token-row" id="token-row" aria-label="Tokens de dica restantes"></div>
+          <button class="use-hint" id="btn-hint" type="button">USAR DICA</button>
+        </div>
+        <div class="terminal-output" id="terminal-output">
+          <div id="terminal-lines"></div>
+          <form id="terminal-form">
+            <label for="mission-command">root@lunar07:~$</label>
+            <input
+              id="mission-command"
+              name="command"
+              autocomplete="off"
+              spellcheck="false"
+              aria-label="Comando do terminal"
+            />
+          </form>
+        </div>
+      </div>
+
+      <!-- Modal de coordenada -->
+      <div class="coord-modal hidden" id="coord-modal" role="dialog" aria-label="Inserir coordenada">
+        <button class="preview-dismiss" type="button" data-close="coord" aria-label="Fechar"></button>
+        <div class="coord-modal-card">
+          <span class="eyebrow">CONFIRMAÇÃO DE COORDENADA</span>
+          <h3 id="coord-target-name">Alvo selecionado</h3>
+          <p class="coord-instructions">
+            Digite a coordenada exata do objeto, conforme informada pela carta física.
+          </p>
+          <form id="coord-form">
+            <input
+              id="coord-input"
+              name="coord"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="ex.: L-27.04 / N-61.9"
+              aria-label="Coordenada"
+            />
+            <button type="submit" class="coord-submit">Confirmar</button>
+          </form>
+          <p class="coord-feedback" id="coord-feedback"></p>
+        </div>
+      </div>
+
+      <!-- Modal de objeto encontrado (após a viagem) -->
+      <div class="object-found-modal hidden" id="object-found-modal" role="dialog" aria-label="Objeto localizado">
+        <button class="preview-dismiss" type="button" data-close="found" aria-label="Fechar"></button>
+        <div class="found-card">
+          <div class="found-card-image">
+            <img id="found-image" src="" alt="" />
+            <span class="found-scan-ring">${""}</span>
+          </div>
+          <div class="found-card-copy">
+            <span class="eyebrow">OBJETO LOCALIZADO</span>
+            <h3 id="found-name"></h3>
+            <p id="found-description"></p>
+            <ul class="found-specs">
+              <li><i data-icon="weight" data-size="18"></i><em>PESO</em><b id="found-weight"></b></li>
+              <li><i data-icon="ruler" data-size="18"></i><em>ALTURA</em><b id="found-height"></b></li>
+              <li><i data-icon="tag" data-size="18"></i><em>CATEGORIA</em><b id="found-category"></b></li>
+              <li><i data-icon="globe" data-size="18"></i><em>LOCAL</em><b id="found-location"></b></li>
+            </ul>
+            <div class="found-action">
+              <span>Deseja catalogar este objeto no arquivo?</span>
+              <div class="found-action-buttons">
+                <button class="catalog-confirm" id="btn-catalog-confirm" type="button">Catalogar</button>
+                <button class="catalog-dismiss" id="btn-catalog-dismiss" type="button">Ainda não</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal de fim de missão -->
+      <div class="mission-end-modal hidden" id="mission-end-modal" role="dialog" aria-label="Missão concluída">
+        <button class="preview-dismiss" type="button" data-close="end" aria-label="Fechar"></button>
+        <div class="mission-end-card">
+          <span class="eyebrow" id="end-eyebrow">MISSÃO CONCLUÍDA</span>
+          <h3 id="end-title"></h3>
+          <div class="end-chat" id="end-chat" aria-live="polite"></div>
+          <button class="next-mission-button" id="btn-next-mission" type="button">Continuar</button>
+        </div>
+      </div>
+
+      <!-- Game over -->
+      <div class="game-over-modal hidden" id="game-over-modal" role="dialog" aria-label="Missão falhada">
+        <div class="game-over-card">
+          <span class="eyebrow">SINAL PERDIDO</span>
+          <h3>Missão falhada</h3>
+          <p>Você esgotou suas três vidas. A nave perdeu o enlace com o arquivo.</p>
+          <button class="next-mission-button" id="btn-restart" type="button">Reiniciar treinamento</button>
+        </div>
+      </div>
+    </main>
+
+    <script type="module" src="js/game.js" defer></script>
+  </body>
+</html>
