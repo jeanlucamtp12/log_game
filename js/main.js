@@ -1865,3 +1865,9 @@ async function init() {
 }
 
 init();
+
+
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  window.location.href = "../index.html";
+});
