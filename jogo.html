@@ -205,7 +205,7 @@
                   <li><b>Escolha um objetivo.</b> Aperte <em>Missão</em> e selecione um dos objetos da missão atual. Ele passa a ser o seu alvo.</li>
                   <li><b>Veja o alvo.</b> Aperte <em>Alvo</em> para abrir a imagem do objeto procurado.</li>
                   <li><b>Peça dicas.</b> No <em>Terminal</em>, digite comandos como <code>peso_objeto</code> ou <code>partiu_em</code>. Acima de 2000 XP as dicas são difíceis e custam 500 XP; com 2000 XP ou menos ficam fáceis, mas custam 1000 XP.</li>
-                  <li><b>Informe a coordenada.</b> No <em>Navegador</em>, preencha a <em>latitude</em> (N/S) e a <em>longitude</em> (L/O) do objeto e aperte <em>Ir</em>. Aceita <code>0,67 N</code>, <code>23,47 L</code> ou números com sinal (S e O são negativos). Se o objeto estiver no espaço, o Navegador mostra um único campo, <code>UA</code>, para a distância informada na carta.</li>
+                  <li><b>Informe a coordenada.</b> No <em>Navegador</em>, preencha a <em>latitude</em> (N/S) e a <em>longitude</em> (L/O) do objeto e aperte <em>Ir</em>. Aceita <code>0,67 N</code>, <code>23,47 L</code> ou números com sinal (S e O são negativos). Se a carta do objeto trouxer a distância em <code>UA</code> (objetos no espaço), aperte o botão <em>N/L ⇄ UA</em> ao lado do <em>Ir</em> para trocar o Navegador para um único campo de distância. O Navegador <b>não troca sozinho</b>: confira a carta e escolha o tipo certo, senão a rota é rejeitada e o casco sofre.</li>
                   <li><b>Viaje.</b> Se o objeto estiver na Lua, em Marte ou no espaço e a nave estiver em outro local, ela salta até lá. Depois de chegar, a nave fica no local até você ir para outro.</li>
                   <li><b>Catalogue.</b> Quando o objeto for encontrado, aperte <em>Catalogar objeto</em>. Ele entra no <em>Catálogo</em>.</li>
                   <li><b>Conclua a missão.</b> Catalogue todos os objetos da missão para avançar.</li>
@@ -239,7 +239,7 @@
                 <dl class="manual-keys">
                   <div><dt>Integridade da Nave</dt><dd>Suas vidas. Cada coordenada errada tira uma.</dd></div>
                   <div><dt>Experiência</dt><dd>Sua pontuação. Dica difícil (acima de 2000 XP): −500. Dica fácil (2000 XP ou menos): −1000.</dd></div>
-                  <div><dt>Navegador</dt><dd>Campos de latitude (N/S) e longitude (L/O), ou só UA para objetos no espaço. Só ficam ativos quando há um alvo selecionado.</dd></div>
+                  <div><dt>Navegador</dt><dd>Campos de latitude (N/S) e longitude (L/O), ou só UA para objetos no espaço. O botão <em>N/L ⇄ UA</em> alterna entre os dois tipos. Só ficam ativos quando há um alvo selecionado.</dd></div>
                   <div><dt>Tempo</dt><dd>Cronômetro da missão atual.</dd></div>
                   <div><dt>Luz da cabine</dt><dd>A chave ao lado do botão <em>Missão</em> apaga e acende a luz da nave. É só ambiente.</dd></div>
                   <div><dt>Vidro da nave</dt><dd>Cada coordenada errada trinca o vidro. É só visual: o vidro se recupera quando a integridade volta.</dd></div>
@@ -254,6 +254,19 @@
             </div>
           </section>
         </div>
+      </div>
+
+      <!-- Dica de treinamento (missão 1): o Neil explica qual tipo de coordenada usar e onde fica o botão de alternar -->
+      <div class="nav-tip" id="nav-tip" role="status" hidden>
+        <div class="nav-tip-head">
+          <span data-icon="guide" data-size="15"></span>
+          <b>Neil · Treinamento</b>
+          <i id="nav-tip-step"></i>
+          <button class="nav-tip-close" id="nav-tip-close" type="button" aria-label="Fechar dica de treinamento" title="Fechar dica">
+            <span data-icon="close" data-size="14"></span>
+          </button>
+        </div>
+        <p id="nav-tip-text"></p>
       </div>
 
       <!-- Alerta do computador de navegação: aparece no vidro quando um vetor é rejeitado -->
@@ -409,6 +422,10 @@
                 <label class="coord-axis"><span id="coord-lat-label"></span><input id="coord-lat" type="text" inputmode="text" placeholder="0,67" disabled /></label>
                 <label class="coord-axis" id="coord-lon-wrap"><span>      L</span><input id="coord-lon" type="text" inputmode="text" placeholder="23,47" disabled /></label>
               </div>
+              <button class="coord-mode" id="coord-mode" type="button" disabled aria-label="Tipo de coordenada: latitude e longitude. Aperte para usar distância em UA." title="Trocar para distância (UA)">
+                <span data-icon="swap" data-size="12"></span>
+                <span class="coord-mode-label" id="coord-mode-label">N/L</span>
+              </button>
               <button class="coord-submit" id="coord-submit" type="submit" disabled>
                 <span class="coord-key">Ir</span>
               </button>

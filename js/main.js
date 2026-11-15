@@ -26,7 +26,7 @@ import {
 import { iconSvg, mountIcons, typeIconSvg } from "./icons.js";
 
 const SAVE_KEY = "lunar07-save";
-const SAVE_VERSION = 3; // v3: objetos reais (ids novos) e coordenadas lat/lon; saves anteriores são descartados
+const SAVE_VERSION = 4; // v4: objetos fixos por missão (missão 1 agora pede 2); saves anteriores são descartados
 const TOTAL_REQUIRED = MISSIONS.reduce((sum, m) => sum + m.requiredCount, 0);
 const SPACE = "espaco";
 const SURFACE_IMAGES = {
@@ -92,9 +92,15 @@ const el = {
   coordForm: $("coord-form"),
   coordInputs: [$("coord-lat"), $("coord-lon")], // [latitude N/S, longitude L/O]
   coordSubmit: $("coord-submit"),
+  coordMode: $("coord-mode"),
+  coordModeLabel: $("coord-mode-label"),
   coordLatLabel: $("coord-lat-label"),
   coordLonWrap: $("coord-lon-wrap"),
   coordFeedback: $("coord-feedback"),
+  navTip: $("nav-tip"),
+  navTipStep: $("nav-tip-step"),
+  navTipText: $("nav-tip-text"),
+  navTipClose: $("nav-tip-close"),
   navAlert: $("nav-alert"),
   navAlertCode: $("nav-alert-code"),
   navAlertText: $("nav-alert-text"),
@@ -245,12 +251,16 @@ document.addEventListener(
 // Legenda oficial da imagem (ex.: "Foto na Lua · NASA").
 const imageCredit = (relic) => (relic.imageCaption ? `${relic.imageCaption} · NASA` : "NASA");
 
-// ---- Sorteio dos objetos de cada missão ----
+// ---- Objetos de cada missão ----
+// Os objetos agora são FIXOS: vêm de MISSIONS[i].relics (game-data.js), na ordem definida lá.
+// O sorteio abaixo só entra como reserva, se uma missão não tiver a lista `relics`.
 // Nunca repete objeto entre missões. Com 2+ objetos, garante ao menos um de cada local.
 // O restante é sorteado entre os que sobraram, sem esgotar um local a ponto de faltar
 // objeto para as missões seguintes que também exigem um de cada.
 function pickMissionRelics(index) {
   const mission = MISSIONS[index];
+  const fixed = (mission.relics ?? []).filter((id) => RELICS.some((r) => r.id === id));
+  if (fixed.length) return fixed;
   const used = new Set(assignedRelicIds());
   const pool = RELICS.filter((r) => !used.has(r.id));
   const later = MISSIONS.slice(index + 1).filter((m) => m.requiredCount >= 2).length;
@@ -730,6 +740,19 @@ function renderRadar() {
 }
 
 // ===== Coordinates =====
+// Tipo de coordenada do Navegador, escolhido pelo JOGADOR no botão ao lado do "Ir":
+//   "latlon" = dois campos (latitude N/S · longitude L/O) · "dist" = um campo, em UA.
+// Não muda sozinho ao trocar de alvo: o jogador precisa ler a carta e escolher o tipo certo.
+let coordMode = "latlon";
+
+function toggleCoordMode() {
+  if (el.coordMode.disabled || traveling) return;
+  coordMode = coordMode === "dist" ? "latlon" : "dist";
+  resetCoordForm();
+  renderCoordinate();
+  el.coordInputs[0].focus({ preventScroll: true });
+}
+
 function setFeedback(text = "", idle = false) {
   el.coordFeedback.textContent = text;
   el.coordFeedback.classList.toggle("is-idle", idle);
@@ -744,6 +767,52 @@ const NAV_FAULTS = [
   { code: "NAV-452 · ALINHAMENTO PERDIDO", text: "Os propulsores corrigiram à força e o casco sentiu o esforço. Confirme os eixos." },
   { code: "NAV-096 · SINAL NÃO CONFERE", text: "O transponder do alvo não respondeu a esse vetor. Verifique a ficha do objeto." },
 ];
+// ---- Treinamento da missão 1 ----
+// Quando a missão tem `tutorial: true`, o Neil explica no vidro qual tipo de coordenada o alvo usa
+// e destaca o botão de alternar enquanto o Navegador estiver no tipo errado.
+// 1º objeto: lat/lon (o Navegador já abre assim) · 2º objeto: UA (precisa apertar o botão).
+let tutorialDismissed = false; // o jogador fechou as dicas (vale até recarregar a página)
+
+function updateTutorialTip() {
+  const target = relicById(state.selectedId);
+  const on =
+    !tutorialDismissed &&
+    !!currentMission().tutorial &&
+    !!target &&
+    !traveling &&
+    state.lives > 0 &&
+    !isWarning() &&
+    foundRelicId === null &&
+    el.navAlert.hidden;
+  el.navTip.hidden = !on;
+  el.coordMode.classList.remove("is-tutorial");
+  if (!on) return;
+
+  const targetInSpace = target.navTipo === "distancia";
+  const modeInSpace = coordMode === "dist";
+  const mismatch = targetInSpace !== modeInSpace;
+  const index = Math.max(0, currentRelicIds().indexOf(target.id));
+  el.navTipStep.textContent = `${index + 1}/${currentRelicIds().length}`;
+  el.coordMode.classList.toggle("is-tutorial", mismatch);
+
+  let text;
+  if (mismatch) {
+    text = targetInSpace
+      ? "Esta carta informa a posição em UA (distância), mas o Navegador está em latitude e longitude. Aperte o botão ⇄ ao lado do Ir para trocar o tipo."
+      : "Esta carta traz latitude e longitude, mas o Navegador está em UA. Aperte o botão ⇄ ao lado do Ir para voltar a N/L.";
+  } else {
+    text = targetInSpace
+      ? "Navegador em UA. Digite a distância que está na carta e aperte Ir."
+      : "Esta carta usa latitude (N/S) e longitude (L/O). Preencha os dois campos e aperte Ir. Atenção: o próximo objeto pode usar outro tipo.";
+  }
+  el.navTipText.textContent = text;
+}
+
+// Tipo de coordenada errado (ex.: lat/lon para um objeto que usa UA): também custa integridade.
+const WRONG_MODE_FAULT = {
+  code: "NAV-071 · TIPO DE COORDENADA",
+  text: "O alvo informa a posição em outro tipo de coordenada. Confira a ficha do objeto e o seletor do Navegador.",
+};
 let navFaultIndex = 0;
 let navAlertTimer = null;
 let navTypeTimer = null;
@@ -763,6 +832,7 @@ function typeInto(node, text, speed = 16) {
 }
 
 function showNavAlert({ code, text, hull = null, ms = 5200 }) {
+  el.navTip.hidden = true; // o alerta de erro tem prioridade sobre a dica de treinamento
   el.navAlert.hidden = false;
   el.navAlert.classList.remove("is-showing");
   void el.navAlert.offsetWidth; // reinicia a animação se falhar duas vezes seguidas
@@ -784,6 +854,7 @@ function hideNavAlert() {
   el.navAlert.classList.remove("is-showing");
   el.navAlert.hidden = true;
   el.coordForm.classList.remove("is-fault");
+  updateTutorialTip();
 }
 
 function resetCoordForm() {
@@ -804,7 +875,8 @@ function submitCoordinate(event) {
   const relic = relicById(state.selectedId);
   if (!relic) return;
 
-  const inSpace = relic.navTipo === "distancia"; // objetos no espaço: o Navegador pede a distância em UA
+  const inSpace = coordMode === "dist"; // tipo escolhido pelo jogador no botão do Navegador
+  const relicInSpace = relic.navTipo === "distancia"; // tipo que o objeto realmente usa
   const typed = el.coordInputs.map((input) => input.value.trim());
   if (typed[0] === "" || (!inSpace && typed[1] === "")) {
     showNavAlert({
@@ -822,6 +894,7 @@ function submitCoordinate(event) {
   if (inSpace) {
     const dist = parseDistanceInput(typed[0]);
     if (dist === null) return invalidVector("Não entendi a distância. Use um número em UA. Ex.: 2,64.");
+    if (!relicInSpace) return failCoordinate(WRONG_MODE_FAULT);
     correct = distMatches(relic, dist);
   } else {
     const lat = parseCoordInput(typed[0], "lat");
@@ -829,6 +902,7 @@ function submitCoordinate(event) {
     if (lat === null || lon === null) {
       return invalidVector("Não entendi o vetor. Use números, com N/S na latitude e L/O na longitude. Ex.: 0,67 N e 23,47 L.");
     }
+    if (relicInSpace) return failCoordinate(WRONG_MODE_FAULT);
     correct = coordMatches(relic, lat, lon);
   }
   if (!correct) return failCoordinate();
@@ -850,7 +924,7 @@ function rewardCorrectCoordinate() {
   appendTerminal(`ROTA CONFIRMADA · +${gain} XP`);
 }
 
-function failCoordinate() {
+function failCoordinate(fault = null) {
   state.lives = Math.max(0, state.lives - 1);
   state.missionMistakes += 1;
   saveState();
@@ -859,8 +933,8 @@ function failCoordinate() {
     renderCoordinate();
     return showGameOver();
   }
-  const fault = NAV_FAULTS[navFaultIndex++ % NAV_FAULTS.length];
-  showNavAlert({ ...fault, hull: `${pad(state.lives)}/${pad(MAX_LIVES)}` });
+  const shown = fault ?? NAV_FAULTS[navFaultIndex++ % NAV_FAULTS.length];
+  showNavAlert({ ...shown, hull: `${pad(state.lives)}/${pad(MAX_LIVES)}` });
   setFeedback("ROTA REJEITADA");
 }
 
@@ -1688,9 +1762,18 @@ function renderCoordinate() {
   const active = hasTarget && !traveling && state.lives > 0 && !isWarning() && foundRelicId === null;
   el.coordInputs.forEach((input) => (input.disabled = !active));
   el.coordSubmit.disabled = !active;
-  // objeto no espaço: um único campo, em UA; senão latitude (N/S) e longitude (L/O)
-  const target = relicById(state.selectedId);
-  const inSpace = !!target && target.navTipo === "distancia";
+  el.coordMode.disabled = !active;
+  // o tipo vem do botão do Navegador (não do alvo): UA = um campo; senão latitude (N/S) e longitude (L/O)
+  const inSpace = coordMode === "dist";
+  el.coordModeLabel.textContent = inSpace ? "UA" : "N/L";
+  el.coordMode.setAttribute(
+    "aria-label",
+    inSpace
+      ? "Tipo de coordenada: distância em UA. Aperte para usar latitude e longitude."
+      : "Tipo de coordenada: latitude e longitude. Aperte para usar distância em UA.",
+  );
+  el.coordMode.title = inSpace ? "Trocar para latitude/longitude" : "Trocar para distância (UA)";
+  updateTutorialTip();
   el.coordLatLabel.textContent = inSpace ? "UA" : "      N";
   el.coordInputs[0].placeholder = inSpace ? " 2,64" : " 0,67";
   el.coordInputs[0].setAttribute("aria-label", inSpace ? "Distância em UA" : "Latitude (N/S)");
@@ -1809,6 +1892,11 @@ function bindEvents() {
   el.btnLight.addEventListener("click", toggleLights);
 
   el.coordForm.addEventListener("submit", submitCoordinate);
+  el.coordMode.addEventListener("click", toggleCoordMode);
+  el.navTipClose.addEventListener("click", () => {
+    tutorialDismissed = true;
+    updateTutorialTip();
+  });
   el.terminalForm.addEventListener("submit", (event) => {
     event.preventDefault();
     runCommand(el.commandInput.value);

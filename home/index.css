@@ -773,12 +773,14 @@ body {
 .atalho-menu {
     position: absolute;
     inset-inline: 0;
-    bottom: clamp(1rem, 4vh, 2rem);
+    bottom: clamp(0.5rem, 2vh, 1rem);
     margin-inline: auto;
     width: max-content;
     max-width: calc(100% - 2rem);
-    padding: 0.5rem 1.1rem;
-    font-size: 0.88rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    white-space: nowrap;
     text-align: center;
     color: var(--texto-suave);
     background: rgba(255, 255, 255, 0.04);
@@ -797,9 +799,9 @@ body {
 
 .atalho-menu kbd {
     display: inline-block;
-    min-width: 2.4em;
+    min-width: 2em;
     margin: 0 0.1em;
-    padding: 0.1em 0.5em;
+    padding: 0.05em 0.4em;
     font: inherit;
     font-size: 0.85em;
     color: var(--texto);
@@ -835,6 +837,21 @@ body {
         gap: 0.75rem;
         padding-bottom: 1rem;
     }
+}
+
+/* telas baixas: aviso do ESC ainda menor, para não cobrir os créditos */
+@media (max-height: 640px) {
+    .atalho-menu {
+        bottom: 0.35rem;
+        padding: 0.15rem 0.55rem;
+        font-size: 0.64rem;
+    }
+}
+
+/* com os créditos abertos, o aviso fica discreto e não captura cliques */
+body:has(.creditos.aberta) .atalho-menu {
+    opacity: 0.8;
+    pointer-events: none;
 }
 
 /* sem teclado (toque), o aviso do ESC não faz sentido */

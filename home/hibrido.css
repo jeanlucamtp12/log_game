@@ -496,7 +496,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem 1rem 4.2rem; /* espaço para o atalho ESC no rodapé */
+    padding: 1rem 1rem 2.4rem; /* espaço para o atalho ESC (compacto) no rodapé */
     overflow-y: auto;
     visibility: hidden;
     pointer-events: none;

@@ -26,6 +26,7 @@ const ICONS = {
     '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',
   check: '<path d="M20 6 9 17l-5-5"/>',
   back: '<path d="m15 6-6 6 6 6"/>',
+  swap: '<path d="M4 8h14l-3.5-3.5M20 16H6l3.5 3.5"/>',
   // ícones dos filtros de tipo do catálogo (mesma ordem de RELIC_TYPES)
   "type-rover":
     '<path d="M4 9.2h15a1 1 0 0 1 1 1V14H3v-3.8a1 1 0 0 1 1-1z"/><path d="M15.8 9.2V6.2"/><rect x="13.6" y="3.6" width="4.8" height="2.6" rx=".7"/><path d="M6.4 9.2V7.2M5.1 7h2.6"/><path d="M5.4 14v1.5M11.5 14v1.5M17.6 14v1.5"/><circle cx="5.4" cy="17.7" r="2.1"/><circle cx="11.5" cy="17.7" r="2.1"/><circle cx="17.6" cy="17.7" r="2.1"/>',

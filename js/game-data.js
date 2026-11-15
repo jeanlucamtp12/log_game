@@ -919,14 +919,22 @@ export const HINT_COMMANDS = {
   },
 };
 
-// Os objetos de cada missão NÃO ficam aqui: são sorteados em main.js (pickMissionRelics).
-// requiredCount = quantos objetos a missão pede.
-// Regra do sorteio: missão com 2+ objetos garante ao menos um de cada local, e nenhum objeto se repete.
+// Os objetos de cada missão são FIXOS: a lista `relics` (ids de RELICS) define o que a missão pede,
+// na ordem em que aparecem no menu Missão. Para mudar a ordem, é só reordenar/trocar os ids.
+// requiredCount = quantos objetos a missão pede (deve ser igual a relics.length).
+// Se uma missão ficar sem `relics`, main.js volta a sortear (pickMissionRelics) como fallback.
+// A mistura de objetos em lat/lon (Lua, Marte) e em UA (espaço) é proposital: o jogador precisa
+// usar o botão de alternar o tipo de coordenada no Navegador.
 export const MISSIONS = [
   {
     id: 1,
     title: "Missão 01",
-    requiredCount: 1,
+    requiredCount: 2,
+    tutorial: true, // dicas do Neil no vidro: 1º objeto em lat/lon, 2º em UA (ensina o botão de alternar)
+    relics: [
+      "01-lunar-descent-stage",
+      "12-dawn",
+    ],
     intro: [
       "Olá, Alex! Que bom que despertou.",
       "Você tem uma missão, e designamos Neil como seu assistente.",
@@ -943,6 +951,11 @@ export const MISSIONS = [
     id: 2,
     title: "Missão 02",
     requiredCount: 3,
+    relics: [
+      "04-sojourner",
+      "14-pioneer-10",
+      "03-surveyor-3",
+    ],
     intro: [
       "Parabéns! Vocês concluíram a primeira missão!",
       "Mas estamos apenas no começo desta aventura espacial.",
@@ -959,6 +972,13 @@ export const MISSIONS = [
     id: 3,
     title: "Missão 03",
     requiredCount: 5,
+    relics: [
+      "21-us-flag-on-the-moon",
+      "05-spirit",
+      "13-near-shoemaker",
+      "07-viking-1",
+      "02-alsep",
+    ],
     intro: [
       "Os sinais ficaram mais fortes e mais numerosos.",
       "Catalogue 5 objetos. A nave vai saltar entre a Lua e Marte conforme os alvos.",
@@ -973,6 +993,13 @@ export const MISSIONS = [
     id: 4,
     title: "Missão 04",
     requiredCount: 5,
+    relics: [
+      "06-opportunity",
+      "18-apollo-12-ascent-stage",
+      "15-pioneer-11",
+      "09-phoenix",
+      "23-apollo-11-plaque",
+    ],
     intro: [
       "Há interferência nos registros.",
       "Algo no arquivo parece reconhecer você.",
@@ -987,9 +1014,16 @@ export const MISSIONS = [
     id: 5,
     title: "Missão 05",
     requiredCount: 5,
+    relics: [
+      "10-insight",
+      "19-apollo-15-ascent-stage",
+      "16-kepler",
+      "11-ingenuity-helicopter",
+      "22-easep",
+    ],
     intro: [
       "Última varredura.",
-      "Catalogue 6 objetos para restaurar o Arquivo Central.",
+      "Catalogue 5 objetos para restaurar o Arquivo Central.",
       "Tudo o que você recuperou aponta para uma verdade que ainda não compreende.",
     ],
     outro: [
