@@ -890,7 +890,7 @@ export const HINT_COMMANDS = {
   },
   jean_rs: {
     label: "easterEgg",
-    hint: (r) => r.coordenadas ? `COORDENADA DO OBJETO: LAT ${formatLat(r.coordenadas.lat)} · LON ${formatLon(r.coordenadas.lon)}` : `DISTÂNCIA DO OBJETO: ${r.distanciaUA} UA`,
+    hint: (r) => r.coordenadas ? `COORDENADA DO OBJETO: LAT ${formatLat(r.coordenadas.lat)} · LON ${r.coordenadas.lon.toFixed(2).replace(".", ",")}° ${r.coordenadas.lon < 0 ? "O" : "L"}` : `DISTÂNCIA DO OBJETO: ${r.distanciaUA} UA`,
   },
 
   leo_marq: {
@@ -908,12 +908,12 @@ export const HINT_COMMANDS = {
     hint: () => "Vamos pegar a nave da Xuxa e voar pelo espaço!",
   },
 
-  luis: {
+  luiz_S2: {
     label: "easterEgg",
-    hint: () => "O motor ta fazendo um barulho estranho...",
+    hint: () => "Feixe de elétrons detectados...",
   },
 
-  gabriel: {
+  ocapitaloliveira: {
     label: "easterEgg",
     hint: () => "Durma bem...",
   },
@@ -1145,7 +1145,8 @@ export const TYPEWRITER_DELAY_MS = 45; // ms por letra nas mensagens (maior = ma
 export const CHECKPOINT_EVERY = 3;
 export const REPORTS = [
   {
-    code: "L.O.G.-0317",
+    code: "1202",
+    alias: "overflow",
     errorCode: "ERRO-3000",
     title: "Relatório 1",
     unit: [
@@ -1158,7 +1159,8 @@ export const REPORTS = [
     ],
   },
   {
-    code: "L.O.G.-2207",
+    code: "1201",
+    alias: "go",
     errorCode: "ERRO-6203",
     title: "Relatório 2",
     unit: [
@@ -1171,7 +1173,8 @@ export const REPORTS = [
     ],
   },
   {
-    code: "L.O.G.-0919",
+    code: "P66",
+    alias: "manual",
     errorCode: "ERRO-4417",
     title: "Relatório 3",
     unit: [
@@ -1184,7 +1187,8 @@ export const REPORTS = [
     ],
   },
   {
-    code: "L.O.G.-4081",
+    code: "CONTACT LIGHT",
+    alias: "touchdown",
     errorCode: "ERRO-5190",
     title: "Relatório 4",
     unit: [
@@ -1197,7 +1201,8 @@ export const REPORTS = [
     ],
   },
   {
-    code: "L.O.G.-1166",
+    code: "SCE TO AUX",
+    alias: "lightning",
     errorCode: "ERRO-7742",
     title: "Relatório 5",
     unit: [
@@ -1210,7 +1215,8 @@ export const REPORTS = [
     ],
   },
   {
-    code: "L.O.G.-7302",
+    code: "PROX-1",
+    alias: "relay",
     errorCode: "ERRO-9068",
     title: "Relatório 6",
     unit: [

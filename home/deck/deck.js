@@ -12,7 +12,13 @@
 (() => {
     'use strict';
 
-    const { T, PROTOCOLOS, cartas, manuais, contagem } = window.DADOS;
+    const { T, PROTOCOLOS, manuais } = window.DADOS;
+    /* as cartas agora vêm do objects.json; o deck_dados.js só empresta os
+       textos em português (o JSON tem apenas o inglês) */
+    const CARTAS_ANTIGAS = window.DADOS.cartas || [];
+    const JSON_URL = '../../js/objects.json';
+    let cartas = [];
+    let contagem = [0, 0, 0, 0, 0];
     const ARTE = window.ARTE;
     const NS = 'http://www.w3.org/2000/svg';
     const calmo = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -37,11 +43,15 @@
             proxima: 'Próxima',
             virar: 'Ver verso',
             frente: 'Ver frente',
-            rever: 'Rever animação',
+            favoritas: 'Favoritas',
+            favoritar: 'Favoritar',
+            favoritada: 'Favorita',
             catCurta: ['Rovers e veículos', 'Pousadores', 'Sondas e telescópios', 'Pedaços de nave e entulho', 'Objetos'],
             manualNome: { protocolos: 'Protocolos', categorias: 'As categorias', comoler: 'Como ler as cartas' },
             cartaDe: 'Carta',
-            versoAlt: 'Verso da carta do L.O.G., com a foto de uma sombra de astronauta na Lua'
+            versoAlt: 'Verso da carta do L.O.G., com a foto de uma sombra de astronauta na Lua',
+            carregando: 'Carregando cartas…',
+            erroDados: 'Não foi possível carregar as cartas (objects.json). Recarregue a página.'
         },
         en: {
             menu: 'Menu',
@@ -60,18 +70,36 @@
             proxima: 'Next',
             virar: 'Show back',
             frente: 'Show front',
-            rever: 'Replay animation',
+            favoritas: 'Favorites',
+            favoritar: 'Favorite',
+            favoritada: 'Favorited',
             catCurta: ['Rovers and vehicles', 'Landers', 'Probes and telescopes', 'Spacecraft parts and debris', 'Objects'],
             manualNome: { protocolos: 'Protocols', categorias: 'The categories', comoler: 'How to read the cards' },
             cartaDe: 'Card',
-            versoAlt: 'L.O.G. card back, with a photo of an astronaut\u2019s shadow on the Moon'
+            versoAlt: 'L.O.G. card back, with a photo of an astronaut\u2019s shadow on the Moon',
+            carregando: 'Loading cards…',
+            erroDados: 'Could not load the cards (objects.json). Please reload the page.'
         }
     };
 
     /* ---------- estado ---------- */
     let idioma = 'pt';
     try { idioma = localStorage.getItem('log-deck-idioma') === 'en' ? 'en' : 'pt'; } catch (e) { /* sem armazenamento */ }
-    const filtro = { local: null, cat: null };
+    const filtro = { local: new Set(), cat: new Set(), fav: false };   // vários locais/categorias ao mesmo tempo
+
+    /* favoritas do jogador, salvas no aparelho (pelo id do JSON) */
+    const CHAVE_MARCAS = 'log-deck-marcas';
+    const marcas = { fav: new Set() };
+    try {
+        const m = JSON.parse(localStorage.getItem(CHAVE_MARCAS) || 'null');
+        if (m && Array.isArray(m.f)) m.f.forEach(i => marcas.fav.add(i));
+    } catch (e) { /* sem armazenamento: as favoritas valem só até fechar a página */ }
+
+    function alterna(id) {
+        if (marcas.fav.has(id)) marcas.fav.delete(id); else marcas.fav.add(id);
+        try { localStorage.setItem(CHAVE_MARCAS, JSON.stringify({ f: [...marcas.fav] })); } catch (e) { /* ok */ }
+    }
+
     let lista = [];          // cartas navegáveis no visualizador
     let indice = 0;
     let aberto = false;
@@ -81,6 +109,81 @@
     const $$ = (s, el = document) => [...el.querySelectorAll(s)];
     const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     const num = (s, L) => (L === 'pt' ? String(s).replace('.', ',') : String(s));
+
+    /* =========================================================
+       0. DADOS: lê o objects.json e monta as cartas
+          (o JSON não é alterado, só consumido)
+       ========================================================= */
+    const ENERGIA = { solar: 'sol', nuclear: 'nuc', battery: 'bat', none: 'nen' };
+    const PT_POSICAO = {
+        'CERES ORBIT': 'ÓRBITA DE CERES',
+        'SUN ORBIT': 'ÓRBITA SOLAR',
+        '\u2192 ALDEBARAN': '\u2192 ALDEBARÃ',
+        '\u2192 AQUILA': '\u2192 ÁGUIA'
+    };
+
+    function valorUnidade(o) {
+        return o && o.value !== null && o.value !== undefined ? [String(o.value), o.unit] : null;
+    }
+
+    /* posição dos objetos no espaço: "Ceres orbit · 2.64 AU from the Sun" -> 2 linhas curtas */
+    function posicaoEmTexto(texto) {
+        const en = String(texto).split(' \u00b7 ').map(p => p.trim()
+            .replace(/ from the Sun$/i, ' from Sun')
+            .replace(/^heading to (the constellation )?/i, '\u2192 ')
+            .toUpperCase());
+        const pt = en.map(p => {
+            if (PT_POSICAO[p]) return PT_POSICAO[p];
+            let m = p.match(/^([\d.]+) AU FROM SUN$/);
+            if (m) return `${m[1].replace('.', ',')} UA DO SOL`;
+            m = p.match(/^([\d.]+) AU FROM EARTH$/);
+            if (m) return `${m[1].replace('.', ',')} UA DA TERRA`;
+            return p;
+        });
+        return { pt, en };
+    }
+
+    function adaptaJson(J) {
+        const cats = J.categories.map(c => c.id);
+        const locais = J.locations.map(l => l.id);
+        return J.cards.map((c, i) => {
+            const cat = cats.indexOf(c.category.id);
+            const local = locais.indexOf(c.location.id);
+            if (cat < 0 || local < 0) throw new Error('categoria/local desconhecido em ' + c.id);
+
+            const p = c.position;
+            const pos = p.type === 'coordinates'
+                ? { lat: p.latitude, lon: p.longitude }
+                : posicaoEmTexto(p.text);
+
+            const txtEnergia = String(c.power.text || '');
+            const sub = txtEnergia.includes(' \u00b7 ') ? txtEnergia.split(' \u00b7 ').slice(1).join(' \u00b7 ') : '';
+            const tipo = ENERGIA[c.power.type] || 'nen';
+
+            const en = String(c.fun_fact).replace(/'/g, '\u2019');
+            const velha = CARTAS_ANTIGAS[i];
+            const ptOk = velha && velha.texto && String(velha.missao).toUpperCase() === String(c.mission).toUpperCase();
+
+            return {
+                id: c.id,
+                cat, local,
+                missao: String(c.mission).toUpperCase(),
+                tam: valorUnidade(c.size),
+                peso: valorUnidade(c.weight),
+                pos,
+                ini: c.launched,
+                fim: c.lost_in,
+                pot: sub ? [tipo, sub] : [tipo],
+                texto: { pt: ptOk ? velha.texto.pt : en, en }
+            };
+        });
+    }
+
+    async function carregaCartas() {
+        const r = await fetch(JSON_URL);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return adaptaJson(await r.json());
+    }
 
     /* =========================================================
        1. DESENHO DAS CARTAS
@@ -256,11 +359,18 @@ ${linhas}
         return moldeCarta(miolo, { leve, anim, rotulo: m.titulo });
     }
 
+    /* No visualizador o fundo com granulado vai numa camada separada, parada.
+       O desenho final é idêntico, mas o granulado deixa de ser recalculado
+       a cada quadro das animações (era o que mais pesava no celular). */
+    const FUNDO_CAMADA = `<svg class="fundo-carta" xmlns="${NS}" viewBox="0 0 630 880" aria-hidden="true" focusable="false">${ARTE.fundoBorda}</svg>`;
+
     function svgDaCarta(item, opc) {
-        if (item.tipo === 'protocolos') return manualProtocolos(opc);
-        if (item.tipo === 'categorias') return manualCategorias(opc);
-        if (item.tipo === 'comoler') return manualComoLer(opc);
-        return frenteObjeto(item, opc);
+        let s;
+        if (item.tipo === 'protocolos') s = manualProtocolos(opc);
+        else if (item.tipo === 'categorias') s = manualCategorias(opc);
+        else if (item.tipo === 'comoler') s = manualComoLer(opc);
+        else s = frenteObjeto(item, opc);
+        return opc.camada ? s.replace(ARTE.fundoBorda, '') : s;
     }
 
     /* =========================================================
@@ -352,48 +462,6 @@ ${linhas}
         ajustaLinhas(svg);
     }
 
-    /* ---------- animação de entrada (a carta "chega" como uma transmissão) ---------- */
-    function decifra(el, final, ms) {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&', min = 'abcdefghijklmnopqrstuvwxyz0123456789';
-        const t0 = performance.now();
-        (function passo(t) {
-            const p = Math.min(1, (t - t0) / ms), n = Math.floor(p * final.length);
-            el.textContent = final.split('').map((c, i) => i < n || c === ' ' ? c : (c >= 'a' && c <= 'z' ? min : chars)[Math.random() * 36 | 0]).join('');
-            if (p < 1) requestAnimationFrame(passo); else el.textContent = final;
-        })(t0);
-    }
-
-    function contaNumeros(svg, atraso) {
-        $$('[data-num]', svg).forEach(el => {
-            const fim = el.dataset.num, dec = +(el.dataset.dec || 0), alvo = parseFloat(fim), de = +(el.dataset.de || 0);
-            const fmt = v => num(v.toFixed(dec), idioma);
-            el.textContent = fmt(de);
-            setTimeout(() => {
-                const t0 = performance.now();
-                (function p(t) {
-                    const k = Math.min(1, (t - t0) / 900), e = 1 - Math.pow(1 - k, 3);
-                    el.textContent = k < 1 ? fmt(de + (alvo - de) * e) : fmt(alvo);
-                    if (k < 1) requestAnimationFrame(p);
-                })(t0);
-            }, atraso);
-        });
-    }
-
-    function entrada(svg) {
-        svg.classList.remove('anim');
-        void svg.getBoundingClientRect();
-        svg.classList.add('anim');
-        if (calmo) return;
-        const tag = $('.tag', svg);
-        tag.textContent = '';
-        setTimeout(() => decifra(tag, tag.dataset.final, 800), 250);
-        contaNumeros(svg, 1200);
-        $$('.senha-on', svg).forEach((el, i) => {
-            el.textContent = '';
-            setTimeout(() => decifra(el, el.dataset.final, 700), 1300 + i * 300);
-        });
-    }
-
     /* ---------- fontes: só mede o texto depois que carregarem ---------- */
     const fontesProntas = Promise.race([
         Promise.all(['400 22px Barlow', '800 52px Barlow', '400 20px "Barlow Semi Condensed"', '700 26px "Barlow Semi Condensed"',
@@ -410,6 +478,8 @@ ${linhas}
     const elFiltros = $('#filtros');
     const elContagem = $('#contagem');
     const elLimpar = $('#limpar');
+    const elRolagem = $('#rolagem');
+    const elFavFiltro = $('#filtro-fav');
 
     function nomeCarta(item) {
         const t = T[idioma], u = UI[idioma];
@@ -417,58 +487,136 @@ ${linhas}
         return `${item.missao}, ${t.categorias[item.cat].toLowerCase()}, ${t.locais[item.local].toLowerCase()}`;
     }
 
+    /* ---------- miniaturas: cada carta só é desenhada quando chega perto da tela ---------- */
+    const fila = [];
+    let filaRodando = false;
+
+    function preencheMini(li) {
+        const b = li.firstElementChild;
+        if (!b || !b.classList.contains('vazio')) return;
+        b.innerHTML = svgDaCarta(li._item, { leve: true, anim: false });
+        const svg = b.firstElementChild;
+        svg.setAttribute('aria-hidden', 'true');
+        svg.removeAttribute('role');
+        b.classList.remove('vazio');
+        preparaSvg(svg);
+    }
+
+    function processaFila() {
+        const t0 = performance.now();
+        do {
+            const li = fila.shift();
+            if (li && li.isConnected && !li.hidden) preencheMini(li);
+        } while (fila.length && performance.now() - t0 < 8);
+        if (fila.length) requestAnimationFrame(processaFila); else filaRodando = false;
+    }
+
+    function enfileira(li) {
+        fila.push(li);
+        if (!filaRodando) { filaRodando = true; requestAnimationFrame(processaFila); }
+    }
+
+    const observador = 'IntersectionObserver' in window
+        ? new IntersectionObserver(entradas => {
+            entradas.forEach(e => {
+                if (e.isIntersecting) { observador.unobserve(e.target); enfileira(e.target); }
+            });
+        }, { root: elRolagem, rootMargin: '600px 0px' })
+        : null;
+
+    const ICONE_ESTRELA = '<path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 17l-5.4 3 1.1-6.1L3.2 9.6l6.1-.8z"/>';
+
+    function criaAcoes() {
+        const d = document.createElement('div');
+        d.className = 'mini-acoes';
+        d.innerHTML = `<button type="button" class="marca" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true">${ICONE_ESTRELA}</svg></button>`;
+        return d;
+    }
+
+    function pintaMini(li) {
+        const u = UI[idioma], f = marcas.fav.has(li.dataset.id);
+        li.classList.toggle('fav', f);
+        const b = $('.marca', li);
+        if (!b) return;   // miniatura sem botão de estrela (ex.: itens do manual)
+        b.setAttribute('aria-pressed', String(f));
+        b.setAttribute('aria-label', `${f ? u.favoritada : u.favoritar}: ${nomeCarta(li._item)}`);
+        b.title = f ? u.favoritada : u.favoritar;
+    }
+
+    function atualizaMini(id) {
+        const li = elGrade.querySelector(`.mini-item[data-id="${id}"]`);
+        if (li) pintaMini(li);
+    }
+
     function criaMini(item) {
         const li = document.createElement('li');
         li.className = 'mini-item';
         li.dataset.id = item.id;
+        li._item = item;
         if (!item.tipo) { li.dataset.cat = item.cat; li.dataset.local = item.local; }
         const b = document.createElement('button');
         b.type = 'button';
-        b.className = 'mini';
+        b.className = 'mini vazio';
         b.setAttribute('aria-label', `${UI[idioma].cartaDe}: ${nomeCarta(item)}`);
-        b.innerHTML = svgDaCarta(item, { leve: true, anim: false });
-        const svg = b.firstElementChild;
-        svg.setAttribute('aria-hidden', 'true');
-        svg.removeAttribute('role');
         li.appendChild(b);
+        if (!item.tipo) { li.appendChild(criaAcoes()); pintaMini(li); }
         return li;
     }
 
     function desenhaGrade() {
-        elGrade.replaceChildren(...cartas.map(criaMini));
-        elGradeMan.replaceChildren(...manuais.map(criaMini));
-        $$('.mini svg').forEach(preparaSvg);
+        fila.length = 0;
+        if (observador) observador.disconnect();
+        const lis = cartas.map(criaMini);
+        const lisMan = manuais.map(criaMini);
+        elGrade.replaceChildren(...lis);
+        elGradeMan.replaceChildren(...lisMan);
+        lis.concat(lisMan).forEach(li => { if (observador) observador.observe(li); else enfileira(li); });
         aplicaFiltro();
     }
 
     function visivel(c, f) {
-        return (f.local === null || c.local === f.local) && (f.cat === null || c.cat === f.cat);
+        return (f.local.size === 0 || f.local.has(c.local)) && (f.cat.size === 0 || f.cat.has(c.cat))
+            && (!f.fav || marcas.fav.has(c.id));
     }
 
     function aplicaFiltro() {
+        const nFav = cartas.filter(c => marcas.fav.has(c.id)).length;
+        if (nFav === 0) filtro.fav = false;   // sem favoritas, o filtro não tem o que mostrar
         let n = 0;
         $$('.mini-item', elGrade).forEach((li, k) => {
             const ok = visivel(cartas[k], filtro);
             li.hidden = !ok;
-            if (ok) n++;
+            if (ok) {
+                n++;
+                // quem ainda não foi desenhado é observado de novo: garante o desenho ao reaparecer
+                if (observador && li.firstElementChild.classList.contains('vazio')) {
+                    observador.unobserve(li);
+                    observador.observe(li);
+                }
+            }
         });
-        elContagem.textContent = UI[idioma].mostrando(n, cartas.length);
-        elLimpar.hidden = filtro.local === null && filtro.cat === null;
+        const u = UI[idioma];
+        elContagem.textContent = u.mostrando(n, cartas.length);
+        elLimpar.hidden = filtro.local.size === 0 && filtro.cat.size === 0 && !filtro.fav;
+        elFavFiltro.hidden = nFav === 0;   // o botão aparece quando existe a primeira favorita
+        elFavFiltro.setAttribute('aria-pressed', String(filtro.fav));
+        elFavFiltro.setAttribute('aria-label', `${u.favoritas}: ${nFav}`);
+        elFavFiltro.title = u.favoritas;
+        elFavFiltro.innerHTML = `<svg class="ico-f" viewBox="0 0 24 24" aria-hidden="true">${ICONE_ESTRELA}</svg><span class="f-n">${nFav}</span>`;
         atualizaBotoes();
     }
 
     function atualizaBotoes() {
         const u = UI[idioma], t = T[idioma];
-        const cLocal = k => cartas.filter(c => visivel(c, { local: k, cat: filtro.cat })).length;
-        const cCat = k => cartas.filter(c => visivel(c, { local: filtro.local, cat: k })).length;
+        // quantas cartas aparecem com aquele item sozinho, mantendo os outros grupos de filtro
+        const cLocal = k => cartas.filter(c => visivel(c, { ...filtro, local: new Set([k]) })).length;
+        const cCat = k => cartas.filter(c => visivel(c, { ...filtro, cat: new Set([k]) })).length;
         const botao = (cls, ativo, texto, n, extra = '', desab = false) =>
             `<button type="button" class="${cls}" aria-pressed="${ativo}" ${desab ? 'disabled' : ''} ${extra}>${texto}<span class="f-n">${n}</span></button>`;
-        const locais = [botao('f-pill', filtro.local === null, u.todos, cLocal(null), 'data-local=""')]
-            .concat(t.locais.map((nome, k) => botao('f-pill', filtro.local === k, nome, cLocal(k), `data-local="${k}"`, cLocal(k) === 0 && filtro.local !== k)));
-        const cats = [botao('f-cat', filtro.cat === null, `<span>${u.todas}</span>`, cCat(null), 'data-cat=""')]
-            .concat(u.catCurta.map((nome, k) => botao('f-cat', filtro.cat === k,
+        const locais = t.locais.map((nome, k) => botao('f-pill', filtro.local.has(k), nome, cLocal(k), `data-local="${k}"`, cLocal(k) === 0 && !filtro.local.has(k)));
+        const cats = u.catCurta.map((nome, k) => botao('f-cat', filtro.cat.has(k),
                 `<svg class="ico-f" viewBox="0 0 24 24" aria-hidden="true">${ARTE.icones[k]}</svg><span>${nome}</span>`,
-                cCat(k), `data-cat="${k}"`, cCat(k) === 0 && filtro.cat !== k)));
+                cCat(k), `data-cat="${k}"`, cCat(k) === 0 && !filtro.cat.has(k)));
         $('#f-local').innerHTML = locais.join('');
         $('#f-cat').innerHTML = cats.join('');
     }
@@ -476,18 +624,43 @@ ${linhas}
     elFiltros.addEventListener('click', e => {
         const b = e.target.closest('button');
         if (!b || b.disabled) return;
-        if ('local' in b.dataset) filtro.local = b.dataset.local === '' ? null : +b.dataset.local;
-        if ('cat' in b.dataset) filtro.cat = b.dataset.cat === '' ? null : +b.dataset.cat;
+        const grupo = 'local' in b.dataset ? filtro.local : 'cat' in b.dataset ? filtro.cat : null;
+        if (!grupo) return;
+        const v = +b.dataset['local' in b.dataset ? 'local' : 'cat'];
+        if (grupo.has(v)) grupo.delete(v); else grupo.add(v);   // liga/desliga cada filtro
         aplicaFiltro();
-        const sel = b.dataset.local !== undefined ? `[data-local="${b.dataset.local}"]` : `[data-cat="${b.dataset.cat}"]`;
-        const novo = $(`.f-pill${sel}, .f-cat${sel}`, elFiltros);
+        const k = 'local' in b.dataset ? 'local' : 'cat';
+        const novo = $(`#filtros [data-${k}="${b.dataset[k]}"]`);
         if (novo) novo.focus({ preventScroll: true });
     });
 
+    elFavFiltro.addEventListener('click', () => {
+        filtro.fav = !filtro.fav;
+        aplicaFiltro();
+    });
+
     elLimpar.addEventListener('click', () => {
-        filtro.local = filtro.cat = null;
+        filtro.local.clear();
+        filtro.cat.clear();
+        filtro.fav = false;
+        /* limpa também todas as favoritas, inclusive as salvas no aparelho */
+        marcas.fav.clear();
+        try { localStorage.removeItem(CHAVE_MARCAS); } catch (e) { /* ok */ }
+        $$('.mini-item').forEach(pintaMini);
+        pintaViewerMarcas();
         aplicaFiltro();
         $('#f-local button')?.focus({ preventScroll: true });
+    });
+
+    /* favoritar direto na miniatura */
+    elGrade.addEventListener('click', e => {
+        const b = e.target.closest('.marca');
+        if (!b) return;
+        const li = b.closest('.mini-item');
+        alterna(li.dataset.id);
+        pintaMini(li);
+        pintaViewerMarcas();
+        aplicaFiltro();
     });
 
     function aoClicarMini(e) {
@@ -510,7 +683,7 @@ ${linhas}
     const giro = $('#giro');
     const faceFrente = $('#face-frente');
     const btnVirar = $('#btn-virar');
-    const btnRever = $('#btn-rever');
+    const btnFav = $('#btn-fav');
     const btnAnt = $('#btn-ant');
     const btnProx = $('#btn-prox');
     const btnFechar = $('#btn-fechar');
@@ -521,16 +694,18 @@ ${linhas}
         const item = lista[indice];
         giro.classList.remove('virada');
         btnVirar.textContent = UI[idioma].virar;
-        faceFrente.innerHTML = svgDaCarta(item, { leve: false, anim: true });
-        const svg = faceFrente.firstElementChild;
+        // a carta já aparece pronta, sem animação de entrada: o jogador precisa da informação na hora
+        faceFrente.innerHTML = FUNDO_CAMADA + svgDaCarta(item, { leve: false, anim: false, camada: true });
+        const svg = $('.carta', faceFrente);
         svg.style.visibility = 'hidden';
         await fontesProntas;
+        if (!aberto || lista[indice] !== item) return;   // o jogador já trocou de carta
         preparaSvg(svg);
         svg.style.visibility = '';
-        entrada(svg);
 
         elPos.textContent = `${indice + 1} / ${lista.length}`;
         elNome.textContent = nomeCarta(item);
+        pintaViewerMarcas();
         btnAnt.disabled = indice === 0;
         btnProx.disabled = indice === lista.length - 1;
 
@@ -541,12 +716,12 @@ ${linhas}
             palco.animate([
                 { transformOrigin: '0 0', transform: `translate(${a.left - b.left}px, ${a.top - b.top}px) scale(${a.width / b.width})` },
                 { transformOrigin: '0 0', transform: 'none' }
-            ], { duration: 460, easing: 'cubic-bezier(.2,.8,.2,1)' });
+            ], { duration: 240, easing: 'cubic-bezier(.2,.8,.2,1)' });
         } else if (direcao) {
             palco.animate([
                 { transform: `translateX(${direcao * 46}px)`, opacity: 0 },
                 { transform: 'none', opacity: 1 }
-            ], { duration: 320, easing: 'cubic-bezier(.2,.8,.2,1)' });
+            ], { duration: 200, easing: 'cubic-bezier(.2,.8,.2,1)' });
         }
     }
 
@@ -585,12 +760,25 @@ ${linhas}
         const v = giro.classList.toggle('virada');
         btnVirar.textContent = v ? UI[idioma].frente : UI[idioma].virar;
     });
-    btnRever.addEventListener('click', () => {
-        giro.classList.remove('virada');
-        btnVirar.textContent = UI[idioma].virar;
-        const svg = $('svg', faceFrente);
-        if (svg) entrada(svg);
-    });
+    function pintaViewerMarcas() {
+        const item = aberto ? lista[indice] : null;
+        btnFav.hidden = !item || !!item.tipo;   // manuais não têm favorito
+        if (btnFav.hidden) return;
+        const u = UI[idioma], f = marcas.fav.has(item.id);
+        btnFav.setAttribute('aria-pressed', String(f));
+        btnFav.setAttribute('aria-label', f ? u.favoritada : u.favoritar);
+        btnFav.title = f ? u.favoritada : u.favoritar;
+    }
+
+    function alternaDoViewer() {
+        const item = lista[indice];
+        if (!aberto || !item || item.tipo) return;
+        alterna(item.id);
+        atualizaMini(item.id);
+        pintaViewerMarcas();
+        aplicaFiltro();
+    }
+    btnFav.addEventListener('click', alternaDoViewer);
     visor.addEventListener('click', e => {
         if (e.target === visor || e.target.classList.contains('visor-corpo')) fecha();
     });
@@ -600,9 +788,10 @@ ${linhas}
             if (e.key === 'Escape') { e.preventDefault(); fecha(); }
             else if (e.key === 'ArrowLeft') vai(-1);
             else if (e.key === 'ArrowRight') vai(1);
+            else if (e.key === 'f' || e.key === 'F') alternaDoViewer();
             else if (e.key === 'Tab') {
                 // mantém o foco dentro do visualizador
-                const f = $$('button:not(:disabled)', visor);
+                const f = $$('button:not(:disabled):not([hidden])', visor);
                 if (!f.length) return;
                 const a = f[0], z = f[f.length - 1];
                 if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); }
@@ -653,11 +842,11 @@ ${linhas}
         $('#t-cat').textContent = u.categoria;
         $('#t-obj').textContent = u.secObj;
         $('#t-man').textContent = u.secMan;
-        elLimpar.textContent = u.limpar;
+        $('#t-limpar').textContent = u.limpar;
         btnFechar.setAttribute('aria-label', u.fechar);
         btnAnt.textContent = u.anterior;
         btnProx.textContent = u.proxima;
-        btnRever.textContent = u.rever;
+        pintaViewerMarcas();
         btnVirar.textContent = giro.classList.contains('virada') ? u.frente : u.virar;
         $$('.idioma button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.idioma === idioma)));
     }
@@ -669,6 +858,7 @@ ${linhas}
         try { localStorage.setItem('log-deck-idioma', idioma); } catch (err) { /* ok */ }
         aplicaTextos();
         fontesProntas.then(() => {
+            if (!cartas.length) return;   // ainda carregando: o carregamento desenha no idioma atual
             const aberta = aberto ? lista[indice] : null;
             desenhaGrade();
             if (aberta) { mostra(0); }
@@ -687,10 +877,22 @@ ${linhas}
         document.body.prepend(defs);
 
         aplicaTextos();
-        fontesProntas.then(() => {
-            desenhaGrade();
-            document.body.classList.add('pronto');
-        });
+        elContagem.textContent = UI[idioma].carregando;
+        // foco no contêiner de rolagem: roda do mouse e teclado funcionam logo de cara (inclusive no itch.io)
+        elRolagem.focus({ preventScroll: true });
+
+        Promise.all([carregaCartas(), fontesProntas])
+            .then(([lista]) => {
+                cartas = lista;
+                contagem = [0, 0, 0, 0, 0];
+                cartas.forEach(c => contagem[c.cat]++);
+                desenhaGrade();
+                document.body.classList.add('pronto');
+            })
+            .catch(err => {
+                console.error('[deck] falha ao carregar', JSON_URL, err);
+                elContagem.textContent = UI[idioma].erroDados;
+            });
     }
     inicio();
 })();

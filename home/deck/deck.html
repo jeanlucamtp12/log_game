@@ -11,6 +11,7 @@
 </head>
 <body>
 
+    <div id="rolagem" class="rolagem" tabindex="-1">
     <header class="topo">
         <a id="voltar" class="voltar" href="../../index.html">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
@@ -42,7 +43,6 @@
 
         <div class="barra-status">
             <p id="contagem" class="contagem" aria-live="polite"></p>
-            <button id="limpar" type="button" class="limpar" hidden>Limpar filtros</button>
         </div>
 
         <section class="secao">
@@ -55,12 +55,25 @@
             <ul id="grade-manuais" class="grade-cartas grade-manuais"></ul>
         </section>
     </main>
+    </div>
+
+    <!-- botões flutuantes: filtro de favoritas e limpar filtros -->
+    <div class="flutuantes">
+        <button id="limpar" type="button" class="fab fab-limpar" hidden>
+            <svg class="ico-f" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            <span id="t-limpar">Limpar filtros</span>
+        </button>
+        <button id="filtro-fav" type="button" class="fab fab-fav" aria-pressed="false" hidden></button>
+    </div>
 
     <!-- visualizador: carta grande, animada, com verso -->
     <div id="visor" class="visor" role="dialog" aria-modal="true" aria-labelledby="visor-nome" hidden>
         <div class="visor-corpo">
             <button id="btn-fechar" type="button" class="visor-fechar" aria-label="Fechar">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+            <button id="btn-fav" type="button" class="visor-fav" aria-pressed="false" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 17l-5.4 3 1.1-6.1L3.2 9.6l6.1-.8z"/></svg>
             </button>
 
             <p id="visor-nome" class="visor-nome"></p>
@@ -87,7 +100,6 @@
                 </div>
                 <div class="acoes">
                     <button id="btn-virar" type="button">Ver verso</button>
-                    <button id="btn-rever" type="button">Rever animação</button>
                 </div>
             </div>
         </div>

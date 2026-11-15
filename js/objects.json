@@ -365,9 +365,10 @@
       },
       "position": {
         "type": "coordinates",
-        "latitude": 22.48,
-        "longitude": -47.94,
-        "text": "22.48° N, -47.94° E"
+        "latitude": 22.27,
+        "longitude": -47.95,
+        "text": "22.27° N, -47.95° E",
+        "note": "NASA NSSDCA record (22.27° N, 312.05° E, planetocentric); the group's document had 22.48° N, -47.94° E, from a different coordinate system"
       },
       "launched": 1975,
       "lost_in": 1982,
@@ -1041,9 +1042,10 @@
       },
       "mission": "Apollo 11",
       "size": {
-        "value": null,
-        "unit": null,
-        "text": "not found"
+        "value": 48,
+        "unit": "cm",
+        "text": "48 cm",
+        "note": "approximate: side of a cube with the stowed volume of the package, 113,300 cm³ (NASA RP-1036, ALSEP Termination Report); NASA does not publish its dimensions"
       },
       "weight": {
         "value": 48,
@@ -1092,9 +1094,10 @@
         "text": "23 cm"
       },
       "weight": {
-        "value": null,
-        "unit": null,
-        "text": "not found"
+        "value": 0.85,
+        "unit": "kg",
+        "text": "0.85 kg",
+        "note": "approximate: about 1 pound 13 7/8 ounces (NASA SP-4223, Before This Decade Is Out, https://ntrs.nasa.gov/api/citations/20000027506/downloads/20000027506.pdf)"
       },
       "position": {
         "type": "coordinates",
@@ -1133,9 +1136,10 @@
       },
       "mission": "Apollo 15",
       "size": {
-        "value": null,
-        "unit": null,
-        "text": "not found"
+        "value": 8.9,
+        "unit": "cm",
+        "text": "8.9 cm",
+        "note": "the Fallen Astronaut figure is 3.5 inches tall (Slate article, 2013, cited by Wikipedia); NASA does not publish the measurement"
       },
       "weight": {
         "value": null,
@@ -1179,9 +1183,10 @@
       },
       "mission": "Apollo 11",
       "size": {
-        "value": null,
-        "unit": null,
-        "text": "not found"
+        "value": 3.8,
+        "unit": "cm",
+        "text": "3.8 cm",
+        "note": "the goodwill message disk, 1.5 inches across, the only item in the packet that NASA measures (https://www.nasa.gov/history/apollo-11-mission-overview/)"
       },
       "weight": {
         "value": null,

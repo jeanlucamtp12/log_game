@@ -25,20 +25,29 @@
 }
 
 html {
+    height: 100%;
     -webkit-text-size-adjust: 100%;
 }
 
+/* A rolagem acontece dentro do #rolagem (e não na janela): o itch.io mostra o jogo
+   dentro de um iframe, e a rolagem da janela ali trava com overflow no body.
+   Sem "background fixed" também, que pesa muito no celular. */
 body {
     margin: 0;
-    min-height: 100vh;
+    height: 100%;
+    overflow: hidden;
     font-family: var(--fonte);
     color: var(--texto);
-    background: radial-gradient(ellipse at 50% 0%, var(--fundo-2) 0%, var(--fundo) 70%) fixed;
-    overflow-x: hidden;
+    background: radial-gradient(ellipse at 50% 0%, var(--fundo-2) 0%, var(--fundo) 70%);
 }
 
-body.com-visor {
-    overflow: hidden;
+.rolagem {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    outline: none;
 }
 
 button {
@@ -61,8 +70,7 @@ a:focus-visible {
     justify-content: space-between;
     align-items: center;
     padding: 12px clamp(14px, 4vw, 40px);
-    background: linear-gradient(180deg, rgba(5, 8, 15, .92), rgba(5, 8, 15, 0));
-    backdrop-filter: blur(6px);
+    background: linear-gradient(180deg, rgba(5, 8, 15, .97) 0%, rgba(5, 8, 15, .88) 65%, rgba(5, 8, 15, 0) 100%);
 }
 
 .voltar {
@@ -120,7 +128,7 @@ a:focus-visible {
 .pagina {
     width: min(1180px, 100%);
     margin: 0 auto;
-    padding: 8px clamp(14px, 4vw, 40px) 64px;
+    padding: 8px clamp(14px, 4vw, 40px) 112px;
 }
 
 .intro {
@@ -150,51 +158,76 @@ a:focus-visible {
     color: var(--texto-suave);
 }
 
-/* ---------- filtros ---------- */
+/* ---------- filtros (compactos: rótulo ao lado, uma linha que rola no celular) ---------- */
 .filtros {
     display: grid;
-    gap: 16px;
-    padding: 16px;
-    margin-top: 8px;
+    gap: 6px;
+    padding: 8px 12px;
+    margin-top: 4px;
     border: 1px solid rgba(111, 142, 166, .55);
     border-radius: 12px;
     background: linear-gradient(180deg, rgba(35, 45, 82, .75), rgba(26, 34, 66, .75));
 }
 
 .grupo {
-    display: grid;
-    gap: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
 }
 
 .rotulo {
+    flex: none;
+    width: 78px;
     margin: 0;
-    font: 700 14px var(--fonte);
-    letter-spacing: .14em;
+    font: 700 12px var(--fonte);
+    letter-spacing: .12em;
     text-transform: uppercase;
     color: var(--ouro);
 }
 
 .f-lista {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    gap: 6px;
+    padding: 3px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.f-lista::-webkit-scrollbar {
+    display: none;
+}
+
+@media (min-width: 900px) {
+    .f-lista {
+        flex-wrap: wrap;
+        overflow: visible;
+    }
 }
 
 .f-pill,
 .f-cat {
     display: inline-flex;
+    flex: none;
     align-items: center;
-    gap: 8px;
-    min-height: 40px;
-    padding: 6px 14px;
-    font: 700 15px var(--fonte);
-    letter-spacing: .06em;
+    gap: 6px;
+    min-height: 32px;
+    padding: 3px 11px;
+    font: 700 13px var(--fonte);
+    letter-spacing: .05em;
     text-transform: uppercase;
     color: #AFC0CE;
     background: transparent;
     border: 1.5px solid #6F8EA6;
     border-radius: 999px;
     transition: background .2s, color .2s, border-color .2s, transform .15s;
+}
+
+.f-lista button:focus-visible {
+    outline-offset: -2px;
 }
 
 .f-pill:hover:not(:disabled),
@@ -224,12 +257,12 @@ a:focus-visible {
 .f-cat {
     text-transform: none;
     letter-spacing: .02em;
-    font-size: 15px;
+    font-size: 13px;
 }
 
 .ico-f {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     fill: none;
     stroke: currentColor;
     stroke-width: 1.8;
@@ -239,9 +272,10 @@ a:focus-visible {
 }
 
 .f-n {
-    min-width: 22px;
-    padding: 1px 6px;
-    font-size: 12px;
+    min-width: 18px;
+    padding: 0 5px;
+    font-size: 11px;
+    line-height: 17px;
     text-align: center;
     border-radius: 999px;
     background: rgba(255, 255, 255, .1);
@@ -253,32 +287,69 @@ a:focus-visible {
 
 .barra-status {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 12px;
-    min-height: 44px;
-    margin: 14px 2px 4px;
+    min-height: 28px;
+    margin: 10px 2px 2px;
 }
 
 .contagem {
     margin: 0;
-    font-size: 14px;
+    font-size: 13px;
     letter-spacing: .06em;
     text-transform: uppercase;
     color: var(--texto-suave);
 }
 
-.limpar {
-    padding: 7px 14px;
-    font: 700 14px var(--fonte);
-    color: var(--ouro);
-    background: transparent;
-    border: 1px solid var(--ouro);
-    border-radius: 999px;
+/* ---------- botões flutuantes ---------- */
+.flutuantes {
+    position: fixed;
+    right: max(14px, env(safe-area-inset-right));
+    bottom: max(14px, env(safe-area-inset-bottom));
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
 }
 
-.limpar:hover {
-    background: rgba(226, 184, 74, .12);
+body.com-visor .flutuantes {
+    display: none;
+}
+
+.fab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 0 16px;
+    font: 700 15px var(--fonte);
+    letter-spacing: .04em;
+    color: var(--texto);
+    background: rgba(20, 27, 48, .97);
+    border: 1.5px solid #6F8EA6;
+    border-radius: 999px;
+    box-shadow: 0 10px 24px -8px rgba(0, 0, 0, .85);
+}
+
+.fab .ico-f {
+    width: 20px;
+    height: 20px;
+}
+
+.fab-limpar {
+    color: var(--ouro);
+    border-color: var(--ouro);
+}
+
+.fab-fav[aria-pressed="true"] {
+    color: #141B30;
+    background: var(--ouro);
+    border-color: var(--ouro);
+}
+
+.fab-fav[aria-pressed="true"] .ico-f {
+    fill: currentColor;
 }
 
 [hidden] {
@@ -317,14 +388,26 @@ a:focus-visible {
     padding: 0;
     background: none;
     border: 0;
+    aspect-ratio: 630 / 880;
     border-radius: 4.4%;
     box-shadow: 0 14px 24px -14px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .04);
     transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s;
 }
 
-.mini:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 22px 30px -14px rgba(0, 0, 0, .95), 0 0 0 1px rgba(159, 212, 214, .4);
+/* espaço reservado enquanto a miniatura ainda não foi desenhada */
+.mini.vazio {
+    background: linear-gradient(180deg, #232D52, #18213C);
+}
+
+/* hover só onde existe mouse (no toque ele "gruda" depois do dedo) */
+@media (hover: hover) {
+    .mini-item:hover {
+        transform: translateY(-5px) scale(1.02);
+    }
+
+    .mini-item:hover .mini {
+        box-shadow: 0 22px 30px -14px rgba(0, 0, 0, .95), 0 0 0 1px rgba(159, 212, 214, .4);
+    }
 }
 
 .mini svg {
@@ -339,13 +422,110 @@ a:focus-visible {
     animation: none !important;
 }
 
+/* ---------- favoritos: estrela no canto superior direito da carta ---------- */
+.mini-item {
+    position: relative;
+    transition: transform .25s cubic-bezier(.2, .8, .2, 1);
+}
+
+.mini-acoes {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    z-index: 1;
+}
+
+.marca {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    color: #DDEBEF;
+    background: rgba(11, 17, 32, .55);
+    border: 0;
+    border-radius: 50%;
+}
+
+/* área de toque maior que o botão visível */
+.marca::after {
+    content: '';
+    position: absolute;
+    inset: -7px;
+}
+
+.marca svg,
+.visor-fav svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.marca[aria-pressed="true"] {
+    color: #141B30;
+    background: var(--ouro);
+}
+
+.marca[aria-pressed="true"] svg,
+.visor-fav[aria-pressed="true"] svg {
+    fill: currentColor;
+}
+
+@media (hover: hover) {
+    .marca:hover {
+        color: var(--ouro);
+    }
+
+    .marca[aria-pressed="true"]:hover {
+        color: #141B30;
+    }
+}
+
+/* favorita: aro dourado fino em volta da carta */
+.mini-item.fav .mini {
+    box-shadow: 0 0 0 1.5px rgba(226, 184, 74, .85), 0 14px 24px -14px rgba(0, 0, 0, .9);
+}
+
+.visor-fav {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    color: var(--texto-suave);
+    background: rgba(26, 36, 67, .85);
+    border: 1px solid var(--linha);
+    border-radius: 50%;
+}
+
+.visor-fav svg {
+    width: 22px;
+    height: 22px;
+}
+
+.visor-fav[aria-pressed="true"] {
+    color: #141B30;
+    background: var(--ouro);
+    border-color: var(--ouro);
+}
+
 /* ---------- visualizador ---------- */
 .visor {
     position: fixed;
     inset: 0;
     z-index: 50;
-    background: rgba(3, 6, 12, .93);
-    backdrop-filter: blur(8px);
+    background: rgba(3, 6, 12, .97);
+    overscroll-behavior: contain;
+    touch-action: pan-y;
     animation: aparece .25s ease both;
 }
 
@@ -463,6 +643,27 @@ a:focus-visible {
     display: block;
     width: 100%;
     height: 100%;
+}
+
+/* fundo (com granulado) numa camada própria, que não é redesenhada a cada quadro */
+.face.frente .fundo-carta,
+.face.frente .carta {
+    position: absolute;
+    inset: 0;
+}
+
+.face.frente .fundo-carta {
+    will-change: transform;
+}
+
+/* com a carta virada, a frente (escondida) para de animar */
+.giro.virada .frente .sweep,
+.giro.virada .frente .tw,
+.giro.virada .frente .sinal,
+.giro.virada .frente .onda,
+.giro.virada .frente .sync,
+.giro.virada .frente .pulso {
+    animation-play-state: paused;
 }
 
 .brilho {

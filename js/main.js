@@ -711,17 +711,13 @@ function hideTarget() {
 function selectObjective(id) {
   if (isCataloged(id) || !relicById(id)) return;
   state.selectedId = id;
+  resetTutorialTip();
   saveState();
   const relic = relicById(id);
   renderRadar();
   resetCoordForm();
   closeMonitor(SIDE.objectives);
   render();
-  openMonitor("terminal");
-  appendTerminal(
-    `ALVO SELECIONADO: ${relic.name.toUpperCase()}.`,
-    'Use "help" para ver as dicas disponíveis.',
-  );
 }
 
 function clearSelection() {
@@ -751,6 +747,7 @@ let coordMode = "latlon";
 function toggleCoordMode() {
   if (el.coordMode.disabled || traveling) return;
   coordMode = coordMode === "dist" ? "latlon" : "dist";
+  resetTutorialTip();
   resetCoordForm();
   renderCoordinate();
   el.coordInputs[0].focus({ preventScroll: true });
@@ -774,7 +771,11 @@ const NAV_FAULTS = [
 // Quando a missão tem `tutorial: true`, o Neil explica no vidro qual tipo de coordenada o alvo usa
 // e destaca o botão de alternar enquanto o Navegador estiver no tipo errado.
 // 1º objeto: lat/lon (o Navegador já abre assim) · 2º objeto: UA (precisa apertar o botão).
-let tutorialDismissed = false; // o jogador fechou as dicas (vale até recarregar a página)
+let tutorialDismissed = false; // o jogador fechou a dica atual (volta a aparecer ao trocar de alvo, de tipo ou de missão)
+
+function resetTutorialTip() {
+  tutorialDismissed = false;
+}
 
 function updateTutorialTip() {
   const target = relicById(state.selectedId);
@@ -999,6 +1000,7 @@ async function restartMission() {
   state.missionMistakes = 0;
   state.terminalLines = defaultState().terminalLines;
   state.missionSummary = null;
+  resetTutorialTip();
   clearSelection();
   resetCoordForm();
   render();
@@ -1086,7 +1088,7 @@ function renderWarning() {
   el.syncNote.hidden = state.reports.length > 0; // aviso extra só no primeiro erro
 }
 
-const normCode = (value) => String(value).toUpperCase().replace(/[^A-Z0-9]/g, "");
+const normCode = (value) => String(value ?? "").toUpperCase().replace(/[^A-Z0-9]/g, "");
 
 // Terminal travado: qualquer entrada passa por aqui até o código certo ser digitado.
 function trySyncCode(raw) {
@@ -1101,8 +1103,8 @@ function trySyncCode(raw) {
     return appendTerminal("Sincronização restabelecida.");
   }
   const typed = normCode(raw);
-  if (typed === normCode(pending.code)) return acceptSyncCode(pending);
-  if (REPORTS.some((r) => normCode(r.code) === typed)) {
+  if (typed === normCode(pending.code) || (pending.alias && typed === normCode(pending.alias))) return acceptSyncCode(pending);
+  if (REPORTS.some((r) => normCode(r.code) === typed || (r.alias && normCode(r.alias) === typed))) {
     return appendTerminal(`Código válido, mas não pertence a ${pending.errorCode}. Confira a carta indicada no Manual.`);
   }
   appendTerminal(
@@ -1294,6 +1296,7 @@ function nextMission() {
   }
   state.missionIndex += 1;
   state.selectedId = null;
+  resetTutorialTip();
   state.lives = MAX_LIVES; // integridade é restaurada ao concluir cada missão
   state.terminalLines.push("Missão concluída. Integridade do casco restaurada.");
   state.score = MAX_SCORE; // XP é restaurada a cada nova missão
@@ -1314,6 +1317,7 @@ async function resetGame() {
   const lightsOn = state.lightsOn;
   state = defaultState();
   state.lightsOn = lightsOn; // a luz da cabine não volta sozinha ao reiniciar
+  resetTutorialTip();
   ensureMissionRelics();
   lastXp = null;
   applyLights(false);
@@ -1547,14 +1551,14 @@ function runCommand(raw) {
     return appendTerminal(cmd.hint(null, state));
   }
 
-  if (["luis"].includes(clean)) {
+  if (["luiz_S2"].includes(clean)) {
     state.lives = Math.max(1, state.lives - 1);
     saveState();
     renderIntegrity();
     return appendTerminal(cmd.hint(null, state));
   }
 
-  if (["gabriel"].includes(clean)) {
+  if (["ocapitaloliveira"].includes(clean)) {
     appendTerminal(cmd.hint(null, state));
     setTimeout( () => {resetGame()}, 2000);
     return;
@@ -1989,5 +1993,5 @@ init();
 
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
-  window.location.href = "../index.html";
+  window.location.href = "index.html";
 });
