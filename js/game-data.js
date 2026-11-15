@@ -101,6 +101,8 @@ export const RELICS = [
       categoria: "Spacecraft parts and debris",
       missao: "Apollo 11",
       energia: "Battery",
+      energiaTipo: "battery", // solar | nuclear | battery | none
+      energiaW: null, // potência em watts (null = sem dado)
     },
   },
   {
@@ -129,6 +131,8 @@ export const RELICS = [
       categoria: "Objects",
       missao: "Apollo 12",
       energia: "Nuclear · 70 W",
+      energiaTipo: "nuclear", // solar | nuclear | battery | none
+      energiaW: 70, // potência em watts (null = sem dado)
     },
   },
   {
@@ -157,6 +161,8 @@ export const RELICS = [
       categoria: "Landers",
       missao: "Surveyor 3",
       energia: "Solar · 85 W",
+      energiaTipo: "solar", // solar | nuclear | battery | none
+      energiaW: 85, // potência em watts (null = sem dado)
     },
   },
   {
@@ -185,6 +191,8 @@ export const RELICS = [
       categoria: "Rovers and vehicles",
       missao: "Mars Pathfinder",
       energia: "Solar · 16 W",
+      energiaTipo: "solar", // solar | nuclear | battery | none
+      energiaW: 16, // potência em watts (null = sem dado)
     },
   },
   {
@@ -213,6 +221,8 @@ export const RELICS = [
       categoria: "Rovers and vehicles",
       missao: "MER-A",
       energia: "Solar · 140 W",
+      energiaTipo: "solar", // solar | nuclear | battery | none
+      energiaW: 140, // potência em watts (null = sem dado)
     },
   },
   {
@@ -241,6 +251,8 @@ export const RELICS = [
       categoria: "Rovers and vehicles",
       missao: "MER-B",
       energia: "Solar · 140 W",
+      energiaTipo: "solar", // solar | nuclear | battery | none
+      energiaW: 140, // potência em watts (null = sem dado)
     },
   },
   {
@@ -269,6 +281,8 @@ export const RELICS = [
       categoria: "Landers",
       missao: "Viking 1",
       energia: "Nuclear · 2 × 30 W",
+      energiaTipo: "nuclear", // solar | nuclear | battery | none
+      energiaW: 60, // potência em watts (null = sem dado)
     },
   },
   {
@@ -297,6 +311,8 @@ export const RELICS = [
       categoria: "Landers",
       missao: "Viking 2",
       energia: "Nuclear · 2 × 30 W",
+      energiaTipo: "nuclear", // solar | nuclear | battery | none
+      energiaW: 60, // potência em watts (null = sem dado)
     },
   },
   {
@@ -325,6 +341,8 @@ export const RELICS = [
       categoria: "Landers",
       missao: "Phoenix",
       energia: "Solar",
+      energiaTipo: "solar", // solar | nuclear | battery | none
+      energiaW: null, // potência em watts (null = sem dado)
     },
   },
   {
@@ -354,6 +372,8 @@ export const RELICS = [
       categoria: "Landers",
       missao: "InSight",
       energia: "Solar",
+      energiaTipo: "solar", // solar | nuclear | battery | none
+      energiaW: null, // potência em watts (null = sem dado)
     },
   },
   {
@@ -382,6 +402,8 @@ export const RELICS = [
       categoria: "Rovers and vehicles",
       missao: "Mars 2020",
       energia: "Solar · 350 W",
+      energiaTipo: "solar", // solar | nuclear | battery | none
+      energiaW: 350, // potência em watts (null = sem dado)
     },
   },
   {
@@ -413,6 +435,8 @@ export const RELICS = [
       categoria: "Probes and telescopes",
       missao: "Dawn",
       energia: "Solar · 10.3 kW",
+      energiaTipo: "solar", // solar | nuclear | battery | none
+      energiaW: 10300, // potência em watts (null = sem dado)
     },
   },
   {
@@ -444,6 +468,8 @@ export const RELICS = [
       categoria: "Probes and telescopes",
       missao: "NEAR",
       energia: "Solar · 1800 W",
+      energiaTipo: "solar", // solar | nuclear | battery | none
+      energiaW: 1800, // potência em watts (null = sem dado)
     },
   },
   {
@@ -475,6 +501,8 @@ export const RELICS = [
       categoria: "Probes and telescopes",
       missao: "Pioneer 10",
       energia: "Nuclear · 140 W",
+      energiaTipo: "nuclear", // solar | nuclear | battery | none
+      energiaW: 140, // potência em watts (null = sem dado)
     },
   },
   {
@@ -506,6 +534,8 @@ export const RELICS = [
       categoria: "Probes and telescopes",
       missao: "Pioneer 11",
       energia: "Nuclear · 144 W",
+      energiaTipo: "nuclear", // solar | nuclear | battery | none
+      energiaW: 144, // potência em watts (null = sem dado)
     },
   },
   {
@@ -537,6 +567,8 @@ export const RELICS = [
       categoria: "Probes and telescopes",
       missao: "Kepler / K2",
       energia: "Solar",
+      energiaTipo: "solar", // solar | nuclear | battery | none
+      energiaW: null, // potência em watts (null = sem dado)
     },
   },
   {
@@ -565,6 +597,8 @@ export const RELICS = [
       categoria: "Landers",
       missao: "Mars Pathfinder",
       energia: "Solar · 35 W",
+      energiaTipo: "solar", // solar | nuclear | battery | none
+      energiaW: 35, // potência em watts (null = sem dado)
     },
   },
   {
@@ -593,6 +627,8 @@ export const RELICS = [
       categoria: "Spacecraft parts and debris",
       missao: "Apollo 12",
       energia: "Battery",
+      energiaTipo: "battery", // solar | nuclear | battery | none
+      energiaW: null, // potência em watts (null = sem dado)
     },
   },
   {
@@ -621,6 +657,8 @@ export const RELICS = [
       categoria: "Spacecraft parts and debris",
       missao: "Apollo 15",
       energia: "Battery",
+      energiaTipo: "battery", // solar | nuclear | battery | none
+      energiaW: null, // potência em watts (null = sem dado)
     },
   },
   {
@@ -650,6 +688,8 @@ export const RELICS = [
       categoria: "Spacecraft parts and debris",
       missao: "MER-B",
       energia: "None",
+      energiaTipo: "none", // solar | nuclear | battery | none
+      energiaW: null, // potência em watts (null = sem dado)
     },
   },
   {
@@ -678,6 +718,8 @@ export const RELICS = [
       categoria: "Objects",
       missao: "Apollo 11",
       energia: "None",
+      energiaTipo: "none", // solar | nuclear | battery | none
+      energiaW: null, // potência em watts (null = sem dado)
     },
   },
   {
@@ -706,6 +748,8 @@ export const RELICS = [
       categoria: "Objects",
       missao: "Apollo 11",
       energia: "Solar · 46 W",
+      energiaTipo: "solar", // solar | nuclear | battery | none
+      energiaW: 46, // potência em watts (null = sem dado)
     },
   },
   {
@@ -734,6 +778,8 @@ export const RELICS = [
       categoria: "Objects",
       missao: "Apollo 11",
       energia: "None",
+      energiaTipo: "none", // solar | nuclear | battery | none
+      energiaW: null, // potência em watts (null = sem dado)
     },
   },
   {
@@ -762,6 +808,8 @@ export const RELICS = [
       categoria: "Objects",
       missao: "Apollo 15",
       energia: "None",
+      energiaTipo: "none", // solar | nuclear | battery | none
+      energiaW: null, // potência em watts (null = sem dado)
     },
   },
   {
@@ -790,6 +838,8 @@ export const RELICS = [
       categoria: "Objects",
       missao: "Apollo 11",
       energia: "None",
+      energiaTipo: "none", // solar | nuclear | battery | none
+      energiaW: null, // potência em watts (null = sem dado)
     },
   },
 ];
@@ -797,35 +847,37 @@ export const RELICS = [
 // The terminal hint commands a player can type. Each one costs points from the mission score.
 // `hint` returns the text the terminal prints for the given relic.
 export const HINT_COMMANDS = {
+  // As 5 dicas do alvo. Cada uma tem duas versões (ver "Dicas por nível" mais abaixo):
+  //   easy -> XP <= 2000 (faixa estreita, bem direta)   hard -> XP > 2000 (faixa larga / pista indireta)
+  tamanho_objeto: {
+    label: "tamanho_objeto",
+    easy: (r) => hintSize(r, SIZE_EASY),
+    hard: (r) => hintSize(r, SIZE_HARD),
+  },
   peso_objeto: {
     label: "peso_objeto",
-    hint: (r) =>
-      r.weightKg == null
-        ? "PESO: dado não encontrado nos registros da NASA."
-        : `PESO: O alvo pesa ${r.fields.peso} no envoltório de lançamento.`,
+    easy: (r) => hintWeight(r, WEIGHT_EASY),
+    hard: (r) => hintWeight(r, WEIGHT_HARD),
   },
-  altura_objeto: {
-    label: "altura_objeto",
-    hint: (r) => r.heightM == null
-        ? "ALTURA: dado não encontrado nos registros da NASA."
-        : `ALTURA: ${r.fields.altura} do equipamento até a base.`,
+  partiu_em: {
+    label: "partiu_em",
+    easy: (r) => `PARTIU EM: entre ${yearWindow(r.fields.lancamento)}.`,
+    hard: (r) => `PARTIU EM: ${yearEra(r.fields.lancamento)}.`,
   },
-  ano_perda: {
-    label: "ano_perda",
-    hint: (r) => `ANO DA PERDA: ${r.fields.ano}. (Correlação histórica em arquivo.)`,
+  perdido_em: {
+    label: "perdido_em",
+    easy: (r) => `PERDIDO EM: entre ${yearWindow(r.fields.ano)}.`,
+    hard: (r) => `PERDIDO EM: ${yearEra(r.fields.ano)}.`,
   },
-  categoria_objeto: {
-    label: "categoria_objeto",
-    hint: (r) => `CATEGORIA: ${r.fields.categoria}.`,
-  },
-  missao_origem: {
-    label: "missao_origem",
-    hint: (r) => `MISSÃO DE ORIGEM: ${r.fields.missao}.`,
+  energia_objeto: {
+    label: "energia_objeto",
+    easy: (r) => hintPowerEasy(r),
+    hard: (r) => hintPowerHard(r),
   },
   help: {
     label: "help",
     hint: () =>
-      "COMANDOS DISPONÍVEIS: peso_objeto · altura_objeto · ano_perda · categoria_objeto · missao_origem · scan · status · clear",
+      "COMANDOS DISPONÍVEIS: tamanho_objeto · peso_objeto · partiu_em · perdido_em · energia_objeto · scan · status · clear",
   },
   scan: {
     label: "scan",
@@ -962,43 +1014,95 @@ export const HINT_COST_EASY = 1000;
 export const hintTier = (score) => (score <= HINT_EASY_THRESHOLD ? "easy" : "hard");
 export const hintCost = (score) => (hintTier(score) === "easy" ? HINT_COST_EASY : HINT_COST_HARD);
 
-const pick = (value, buckets) => buckets.find(([max]) => value < max)[1];
+// ---- Dicas por nível ----
+// Todas as dicas saem dos dados oficiais das cartas (objects.json).
+//  - FÁCIL (XP <= 2000): faixa estreita. Dá uma boa direção "de cara", mas nunca o valor exato.
+//  - DIFÍCIL (XP > 2000): faixa larga ou ordem de grandeza. O jogador precisa deduzir mais.
+// Cada faixa é [limite superior (inclusive), texto]; vale a primeira em que o valor cabe.
+const inBucket = (value, buckets) => buckets.find(([max]) => value <= max)[1];
+const notFound = (label) => `${label}: dado não encontrado nos registros da NASA.`;
 
-const WEIGHT_BUCKETS = [
-  [0.5, "menos de 500 g"],
-  [5, "entre 500 g e 5 kg"],
-  [50, "entre 5 kg e 50 kg"],
-  [500, "entre 50 kg e 500 kg"],
-  [Infinity, "mais de 500 kg"],
+// TAMANHO (em metros)
+const SIZE_EASY = [
+  [0.25, "menos de 25 cm"],
+  [0.5, "entre 25 cm e 50 cm"],
+  [1, "entre 50 cm e 1 m"],
+  [2, "entre 1 m e 2 m"],
+  [3, "entre 2 m e 3 m"],
+  [5, "entre 3 m e 5 m"],
+  [Infinity, "mais de 5 m"],
 ];
-
-const HEIGHT_BUCKETS = [
-  [0.3, "menos de 30 cm"],
-  [1, "entre 30 cm e 1 m"],
-  [2.5, "entre 1 m e 2,5 m"],
-  [Infinity, "mais de 2,5 m"],
+const SIZE_HARD = [
+  [1, "menor que 1 m"],
+  [3, "entre 1 m e 3 m"],
+  [Infinity, "maior que 3 m"],
 ];
+const hintSize = (r, buckets) => (r.heightM == null ? notFound("TAMANHO") : `TAMANHO: ${inBucket(r.heightM, buckets)}.`);
 
-// Versão difícil de cada dica: só uma faixa ou uma pista parcial, nunca o valor exato.
-export const HARD_HINTS = {
-  peso_objeto: (r) =>
-    r.weightKg == null ? "PESO: dado não encontrado nos registros da NASA." : `PESO: ${pick(r.weightKg, WEIGHT_BUCKETS)}.`,
-  altura_objeto: (r) =>
-    r.heightM == null ? "ALTURA: dado não encontrado nos registros da NASA." : `ALTURA: ${pick(r.heightM, HEIGHT_BUCKETS)}.`,
-  ano_perda: (r) => `ANO DA PERDA: década de ${Math.floor(Number(r.fields.ano) / 10) * 10}.`,
-  categoria_objeto: (r) =>
-    `CATEGORIA: começa com "${r.fields.categoria[0].toUpperCase()}" e tem ${r.fields.categoria.length} letras.`,
-  missao_origem: (r) => {
-    const programa = r.fields.missao.replace(/\s*\d+\s*$/, "");
-    return programa !== r.fields.missao
-      ? `MISSÃO DE ORIGEM: programa ${programa} (número da missão omitido).`
-      : `MISSÃO DE ORIGEM: nome começa com "${programa[0].toUpperCase()}" e tem ${programa.length} letras.`;
-  },
+// PESO (em kg)
+const WEIGHT_EASY = [
+  [1, "menos de 1 kg"],
+  [5, "entre 1 kg e 5 kg"],
+  [20, "entre 5 kg e 20 kg"],
+  [50, "entre 20 kg e 50 kg"],
+  [100, "entre 50 kg e 100 kg"],
+  [250, "entre 100 kg e 250 kg"],
+  [500, "entre 250 kg e 500 kg"],
+  [1000, "entre 500 kg e 1 tonelada"],
+  [2000, "entre 1 e 2 toneladas"],
+  [Infinity, "mais de 2 toneladas"],
+];
+const WEIGHT_HARD = [
+  [10, "na casa das unidades de kg"],
+  [100, "na casa das dezenas de kg"],
+  [1000, "na casa das centenas de kg"],
+  [Infinity, "na casa dos milhares de kg"],
+];
+const hintWeight = (r, buckets) => (r.weightKg == null ? notFound("PESO") : `PESO: ${inBucket(r.weightKg, buckets)}.`);
+
+// PARTIU EM (lançamento) e PERDIDO EM (ano em que parou de funcionar)
+// Fácil: janela de 5 anos. Difícil: era de ~20 anos.
+const yearWindow = (year) => {
+  const start = Math.floor(Number(year) / 5) * 5;
+  return `${start} e ${start + 4}`;
 };
+const ERAS = [
+  [1969, "em 1969 ou antes"],
+  [1989, "entre 1970 e 1989"],
+  [2009, "entre 1990 e 2009"],
+  [Infinity, "depois de 2009"],
+];
+const yearEra = (year) => inBucket(Number(year), ERAS);
+
+// ENERGIA (tipo da fonte + potência em watts)
+const POWER_NAMES = { solar: "solar", nuclear: "nuclear", battery: "bateria", none: "nenhuma" };
+const WATT_BANDS = [
+  [50, "abaixo de 50 W"],
+  [100, "entre 50 W e 100 W"],
+  [200, "entre 100 W e 200 W"],
+  [1000, "entre 200 W e 1 kW"],
+  [Infinity, "acima de 1 kW"],
+];
+const hintPowerEasy = (r) => {
+  const { energiaTipo: tipo, energiaW: watts } = r.fields;
+  if (tipo === "none") return "ENERGIA: nenhuma. O objeto não tem fonte de energia.";
+  if (tipo === "battery") return "ENERGIA: bateria.";
+  return watts == null
+    ? `ENERGIA: ${POWER_NAMES[tipo]} (potência não registrada).`
+    : `ENERGIA: ${POWER_NAMES[tipo]}, com potência ${inBucket(watts, WATT_BANDS)}.`;
+};
+const hintPowerHard = (r) => {
+  const { energiaTipo: tipo, energiaW: watts } = r.fields;
+  if (tipo === "none") return "ENERGIA: não usa nenhuma fonte de energia.";
+  if (tipo === "battery") return "ENERGIA: funciona com energia armazenada; não gera a própria.";
+  const power = watts == null ? "" : watts < 100 ? " Potência abaixo de 100 W." : " Potência de 100 W ou mais.";
+  return `ENERGIA: gera a própria energia.${power}`;
+};
+
 export const MAX_LIVES = 3;
 export const WARP_DURATION_MS = 4000; // salto entre locais (espaço, Lua, Marte)
 export const LOCAL_HOP_MS = 1600; // deslocamento dentro do mesmo local
-export const TYPEWRITER_DELAY_MS = 22;
+export const TYPEWRITER_DELAY_MS = 45; // ms por letra nas mensagens (maior = mais devagar)
 // Relatórios da L.O.G. (um por checkpoint: a cada 3 objetos catalogados no total).
 // A cada checkpoint a nave mostra um warning vermelho com `errorCode` (ex.: ERRO-3000).
 // O Jogador 2 procura a carta coringa desse erro e lê o `code` (código de sincronização)

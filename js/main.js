@@ -6,7 +6,6 @@ import {
   HINT_COMMANDS,
   MAX_SCORE,
   HINT_PENALTY,
-  HARD_HINTS,
   hintTier,
   hintCost,
   MAX_LIVES,
@@ -321,6 +320,9 @@ function loadState() {
   const saved = loadSaved();
   const valid = saved && saved.version === SAVE_VERSION;
   state = valid ? { ...defaultState(), ...saved } : defaultState();
+  // F5 zera o cronômetro da missão em andamento (se estiver pausado no erro de sincronização, continua pausado em 00:00)
+  state.missionStartedAt = Date.now();
+  if (state.pauseAt != null) state.pauseAt = state.missionStartedAt;
   if (!Array.isArray(state.terminalLines)) state.terminalLines = defaultState().terminalLines;
   ensureMissionRelics();
   persistenceReady = true;
@@ -1316,6 +1318,8 @@ function showThread(index) {
   el.threadList.hidden = true;
   el.threadView.hidden = false;
   el.threadTitle.textContent = MISSIONS[index].title;
+  el.threadBack.hidden = false; // o botão Voltar e o título ficam no cabeçalho, ao lado de "Mensagens"
+  el.threadTitle.hidden = false;
   el.chatLog.innerHTML = lines.slice(0, seen).map((line) => bubbleHtml(line)).join("");
   const scroller = el.chatLog.closest(".monitor-body");
   if (scroller) scroller.scrollTop = scroller.scrollHeight;
@@ -1328,6 +1332,8 @@ function showThread(index) {
 
 function leaveThread() {
   openThread = null;
+  el.threadBack.hidden = true;
+  el.threadTitle.hidden = true;
   bumpRun(el.chatLog);
 }
 
@@ -1463,10 +1469,10 @@ function runCommand(raw) {
   // Dica difícil (XP > 2000, custa 500) ou fácil (XP <= 2000, custa 1000)
   const tier = hintTier(state.score);
   const cost = hintCost(state.score);
-  const text = tier === "easy" || !HARD_HINTS[clean] ? cmd.hint(relic, state) : HARD_HINTS[clean](relic);
+  const text = (tier === "easy" ? cmd.easy : cmd.hard)(relic);
   state.score = Math.max(0, state.score - cost);
   state.hintsUsed += 1;
-  appendTerminal(text, `[${tier === "easy" ? "DICA DIRETA" : "DICA CODIFICADA"} · -${cost} XP]`);
+  appendTerminal(text, `[${tier === "easy" ? "DICA FÁCIL" : "DICA DIFÍCIL"} · -${cost} XP]`);
   renderScore();
 }
 
@@ -1685,8 +1691,8 @@ function renderCoordinate() {
   // objeto no espaço: um único campo, em UA; senão latitude (N/S) e longitude (L/O)
   const target = relicById(state.selectedId);
   const inSpace = !!target && target.navTipo === "distancia";
-  el.coordLatLabel.textContent = inSpace ? "UA" : "N/S";
-  el.coordInputs[0].placeholder = inSpace ? "2,64" : "0,67 N";
+  el.coordLatLabel.textContent = inSpace ? "UA" : "      N";
+  el.coordInputs[0].placeholder = inSpace ? " 2,64" : " 0,67";
   el.coordInputs[0].setAttribute("aria-label", inSpace ? "Distância em UA" : "Latitude (N/S)");
   el.coordLonWrap.style.display = inSpace ? "none" : "";
   el.btnTarget.disabled = !hasTarget || isLocked() || isWarning() || isGlassModalOpen();

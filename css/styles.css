@@ -3961,3 +3961,32 @@ button.catalog-card:hover {
   .console-pod { min-width: 0; }
   .ship-btn { min-width: 0; }
 }
+
+/* ----- Mensagens: botão Voltar dentro do cabeçalho, ao lado de "Mensagens" ----- */
+.monitor-header .header-main {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+}
+
+.monitor-header .thread-back {
+  padding: 4px 10px 4px 6px;
+  font-size: 10px;
+}
+
+.thread-back[hidden],
+.thread-title[hidden] { display: none; }
+
+.monitor-header .thread-title {
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.monitor-header .thread-title::before {
+  margin-right: 10px;
+  content: "/";
+  color: var(--cyan);
+  opacity: 0.5;
+}

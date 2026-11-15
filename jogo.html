@@ -126,7 +126,11 @@
       <div class="monitor-overlay side-right" id="monitor-right" hidden>
         <div class="monitor-screen">
           <header class="monitor-header">
-            <span class="eyebrow"></span>
+            <div class="header-main">
+              <span class="eyebrow"></span>
+              <button class="thread-back" id="thread-back" type="button" aria-label="Voltar para as conversas" hidden><span data-icon="back" data-size="14"></span><span>Conversas</span></button>
+              <b class="thread-title" id="thread-title" hidden></b>
+            </div>
             <button class="icon-button" data-monitor-close="right" type="button" aria-label="Fechar painel">
               <span data-icon="close" data-size="16"></span>
             </button>
@@ -135,10 +139,6 @@
           <section class="monitor-body" data-screen="messages" hidden>
             <div class="thread-list" id="thread-list"></div>
             <div class="thread-view" id="thread-view" hidden>
-              <div class="thread-head">
-                <button class="thread-back" id="thread-back" type="button" aria-label="Voltar para as conversas"><span data-icon="back" data-size="14"></span><span>Conversas</span></button>
-                <b class="thread-title" id="thread-title"></b>
-              </div>
               <div class="chat-log" id="chat-log" aria-live="polite"></div>
             </div>
           </section>
@@ -204,7 +204,7 @@
                 <ol class="manual-steps">
                   <li><b>Escolha um objetivo.</b> Aperte <em>Missão</em> e selecione um dos objetos da missão atual. Ele passa a ser o seu alvo.</li>
                   <li><b>Veja o alvo.</b> Aperte <em>Alvo</em> para abrir a imagem do objeto procurado.</li>
-                  <li><b>Peça dicas.</b> No <em>Terminal</em>, digite comandos como <code>peso_objeto</code> ou <code>ano_perda</code>. Acima de 2000 XP as dicas são difíceis e custam 500 XP; a partir de 2000 XP ficam fáceis, mas custam 1000 XP.</li>
+                  <li><b>Peça dicas.</b> No <em>Terminal</em>, digite comandos como <code>peso_objeto</code> ou <code>partiu_em</code>. Acima de 2000 XP as dicas são difíceis e custam 500 XP; com 2000 XP ou menos ficam fáceis, mas custam 1000 XP.</li>
                   <li><b>Informe a coordenada.</b> No <em>Navegador</em>, preencha a <em>latitude</em> (N/S) e a <em>longitude</em> (L/O) do objeto e aperte <em>Ir</em>. Aceita <code>0,67 N</code>, <code>23,47 L</code> ou números com sinal (S e O são negativos). Se o objeto estiver no espaço, o Navegador mostra um único campo, <code>UA</code>, para a distância informada na carta.</li>
                   <li><b>Viaje.</b> Se o objeto estiver na Lua, em Marte ou no espaço e a nave estiver em outro local, ela salta até lá. Depois de chegar, a nave fica no local até você ir para outro.</li>
                   <li><b>Catalogue.</b> Quando o objeto for encontrado, aperte <em>Catalogar objeto</em>. Ele entra no <em>Catálogo</em>.</li>
@@ -247,7 +247,7 @@
 
                 <h3>Comandos do terminal</h3>
                 <dl class="manual-keys">
-                  <div><dt><code>peso_objeto</code> <code>altura_objeto</code> <code>ano_perda</code> <code>categoria_objeto</code> <code>missao_origem</code></dt><dd>Dicas sobre o alvo. Custam XP.</dd></div>
+                  <div><dt><code>tamanho_objeto</code> <code>peso_objeto</code> <code>partiu_em</code> <code>perdido_em</code> <code>energia_objeto</code></dt><dd>Dicas sobre o alvo. Custam XP.</dd></div>
                   <div><dt><code>help</code> <code>scan</code> <code>status</code> <code>clear</code></dt><dd>Gratuitos. Listam comandos, mostram o status e limpam a tela.</dd></div>
                 </dl>
               </article>
@@ -406,8 +406,8 @@
             <span class="console-label">Navegador</span>
             <div class="coord-row">
               <div class="coord-fields">
-                <label class="coord-axis"><span id="coord-lat-label">N/S</span><input id="coord-lat" type="text" inputmode="text" placeholder="0,67 N" aria-label="Latitude (N/S)" disabled /></label>
-                <label class="coord-axis" id="coord-lon-wrap"><span>L/O</span><input id="coord-lon" type="text" inputmode="text" placeholder="23,47 L" aria-label="Longitude (L/O)" disabled /></label>
+                <label class="coord-axis"><span id="coord-lat-label"></span><input id="coord-lat" type="text" inputmode="text" placeholder="0,67" disabled /></label>
+                <label class="coord-axis" id="coord-lon-wrap"><span>      L</span><input id="coord-lon" type="text" inputmode="text" placeholder="23,47" disabled /></label>
               </div>
               <button class="coord-submit" id="coord-submit" type="submit" disabled>
                 <span class="coord-key">Ir</span>
