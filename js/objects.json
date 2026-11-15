@@ -1,0 +1,1215 @@
+{
+  "game": "L.O.G. — Legacy of Giants",
+  "version": "2026-11-14",
+  "language": "en",
+  "total_cards": 25,
+  "card_back": {
+    "same_on_all": true,
+    "png": "Card back.png",
+    "svg": "Card back - vector.svg"
+  },
+  "categories": [
+    {
+      "id": "rover",
+      "name": "Rovers and vehicles"
+    },
+    {
+      "id": "lander",
+      "name": "Landers"
+    },
+    {
+      "id": "probe",
+      "name": "Probes and telescopes"
+    },
+    {
+      "id": "debris",
+      "name": "Spacecraft parts and debris"
+    },
+    {
+      "id": "objects",
+      "name": "Objects"
+    }
+  ],
+  "locations": [
+    {
+      "id": "moon",
+      "name": "Moon"
+    },
+    {
+      "id": "mars",
+      "name": "Mars"
+    },
+    {
+      "id": "space",
+      "name": "Space"
+    }
+  ],
+  "fields": {
+    "number": "card number in the deck, 1 to 25",
+    "id": "unique identifier (number + name without accents)",
+    "object": "the object's name: it is the answer and does not appear on the front of the card",
+    "category": "category id and name (one of the 5 in 'categories')",
+    "location": "where the object is: moon, mars or space",
+    "mission": "the NASA mission that carried the object",
+    "size": "value (number), unit (m or cm) and the text as printed on the card; value null = not found in NASA sources",
+    "weight": "value (number), unit (kg) and the text as printed on the card; value null = not found",
+    "position": "type 'coordinates' (latitude and longitude in decimal degrees, always as North and East: South or West values are negative) or 'description' (objects in space: text); 'text' is as printed on the card; 'note' explains approximations",
+    "launched": "launch year",
+    "lost_in": "year the object was lost or stopped working",
+    "power": "type (solar, nuclear, battery or none), watts (null when there is no data) and the text as printed on the card",
+    "fun_fact": "the card text, told by the object itself, without saying its name",
+    "img": "direct link to the official NASA image that represents the object (images.nasa.gov, large JPG)",
+    "img_page": "official page of the image in NASA's library, with title, date and credit",
+    "img_type": "what the image is: photo on site, photo before launch, illustration or NASA painting",
+    "files": "file names of the card front (PNG image, SVG vector, HTML with animation)"
+  },
+  "cards": [
+    {
+      "number": 1,
+      "id": "01-lunar-descent-stage",
+      "object": "Lunar descent stage",
+      "category": {
+        "id": "debris",
+        "name": "Spacecraft parts and debris"
+      },
+      "location": {
+        "id": "moon",
+        "name": "Moon"
+      },
+      "mission": "Apollo 11",
+      "size": {
+        "value": 3.2,
+        "unit": "m",
+        "text": "3.2 m"
+      },
+      "weight": {
+        "value": 2034,
+        "unit": "kg",
+        "text": "2034 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": 0.67,
+        "longitude": 23.47,
+        "text": "0.67° N, 23.47° E"
+      },
+      "launched": 1969,
+      "lost_in": 1969,
+      "power": {
+        "type": "battery",
+        "watts": null,
+        "text": "Battery"
+      },
+      "fun_fact": "After my passengers left, I stayed behind and served as the launch pad for their trip home. Behind my ladder there is a plaque saying we came in peace.",
+      "img": "https://images-assets.nasa.gov/image/as11-40-5927/as11-40-5927~large.jpg",
+      "img_page": "https://images.nasa.gov/details/as11-40-5927",
+      "img_type": "photo on the Moon",
+      "files": {
+        "front_png": "Card 01 - Lunar descent stage.png",
+        "front_svg": "Card 01 - Lunar descent stage - vector.svg",
+        "front_html": "Card 01 - Lunar descent stage - animated.html"
+      }
+    },
+    {
+      "number": 2,
+      "id": "02-alsep",
+      "object": "ALSEP",
+      "category": {
+        "id": "objects",
+        "name": "Objects"
+      },
+      "location": {
+        "id": "moon",
+        "name": "Moon"
+      },
+      "mission": "Apollo 12",
+      "size": {
+        "value": 0.46,
+        "unit": "m",
+        "text": "0.46 m"
+      },
+      "weight": {
+        "value": 46,
+        "unit": "kg",
+        "text": "46 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": -3.01,
+        "longitude": -23.42,
+        "text": "-3.01° N, -23.42° E"
+      },
+      "launched": 1969,
+      "lost_in": 1977,
+      "power": {
+        "type": "nuclear",
+        "watts": 70,
+        "text": "Nuclear · 70 W"
+      },
+      "fun_fact": "Two astronauts set me up on the ground and fitted, by hand, the plutonium rod that powered me. I measured quakes, the solar wind and the magnetic field for almost eight years.",
+      "img": "https://images-assets.nasa.gov/image/as12-47-6918/as12-47-6918~large.jpg",
+      "img_page": "https://images.nasa.gov/details/as12-47-6918",
+      "img_type": "photo on the Moon",
+      "files": {
+        "front_png": "Card 02 - ALSEP.png",
+        "front_svg": "Card 02 - ALSEP - vector.svg",
+        "front_html": "Card 02 - ALSEP - animated.html"
+      }
+    },
+    {
+      "number": 3,
+      "id": "03-surveyor-3",
+      "object": "Surveyor 3",
+      "category": {
+        "id": "lander",
+        "name": "Landers"
+      },
+      "location": {
+        "id": "moon",
+        "name": "Moon"
+      },
+      "mission": "Surveyor 3",
+      "size": {
+        "value": 3,
+        "unit": "m",
+        "text": "3 m"
+      },
+      "weight": {
+        "value": 997.9,
+        "unit": "kg",
+        "text": "997.9 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": -3.02,
+        "longitude": -23.42,
+        "text": "-3.02° N, -23.42° E"
+      },
+      "launched": 1967,
+      "lost_in": 1967,
+      "power": {
+        "type": "solar",
+        "watts": 85,
+        "text": "Solar · 85 W"
+      },
+      "fun_fact": "On the way down, bright rocks fooled my radar and I bounced twice. Two years later, astronauts landed 180 m from me and took pieces of me back to Earth.",
+      "img": "https://images-assets.nasa.gov/image/AS12-48-7134/AS12-48-7134~large.jpg",
+      "img_page": "https://images.nasa.gov/details/AS12-48-7134",
+      "img_type": "photo on the Moon",
+      "files": {
+        "front_png": "Card 03 - Surveyor 3.png",
+        "front_svg": "Card 03 - Surveyor 3 - vector.svg",
+        "front_html": "Card 03 - Surveyor 3 - animated.html"
+      }
+    },
+    {
+      "number": 4,
+      "id": "04-sojourner",
+      "object": "Sojourner",
+      "category": {
+        "id": "rover",
+        "name": "Rovers and vehicles"
+      },
+      "location": {
+        "id": "mars",
+        "name": "Mars"
+      },
+      "mission": "Mars Pathfinder",
+      "size": {
+        "value": 30,
+        "unit": "cm",
+        "text": "30 cm"
+      },
+      "weight": {
+        "value": 10.6,
+        "unit": "kg",
+        "text": "10.6 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": 19.33,
+        "longitude": -33.55,
+        "text": "19.33° N, -33.55° E"
+      },
+      "launched": 1996,
+      "lost_in": 1997,
+      "power": {
+        "type": "solar",
+        "watts": 16,
+        "text": "Solar · 16 W"
+      },
+      "fun_fact": "I rolled down a ramp and became the first wheeled robot to explore this planet. My name honors a civil rights fighter, and I sent 550 images of the rocks around me.",
+      "img": "https://images-assets.nasa.gov/image/PIA01551/PIA01551~orig.jpg",
+      "img_page": "https://images.nasa.gov/details/PIA01551",
+      "img_type": "photo on Mars",
+      "files": {
+        "front_png": "Card 04 - Sojourner.png",
+        "front_svg": "Card 04 - Sojourner - vector.svg",
+        "front_html": "Card 04 - Sojourner - animated.html"
+      }
+    },
+    {
+      "number": 5,
+      "id": "05-spirit",
+      "object": "Spirit",
+      "category": {
+        "id": "rover",
+        "name": "Rovers and vehicles"
+      },
+      "location": {
+        "id": "mars",
+        "name": "Mars"
+      },
+      "mission": "MER-A",
+      "size": {
+        "value": 1.4,
+        "unit": "m",
+        "text": "1.4 m"
+      },
+      "weight": {
+        "value": 185,
+        "unit": "kg",
+        "text": "185 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": -14.57,
+        "longitude": 175.48,
+        "text": "-14.57° N, 175.48° E"
+      },
+      "launched": 2003,
+      "lost_in": 2010,
+      "power": {
+        "type": "solar",
+        "watts": 140,
+        "text": "Solar · 140 W"
+      },
+      "fun_fact": "I drove 7.73 km across a crater that may once have been a lake, even dragging a wheel that stopped turning. In 2009 I broke through a thin crust, got stuck in sand and never moved again.",
+      "img": "https://images-assets.nasa.gov/image/PIA04239/PIA04239~orig.jpg",
+      "img_page": "https://images.nasa.gov/details/PIA04239",
+      "img_type": "NASA illustration (Spirit and Opportunity were twins)",
+      "files": {
+        "front_png": "Card 05 - Spirit.png",
+        "front_svg": "Card 05 - Spirit - vector.svg",
+        "front_html": "Card 05 - Spirit - animated.html"
+      }
+    },
+    {
+      "number": 6,
+      "id": "06-opportunity",
+      "object": "Opportunity",
+      "category": {
+        "id": "rover",
+        "name": "Rovers and vehicles"
+      },
+      "location": {
+        "id": "mars",
+        "name": "Mars"
+      },
+      "mission": "MER-B",
+      "size": {
+        "value": 1.4,
+        "unit": "m",
+        "text": "1.4 m"
+      },
+      "weight": {
+        "value": 185,
+        "unit": "kg",
+        "text": "185 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": -1.95,
+        "longitude": -5.53,
+        "text": "-1.95° N, -5.53° E"
+      },
+      "launched": 2003,
+      "lost_in": 2018,
+      "power": {
+        "type": "solar",
+        "watts": 140,
+        "text": "Solar · 140 W"
+      },
+      "fun_fact": "I drove 45.16 km in more than 14 years, an off-Earth record that lasted until 2026. A dust storm covered the whole planet, hid the Sun from my panels and I went silent.",
+      "img": "https://images-assets.nasa.gov/image/PIA17759/PIA17759~large.jpg",
+      "img_page": "https://images.nasa.gov/details/PIA17759",
+      "img_type": "self-portrait on Mars",
+      "files": {
+        "front_png": "Card 06 - Opportunity.png",
+        "front_svg": "Card 06 - Opportunity - vector.svg",
+        "front_html": "Card 06 - Opportunity - animated.html"
+      }
+    },
+    {
+      "number": 7,
+      "id": "07-viking-1",
+      "object": "Viking 1",
+      "category": {
+        "id": "lander",
+        "name": "Landers"
+      },
+      "location": {
+        "id": "mars",
+        "name": "Mars"
+      },
+      "mission": "Viking 1",
+      "size": {
+        "value": 2,
+        "unit": "m",
+        "text": "2 m"
+      },
+      "weight": {
+        "value": 572,
+        "unit": "kg",
+        "text": "572 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": 22.48,
+        "longitude": -47.94,
+        "text": "22.48° N, -47.94° E"
+      },
+      "launched": 1975,
+      "lost_in": 1982,
+      "power": {
+        "type": "nuclear",
+        "watts": 60,
+        "text": "Nuclear · 2 × 30 W"
+      },
+      "fun_fact": "I sent the first photo taken from the ground of this planet: it started arriving 25 seconds after I landed. With my arm, I scooped up soil and tested it inside me, looking for signs of life.",
+      "img": "https://images-assets.nasa.gov/image/PIA09703/PIA09703~large.jpg",
+      "img_page": "https://images.nasa.gov/details/PIA09703",
+      "img_type": "model of the Viking lander (Viking 1 and 2 were identical)",
+      "files": {
+        "front_png": "Card 07 - Viking 1.png",
+        "front_svg": "Card 07 - Viking 1 - vector.svg",
+        "front_html": "Card 07 - Viking 1 - animated.html"
+      }
+    },
+    {
+      "number": 8,
+      "id": "08-viking-2",
+      "object": "Viking 2",
+      "category": {
+        "id": "lander",
+        "name": "Landers"
+      },
+      "location": {
+        "id": "mars",
+        "name": "Mars"
+      },
+      "mission": "Viking 2",
+      "size": {
+        "value": 2,
+        "unit": "m",
+        "text": "2 m"
+      },
+      "weight": {
+        "value": 572,
+        "unit": "kg",
+        "text": "572 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": 47.67,
+        "longitude": 134.28,
+        "text": "47.67° N, 134.28° E"
+      },
+      "launched": 1975,
+      "lost_in": 1980,
+      "power": {
+        "type": "nuclear",
+        "watts": 60,
+        "text": "Nuclear · 2 × 30 W"
+      },
+      "fun_fact": "My engines fired again a split second before landing, and I ended up tilted, with one foot on a rock. I traveled 333 days to get here, inside a shield against Earth's microbes.",
+      "img": "https://images-assets.nasa.gov/image/101-KSC-75P-110/101-KSC-75P-110~large.jpg",
+      "img_page": "https://images.nasa.gov/details/101-KSC-75P-110",
+      "img_type": "photo of Viking Lander 2 itself, in testing before launch",
+      "files": {
+        "front_png": "Card 08 - Viking 2.png",
+        "front_svg": "Card 08 - Viking 2 - vector.svg",
+        "front_html": "Card 08 - Viking 2 - animated.html"
+      }
+    },
+    {
+      "number": 9,
+      "id": "09-phoenix",
+      "object": "Phoenix",
+      "category": {
+        "id": "lander",
+        "name": "Landers"
+      },
+      "location": {
+        "id": "mars",
+        "name": "Mars"
+      },
+      "mission": "Phoenix",
+      "size": {
+        "value": 2.2,
+        "unit": "m",
+        "text": "2.2 m"
+      },
+      "weight": {
+        "value": 350,
+        "unit": "kg",
+        "text": "350 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": 68.15,
+        "longitude": -125.9,
+        "text": "68.15° N, -125.90° E"
+      },
+      "launched": 2007,
+      "lost_in": 2008,
+      "power": {
+        "type": "solar",
+        "watts": null,
+        "text": "Solar"
+      },
+      "fun_fact": "I landed near the north pole and dug the ground with my arm to study the ice. At first the Sun never set; when winter came, there was not enough light for my panels.",
+      "img": "https://images-assets.nasa.gov/image/PIA09701/PIA09701~orig.jpg",
+      "img_page": "https://images.nasa.gov/details/PIA09701",
+      "img_type": "photo in testing, before launch",
+      "files": {
+        "front_png": "Card 09 - Phoenix.png",
+        "front_svg": "Card 09 - Phoenix - vector.svg",
+        "front_html": "Card 09 - Phoenix - animated.html"
+      }
+    },
+    {
+      "number": 10,
+      "id": "10-insight",
+      "object": "InSight",
+      "category": {
+        "id": "lander",
+        "name": "Landers"
+      },
+      "location": {
+        "id": "mars",
+        "name": "Mars"
+      },
+      "mission": "InSight",
+      "size": {
+        "value": 1.08,
+        "unit": "m",
+        "text": "1.08 m"
+      },
+      "weight": {
+        "value": 360,
+        "unit": "kg",
+        "text": "360 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": 4.5,
+        "longitude": 135.62,
+        "text": "4.50° N, 135.62° E",
+        "note": "actual landing site, reconstructed by NASA (4.502° N, 135.623° E); 135.90° E was the center of the planned landing area"
+      },
+      "launched": 2018,
+      "lost_in": 2022,
+      "power": {
+        "type": "solar",
+        "watts": null,
+        "text": "Solar"
+      },
+      "fun_fact": "I came to measure the planet's pulse, temperature and reflexes from the inside. I placed a seismometer on the ground to hear the quakes and even recorded the wind blowing on my panels.",
+      "img": "https://images-assets.nasa.gov/image/PIA22876/PIA22876~large.jpg",
+      "img_page": "https://images.nasa.gov/details/PIA22876",
+      "img_type": "self-portrait on Mars",
+      "files": {
+        "front_png": "Card 10 - InSight.png",
+        "front_svg": "Card 10 - InSight - vector.svg",
+        "front_html": "Card 10 - InSight - animated.html"
+      }
+    },
+    {
+      "number": 11,
+      "id": "11-ingenuity-helicopter",
+      "object": "Ingenuity helicopter",
+      "category": {
+        "id": "rover",
+        "name": "Rovers and vehicles"
+      },
+      "location": {
+        "id": "mars",
+        "name": "Mars"
+      },
+      "mission": "Mars 2020",
+      "size": {
+        "value": 0.49,
+        "unit": "m",
+        "text": "0.49 m"
+      },
+      "weight": {
+        "value": 1.8,
+        "unit": "kg",
+        "text": "1.8 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": 18.5,
+        "longitude": 77.32,
+        "text": "18.50° N, 77.32° E"
+      },
+      "launched": 2020,
+      "lost_in": 2024,
+      "power": {
+        "type": "solar",
+        "watts": 350,
+        "text": "Solar · 350 W"
+      },
+      "fun_fact": "I traveled tucked under another robot and made the first powered flight on another planet. I was meant to fly 5 times at most; I flew 72, until I broke my blades on the last landing.",
+      "img": "https://images-assets.nasa.gov/image/PIA25881/PIA25881~large.jpg",
+      "img_page": "https://images.nasa.gov/details/PIA25881",
+      "img_type": "photo on Mars, taken by Perseverance",
+      "files": {
+        "front_png": "Card 11 - Ingenuity helicopter.png",
+        "front_svg": "Card 11 - Ingenuity helicopter - vector.svg",
+        "front_html": "Card 11 - Ingenuity helicopter - animated.html"
+      }
+    },
+    {
+      "number": 12,
+      "id": "12-dawn",
+      "object": "Dawn",
+      "category": {
+        "id": "probe",
+        "name": "Probes and telescopes"
+      },
+      "location": {
+        "id": "space",
+        "name": "Space"
+      },
+      "mission": "Dawn",
+      "size": {
+        "value": 1.77,
+        "unit": "m",
+        "text": "1.77 m"
+      },
+      "weight": {
+        "value": 747,
+        "unit": "kg",
+        "text": "747 kg"
+      },
+      "position": {
+        "type": "description",
+        "text": "Ceres orbit · 2.64 AU from the Sun",
+        "note": "distance computed for 2026-11-14 (JPL Horizons)"
+      },
+      "launched": 2007,
+      "lost_in": 2018,
+      "power": {
+        "type": "solar",
+        "watts": 10300,
+        "text": "Solar · 10.3 kW"
+      },
+      "fun_fact": "I used engines that push with xenon to visit two worlds in the asteroid belt. When I ran out of fuel, I kept circling the second one, and I am still there today.",
+      "img": "https://images-assets.nasa.gov/image/PIA12031/PIA12031~orig.jpg",
+      "img_page": "https://images.nasa.gov/details/PIA12031",
+      "img_type": "NASA illustration",
+      "files": {
+        "front_png": "Card 12 - Dawn.png",
+        "front_svg": "Card 12 - Dawn - vector.svg",
+        "front_html": "Card 12 - Dawn - animated.html"
+      }
+    },
+    {
+      "number": 13,
+      "id": "13-near-shoemaker",
+      "object": "NEAR Shoemaker",
+      "category": {
+        "id": "probe",
+        "name": "Probes and telescopes"
+      },
+      "location": {
+        "id": "space",
+        "name": "Space"
+      },
+      "mission": "NEAR",
+      "size": {
+        "value": 1.7,
+        "unit": "m",
+        "text": "1.7 m"
+      },
+      "weight": {
+        "value": 487,
+        "unit": "kg",
+        "text": "487 kg"
+      },
+      "position": {
+        "type": "description",
+        "text": "1.76 AU from the Sun",
+        "note": "distance from asteroid Eros, where NEAR landed (just south of the Himeros formation), to the Sun on 2026-11-14, from JPL Horizons; Eros orbits the Sun between 1.13 and 1.78 AU, between the orbits of Earth and Mars (JPL Small-Body Database)"
+      },
+      "launched": 1996,
+      "lost_in": 2001,
+      "power": {
+        "type": "solar",
+        "watts": 1800,
+        "text": "Solar · 1800 W"
+      },
+      "fun_fact": "I was not built to land, but I came down slowly, at just 6.4 km/h, and sent data for two more weeks. On the way, I passed 1,200 km from another asteroid and photographed more than half of it.",
+      "img": "https://images-assets.nasa.gov/image/PIA18177/PIA18177~large.jpg",
+      "img_page": "https://images.nasa.gov/details/PIA18177",
+      "img_type": "NASA illustration",
+      "files": {
+        "front_png": "Card 13 - NEAR Shoemaker.png",
+        "front_svg": "Card 13 - NEAR Shoemaker - vector.svg",
+        "front_html": "Card 13 - NEAR Shoemaker - animated.html"
+      }
+    },
+    {
+      "number": 14,
+      "id": "14-pioneer-10",
+      "object": "Pioneer 10",
+      "category": {
+        "id": "probe",
+        "name": "Probes and telescopes"
+      },
+      "location": {
+        "id": "space",
+        "name": "Space"
+      },
+      "mission": "Pioneer 10",
+      "size": {
+        "value": 6.6,
+        "unit": "m",
+        "text": "6.6 m"
+      },
+      "weight": {
+        "value": 258,
+        "unit": "kg",
+        "text": "258 kg"
+      },
+      "position": {
+        "type": "description",
+        "text": "142 AU from the Sun · heading to Aldebaran",
+        "note": "distance computed for 2026-11-14 (JPL Horizons)"
+      },
+      "launched": 1972,
+      "lost_in": 2003,
+      "power": {
+        "type": "nuclear",
+        "watts": 140,
+        "text": "Nuclear · 140 W"
+      },
+      "fun_fact": "I was the first to cross the asteroid belt and fly past Jupiter. I carry a plaque with drawings of a man, a woman and the way to Earth, in case someone finds me.",
+      "img": "https://images-assets.nasa.gov/image/ARC-1972-AC72-2135/ARC-1972-AC72-2135~large.jpg",
+      "img_page": "https://images.nasa.gov/details/ARC-1972-AC72-2135",
+      "img_type": "photo before launch",
+      "files": {
+        "front_png": "Card 14 - Pioneer 10.png",
+        "front_svg": "Card 14 - Pioneer 10 - vector.svg",
+        "front_html": "Card 14 - Pioneer 10 - animated.html"
+      }
+    },
+    {
+      "number": 15,
+      "id": "15-pioneer-11",
+      "object": "Pioneer 11",
+      "category": {
+        "id": "probe",
+        "name": "Probes and telescopes"
+      },
+      "location": {
+        "id": "space",
+        "name": "Space"
+      },
+      "mission": "Pioneer 11",
+      "size": {
+        "value": 2.9,
+        "unit": "m",
+        "text": "2.9 m"
+      },
+      "weight": {
+        "value": 259,
+        "unit": "kg",
+        "text": "259 kg"
+      },
+      "position": {
+        "type": "description",
+        "text": "118 AU from the Sun · heading to the constellation Aquila",
+        "note": "distance computed for 2026-11-14 (JPL Horizons)"
+      },
+      "launched": 1973,
+      "lost_in": 1995,
+      "power": {
+        "type": "nuclear",
+        "watts": 144,
+        "text": "Nuclear · 144 W"
+      },
+      "fun_fact": "I used Jupiter's gravity to change course and reach Saturn. I worked the whole trip on my backup transmitter, spinning nonstop at 4.8 turns per minute.",
+      "img": "https://images-assets.nasa.gov/image/ARC-2000-80-HC-251/ARC-2000-80-HC-251~large.jpg",
+      "img_page": "https://images.nasa.gov/details/ARC-2000-80-HC-251",
+      "img_type": "NASA painting",
+      "files": {
+        "front_png": "Card 15 - Pioneer 11.png",
+        "front_svg": "Card 15 - Pioneer 11 - vector.svg",
+        "front_html": "Card 15 - Pioneer 11 - animated.html"
+      }
+    },
+    {
+      "number": 16,
+      "id": "16-kepler",
+      "object": "Kepler",
+      "category": {
+        "id": "probe",
+        "name": "Probes and telescopes"
+      },
+      "location": {
+        "id": "space",
+        "name": "Space"
+      },
+      "mission": "Kepler / K2",
+      "size": {
+        "value": 4.7,
+        "unit": "m",
+        "text": "4.7 m"
+      },
+      "weight": {
+        "value": 1052,
+        "unit": "kg",
+        "text": "1052 kg"
+      },
+      "position": {
+        "type": "description",
+        "text": "Sun orbit · 1.79 AU from Earth",
+        "note": "distance computed for 2026-11-14 (JPL Horizons)"
+      },
+      "launched": 2009,
+      "lost_in": 2018,
+      "power": {
+        "type": "solar",
+        "watts": null,
+        "text": "Solar"
+      },
+      "fun_fact": "For years I stared at stars, waiting for their light to dim when a planet passed in front. When two of my wheels stopped, I started balancing with the pressure of sunlight.",
+      "img": "https://images-assets.nasa.gov/image/PIA11825/PIA11825~orig.jpg",
+      "img_page": "https://images.nasa.gov/details/PIA11825",
+      "img_type": "NASA illustration",
+      "files": {
+        "front_png": "Card 16 - Kepler.png",
+        "front_svg": "Card 16 - Kepler - vector.svg",
+        "front_html": "Card 16 - Kepler - animated.html"
+      }
+    },
+    {
+      "number": 17,
+      "id": "17-mars-pathfinder-lander",
+      "object": "Mars Pathfinder lander",
+      "category": {
+        "id": "lander",
+        "name": "Landers"
+      },
+      "location": {
+        "id": "mars",
+        "name": "Mars"
+      },
+      "mission": "Mars Pathfinder",
+      "size": {
+        "value": 0.9,
+        "unit": "m",
+        "text": "0.9 m"
+      },
+      "weight": {
+        "value": 463,
+        "unit": "kg",
+        "text": "463 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": 19.33,
+        "longitude": -33.55,
+        "text": "19.33° N, -33.55° E"
+      },
+      "launched": 1996,
+      "lost_in": 1997,
+      "power": {
+        "type": "solar",
+        "watts": 35,
+        "text": "Solar · 35 W"
+      },
+      "fun_fact": "I arrived bouncing inside airbags and opened three petals to release a small six-wheeled robot. Then I photographed its work. My name honors a famous astronomer.",
+      "img": "https://images-assets.nasa.gov/image/PIA01121/PIA01121~orig.jpg",
+      "img_page": "https://images.nasa.gov/details/PIA01121",
+      "img_type": "photo on Mars, taken by Sojourner",
+      "files": {
+        "front_png": "Card 17 - Mars Pathfinder lander.png",
+        "front_svg": "Card 17 - Mars Pathfinder lander - vector.svg",
+        "front_html": "Card 17 - Mars Pathfinder lander - animated.html"
+      }
+    },
+    {
+      "number": 18,
+      "id": "18-apollo-12-ascent-stage",
+      "object": "Apollo 12 ascent stage",
+      "category": {
+        "id": "debris",
+        "name": "Spacecraft parts and debris"
+      },
+      "location": {
+        "id": "moon",
+        "name": "Moon"
+      },
+      "mission": "Apollo 12",
+      "size": {
+        "value": 2.8,
+        "unit": "m",
+        "text": "2.8 m"
+      },
+      "weight": {
+        "value": 2383,
+        "unit": "kg",
+        "text": "2383 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": -3.94,
+        "longitude": -21.2,
+        "text": "-3.94° N, -21.20° E"
+      },
+      "launched": 1969,
+      "lost_in": 1969,
+      "power": {
+        "type": "battery",
+        "watts": null,
+        "text": "Battery"
+      },
+      "fun_fact": "I carried two astronauts from the ground back to the ship in orbit. Then they crashed me on purpose, and my impact made the first artificial quake recorded on this world.",
+      "img": "https://images-assets.nasa.gov/image/as12-46-6729/as12-46-6729~large.jpg",
+      "img_page": "https://images.nasa.gov/details/as12-46-6729",
+      "img_type": "photo of the whole Lunar Module on the Moon (the ascent stage is the top part)",
+      "files": {
+        "front_png": "Card 18 - Apollo 12 ascent stage.png",
+        "front_svg": "Card 18 - Apollo 12 ascent stage - vector.svg",
+        "front_html": "Card 18 - Apollo 12 ascent stage - animated.html"
+      }
+    },
+    {
+      "number": 19,
+      "id": "19-apollo-15-ascent-stage",
+      "object": "Apollo 15 ascent stage",
+      "category": {
+        "id": "debris",
+        "name": "Spacecraft parts and debris"
+      },
+      "location": {
+        "id": "moon",
+        "name": "Moon"
+      },
+      "mission": "Apollo 15",
+      "size": {
+        "value": 2.8,
+        "unit": "m",
+        "text": "2.8 m"
+      },
+      "weight": {
+        "value": 2385,
+        "unit": "kg",
+        "text": "2385 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": 26.36,
+        "longitude": 0.25,
+        "text": "26.36° N, 0.25° E"
+      },
+      "launched": 1971,
+      "lost_in": 1971,
+      "power": {
+        "type": "battery",
+        "watts": null,
+        "text": "Battery"
+      },
+      "fun_fact": "I stayed landed for almost three days, and an astronaut even stood in my top hatch, describing the landscape. Released in orbit, I fell two hours later.",
+      "img": "https://images-assets.nasa.gov/image/S71-41511/S71-41511~large.jpg",
+      "img_page": "https://images.nasa.gov/details/S71-41511",
+      "img_type": "TV image on the Moon, seconds before liftoff",
+      "files": {
+        "front_png": "Card 19 - Apollo 15 ascent stage.png",
+        "front_svg": "Card 19 - Apollo 15 ascent stage - vector.svg",
+        "front_html": "Card 19 - Apollo 15 ascent stage - animated.html"
+      }
+    },
+    {
+      "number": 20,
+      "id": "20-opportunity-heat-shield",
+      "object": "Opportunity heat shield",
+      "category": {
+        "id": "debris",
+        "name": "Spacecraft parts and debris"
+      },
+      "location": {
+        "id": "mars",
+        "name": "Mars"
+      },
+      "mission": "MER-B",
+      "size": {
+        "value": 2.65,
+        "unit": "m",
+        "text": "2.65 m"
+      },
+      "weight": {
+        "value": 78,
+        "unit": "kg",
+        "text": "78 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": -2.0,
+        "longitude": -6.0,
+        "text": "-2.00° N, -6.00° E",
+        "note": "approximate: the Meridiani Planum area where Opportunity landed and the heat shield fell (NASA, PIA21130: about 2° S, 354° E); the exact position of the heat shield was not found"
+      },
+      "launched": 2003,
+      "lost_in": 2004,
+      "power": {
+        "type": "none",
+        "watts": null,
+        "text": "None"
+      },
+      "fun_fact": "I braked the descent from 19,300 km/h and, once I was no longer needed, I was dropped and fell on my own. Almost a year later, the robot I protected came back to photograph me: I was inside out.",
+      "img": "https://images-assets.nasa.gov/image/PIA07223/PIA07223~orig.jpg",
+      "img_page": "https://images.nasa.gov/details/PIA07223",
+      "img_type": "photo on Mars",
+      "files": {
+        "front_png": "Card 20 - Opportunity heat shield.png",
+        "front_svg": "Card 20 - Opportunity heat shield - vector.svg",
+        "front_html": "Card 20 - Opportunity heat shield - animated.html"
+      }
+    },
+    {
+      "number": 21,
+      "id": "21-us-flag-on-the-moon",
+      "object": "US flag on the Moon",
+      "category": {
+        "id": "objects",
+        "name": "Objects"
+      },
+      "location": {
+        "id": "moon",
+        "name": "Moon"
+      },
+      "mission": "Apollo 11",
+      "size": {
+        "value": 1.5,
+        "unit": "m",
+        "text": "1.5 m"
+      },
+      "weight": {
+        "value": 4.3,
+        "unit": "kg",
+        "text": "4.3 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": 0.67,
+        "longitude": 23.47,
+        "text": "0.67° N, 23.47° E"
+      },
+      "launched": 1969,
+      "lost_in": 1969,
+      "power": {
+        "type": "none",
+        "watts": null,
+        "text": "None"
+      },
+      "fun_fact": "A bar along my top keeps me spread out, because there is no wind here. I traveled strapped to the ship's ladder, in a heat cover, and they could only push me 15 to 23 cm into the ground.",
+      "img": "https://images-assets.nasa.gov/image/as11-40-5875/as11-40-5875~large.jpg",
+      "img_page": "https://images.nasa.gov/details/as11-40-5875",
+      "img_type": "photo on the Moon",
+      "files": {
+        "front_png": "Card 21 - US flag on the Moon.png",
+        "front_svg": "Card 21 - US flag on the Moon - vector.svg",
+        "front_html": "Card 21 - US flag on the Moon - animated.html"
+      }
+    },
+    {
+      "number": 22,
+      "id": "22-easep",
+      "object": "EASEP",
+      "category": {
+        "id": "objects",
+        "name": "Objects"
+      },
+      "location": {
+        "id": "moon",
+        "name": "Moon"
+      },
+      "mission": "Apollo 11",
+      "size": {
+        "value": null,
+        "unit": null,
+        "text": "not found"
+      },
+      "weight": {
+        "value": 48,
+        "unit": "kg",
+        "text": "48 kg"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": 0.67,
+        "longitude": 23.47,
+        "text": "0.67° N, 23.47° E"
+      },
+      "launched": 1969,
+      "lost_in": 1969,
+      "power": {
+        "type": "solar",
+        "watts": 46,
+        "text": "Solar · 46 W"
+      },
+      "fun_fact": "I was switched on by command from Earth while the two astronauts were still walking nearby. My two panels faced east and west, so I only worked during the day.",
+      "img": "https://images-assets.nasa.gov/image/as11-40-5951/as11-40-5951~large.jpg",
+      "img_page": "https://images.nasa.gov/details/as11-40-5951",
+      "img_type": "photo on the Moon",
+      "files": {
+        "front_png": "Card 22 - EASEP.png",
+        "front_svg": "Card 22 - EASEP - vector.svg",
+        "front_html": "Card 22 - EASEP - animated.html"
+      }
+    },
+    {
+      "number": 23,
+      "id": "23-apollo-11-plaque",
+      "object": "Apollo 11 plaque",
+      "category": {
+        "id": "objects",
+        "name": "Objects"
+      },
+      "location": {
+        "id": "moon",
+        "name": "Moon"
+      },
+      "mission": "Apollo 11",
+      "size": {
+        "value": 23,
+        "unit": "cm",
+        "text": "23 cm"
+      },
+      "weight": {
+        "value": null,
+        "unit": null,
+        "text": "not found"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": 0.67,
+        "longitude": 23.47,
+        "text": "0.67° N, 23.47° E"
+      },
+      "launched": 1969,
+      "lost_in": 1969,
+      "power": {
+        "type": "none",
+        "watts": null,
+        "text": "None"
+      },
+      "fun_fact": "I am made of stainless steel and traveled under a thin sheet of the same metal. I was only uncovered after the second astronaut came down, and my words were read aloud to Earth.",
+      "img": "https://images-assets.nasa.gov/image/as11-40-5899/as11-40-5899~large.jpg",
+      "img_page": "https://images.nasa.gov/details/as11-40-5899",
+      "img_type": "photo on the Moon",
+      "files": {
+        "front_png": "Card 23 - Apollo 11 plaque.png",
+        "front_svg": "Card 23 - Apollo 11 plaque - vector.svg",
+        "front_html": "Card 23 - Apollo 11 plaque - animated.html"
+      }
+    },
+    {
+      "number": 24,
+      "id": "24-apollo-15-memorial",
+      "object": "Apollo 15 memorial",
+      "category": {
+        "id": "objects",
+        "name": "Objects"
+      },
+      "location": {
+        "id": "moon",
+        "name": "Moon"
+      },
+      "mission": "Apollo 15",
+      "size": {
+        "value": null,
+        "unit": null,
+        "text": "not found"
+      },
+      "weight": {
+        "value": null,
+        "unit": null,
+        "text": "not found"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": 26.13,
+        "longitude": 3.63,
+        "text": "26.13° N, 3.63° E"
+      },
+      "launched": 1971,
+      "lost_in": 1971,
+      "power": {
+        "type": "none",
+        "watts": null,
+        "text": "None"
+      },
+      "fun_fact": "We are a small aluminum figure and a plaque with the names of 14 explorers from two countries who died before getting here. We have been on the ground since the last walk outside.",
+      "img": "https://images-assets.nasa.gov/image/as15-88-11894/as15-88-11894~large.jpg",
+      "img_page": "https://images.nasa.gov/details/as15-88-11894",
+      "img_type": "photo on the Moon",
+      "files": {
+        "front_png": "Card 24 - Apollo 15 memorial.png",
+        "front_svg": "Card 24 - Apollo 15 memorial - vector.svg",
+        "front_html": "Card 24 - Apollo 15 memorial - animated.html"
+      }
+    },
+    {
+      "number": 25,
+      "id": "25-apollo-11-memorial-packet",
+      "object": "Apollo 11 memorial packet",
+      "category": {
+        "id": "objects",
+        "name": "Objects"
+      },
+      "location": {
+        "id": "moon",
+        "name": "Moon"
+      },
+      "mission": "Apollo 11",
+      "size": {
+        "value": null,
+        "unit": null,
+        "text": "not found"
+      },
+      "weight": {
+        "value": null,
+        "unit": null,
+        "text": "not found"
+      },
+      "position": {
+        "type": "coordinates",
+        "latitude": 0.67,
+        "longitude": 23.47,
+        "text": "0.67° N, 23.47° E"
+      },
+      "launched": 1969,
+      "lost_in": 1969,
+      "power": {
+        "type": "none",
+        "watts": null,
+        "text": "None"
+      },
+      "fun_fact": "I hold a gold olive branch, a patch and medals honoring five explorers, plus a silicon disk with peace messages from 73 countries. I was left on the ground just before departure.",
+      "img": "https://images-assets.nasa.gov/image/S69-39148/S69-39148~large.jpg",
+      "img_page": "https://images.nasa.gov/details/S69-39148",
+      "img_type": "photo of the goodwill message disk, before flight",
+      "files": {
+        "front_png": "Card 25 - Apollo 11 memorial packet.png",
+        "front_svg": "Card 25 - Apollo 11 memorial packet - vector.svg",
+        "front_html": "Card 25 - Apollo 11 memorial packet - animated.html"
+      }
+    }
+  ]
+}

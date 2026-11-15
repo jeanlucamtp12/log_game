@@ -16,11 +16,18 @@ import {
   REPORTS,
   CHECKPOINT_EVERY,
   HINT_EASY_THRESHOLD,
+  parseCoordInput,
+  coordMatches,
+  formatCoord,
+  parseDistanceInput,
+  distMatches,
+  formatTarget,
+  placeName,
 } from "./game-data.js";
 import { iconSvg, mountIcons } from "./icons.js";
 
 const SAVE_KEY = "lunar07-save";
-const SAVE_VERSION = 2; // saves de versões anteriores (objetos fixos por missão) são descartados
+const SAVE_VERSION = 3; // v3: objetos reais (ids novos) e coordenadas lat/lon; saves anteriores são descartados
 const TOTAL_REQUIRED = MISSIONS.reduce((sum, m) => sum + m.requiredCount, 0);
 const SPACE = "espaco";
 const SURFACE_IMAGES = {
@@ -84,8 +91,10 @@ const el = {
   hudStatus: $("hud-status"),
   missionTimer: $("mission-timer"),
   coordForm: $("coord-form"),
-  coordInputs: [$("coord-x"), $("coord-y"), $("coord-z")],
+  coordInputs: [$("coord-lat"), $("coord-lon")], // [latitude N/S, longitude L/O]
   coordSubmit: $("coord-submit"),
+  coordLatLabel: $("coord-lat-label"),
+  coordLonWrap: $("coord-lon-wrap"),
   coordFeedback: $("coord-feedback"),
   navAlert: $("nav-alert"),
   navAlertCode: $("nav-alert-code"),
@@ -104,6 +113,7 @@ const el = {
   foundHeight: $("found-height"),
   foundCategory: $("found-category"),
   foundLocation: $("found-location"),
+  foundCaption: $("found-image-caption"),
   endModal: $("mission-end-modal"),
   endEyebrow: $("end-eyebrow"),
   endTitle: $("end-title"),
@@ -213,13 +223,28 @@ const unreadIndex = () => {
 };
 const missionShortName = (m) => m.title.split(" — ")[1] ?? m.title;
 
-// Imagem do objeto; se ainda não houver URL, desenha um placeholder com o codinome.
-function imgSrc(relic) {
-  if (relic.image) return relic.image;
-  const label = escapeHtml((relic.codename || relic.name).toUpperCase());
+// Imagem do objeto (foto/ilustração oficial da NASA); se não houver URL, desenha um placeholder.
+function placeholderSrc(text) {
+  const label = escapeHtml(String(text).toUpperCase());
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400"><rect width="640" height="400" fill="#07121a"/><g stroke="#4fe6ff" stroke-opacity=".25" fill="none"><circle cx="320" cy="190" r="70"/><circle cx="320" cy="190" r="110"/><path d="M320 60v260M190 190h260"/></g><text x="320" y="340" fill="#4fe6ff" font-family="monospace" font-size="22" text-anchor="middle" letter-spacing="3">${label}</text></svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
+function imgSrc(relic) {
+  return relic.image || placeholderSrc(relic.codename || relic.name);
+}
+// Se a imagem remota falhar (offline, link quebrado), troca por um placeholder uma única vez.
+document.addEventListener(
+  "error",
+  (event) => {
+    const img = event.target;
+    if (!(img instanceof HTMLImageElement) || img.dataset.fallback === "1") return;
+    img.dataset.fallback = "1";
+    img.src = placeholderSrc("Imagem indisponível");
+  },
+  true,
+);
+// Legenda oficial da imagem (ex.: "Foto na Lua · NASA").
+const imageCredit = (relic) => (relic.imageCaption ? `${relic.imageCaption} · NASA` : "NASA");
 
 // ---- Sorteio dos objetos de cada missão ----
 // Nunca repete objeto entre missões. Com 2+ objetos, garante ao menos um de cada local.
@@ -693,8 +718,8 @@ function clearSelection() {
 // Radar do vidro: alvo rastreado (também restaurado ao recarregar o jogo)
 function renderRadar() {
   const relic = relicById(state.selectedId);
-  el.scanPrompt.classList.toggle("is-tracking", !!relic);
-  el.scanPromptText.textContent = relic ? `Rastreando: ${relic.name}` : "AGUARDANDO OBJETIVO";
+
+  
   if (relic) {
     el.waypointTitle.textContent = `Alvo: ${relic.name}`;
     //el.waypointSub.textContent = `Local: ${relic.location}`;
@@ -765,25 +790,45 @@ function resetCoordForm() {
   setFeedback();
 }
 
+// Formato ilegível: avisa, mas não custa integridade.
+function invalidVector(text) {
+  showNavAlert({ code: "NAV-063 · FORMATO INVÁLIDO", text, ms: 4200 });
+  setFeedback("FORMATO INVÁLIDO");
+}
+
 function submitCoordinate(event) {
   event.preventDefault();
   if (traveling || state.lives <= 0) return;
   const relic = relicById(state.selectedId);
   if (!relic) return;
 
+  const inSpace = relic.navTipo === "distancia"; // objetos no espaço: o Navegador pede a distância em UA
   const typed = el.coordInputs.map((input) => input.value.trim());
-  if (typed.some((value) => value === "")) {
+  if (typed[0] === "" || (!inSpace && typed[1] === "")) {
     showNavAlert({
       code: "NAV-051 · VETOR INCOMPLETO",
-      text: "O computador precisa dos três eixos (X, Y e Z) para fechar a rota.",
+      text: inSpace
+        ? "O computador precisa da distância em UA para fechar a rota."
+        : "O computador precisa da latitude e da longitude para fechar a rota.",
       ms: 3600,
     });
     setFeedback("VETOR INCOMPLETO");
     return;
   }
 
-  const { x, y, z } = relic.coordenadas;
-  const correct = [x, y, z].every((expected, i) => Number(typed[i]) === expected);
+  let correct;
+  if (inSpace) {
+    const dist = parseDistanceInput(typed[0]);
+    if (dist === null) return invalidVector("Não entendi a distância. Use um número em UA. Ex.: 2,64.");
+    correct = distMatches(relic, dist);
+  } else {
+    const lat = parseCoordInput(typed[0], "lat");
+    const lon = parseCoordInput(typed[1], "lon");
+    if (lat === null || lon === null) {
+      return invalidVector("Não entendi o vetor. Use números, com N/S na latitude e L/O na longitude. Ex.: 0,67 N e 23,47 L.");
+    }
+    correct = coordMatches(relic, lat, lon);
+  }
   if (!correct) return failCoordinate();
 
   resetCoordForm();
@@ -819,7 +864,6 @@ function failCoordinate() {
 
 // Se o objeto está em outro local, a nave salta até lá (e fica lá). No mesmo local, é só um deslocamento curto.
 function travelTo(relic) {
-  const { x, y, z } = relic.coordenadas;
   const changesPlace = state.location !== relic.location;
   const duration = changesPlace ? WARP_DURATION_MS : LOCAL_HOP_MS;
 
@@ -829,8 +873,8 @@ function travelTo(relic) {
   closeMonitor("center");
 
   el.viewport.style.setProperty("--warp-ms", `${duration}ms`);
-  el.warpTitle.textContent = changesPlace ? `Salto até ${relic.location}` : "Deslocamento local";
-  el.warpCoord.textContent = `X ${x} · Y ${y} · Z ${z}`;
+  el.warpTitle.textContent = changesPlace ? `Salto até ${placeName(relic.location)}` : "Deslocamento local";
+  el.warpCoord.textContent = formatTarget(relic);
   el.viewport.classList.add("is-warping");
   el.warpLayer.classList.add("is-active");
   warpRun = { start: performance.now(), ms: duration };
@@ -887,12 +931,14 @@ async function restartMission() {
 function showObjectFound(relic) {
   el.foundImage.src = imgSrc(relic);
   el.foundImage.alt = relic.name;
+  el.foundImage.dataset.fallback = "";
+  el.foundCaption.textContent = imageCredit(relic);
   el.foundName.textContent = relic.name;
   el.foundDescription.textContent = relic.description;
   el.foundWeight.textContent = relic.weight;
   el.foundHeight.textContent = relic.height;
   el.foundCategory.textContent = relic.category;
-  el.foundLocation.textContent = relic.location;
+  el.foundLocation.textContent = placeName(relic.location);
 
   // o cartão aparece no vidro e o resto da nave espera: só "Catalogar objeto" o fecha
   foundRelicId = relic.id;
@@ -1497,13 +1543,14 @@ function openCatalogCard(id) {
     <article class="catalog-card is-expanded">
       <div class="card-title">${escapeHtml(relic.name)}</div>
       <img src="${escapeHtml(imgSrc(relic))}" alt="${escapeHtml(relic.name)}" />
+      <small class="card-credit">${escapeHtml(imageCredit(relic))}</small>
       <p>${escapeHtml(relic.description)}</p>
       <dl class="card-specs">
         <div><dt>Peso</dt><dd>${escapeHtml(relic.weight)}</dd></div>
         <div><dt>Altura</dt><dd>${escapeHtml(relic.height)}</dd></div>
         <div><dt>Ano</dt><dd>${escapeHtml(relic.fields.ano)}</dd></div>
         <div><dt>Missão</dt><dd>${escapeHtml(relic.fields.missao)}</dd></div>
-        <div><dt>Local</dt><dd>${escapeHtml(relic.location)}</dd></div>
+        <div><dt>Local</dt><dd>${escapeHtml(placeName(relic.location))}</dd></div>
         <div><dt>Categoria</dt><dd>${escapeHtml(relic.category)}</dd></div>
       </dl>
     </article>`;
@@ -1639,6 +1686,13 @@ function renderCoordinate() {
   const active = hasTarget && !traveling && state.lives > 0 && !isWarning() && foundRelicId === null;
   el.coordInputs.forEach((input) => (input.disabled = !active));
   el.coordSubmit.disabled = !active;
+  // objeto no espaço: um único campo, em UA; senão latitude (N/S) e longitude (L/O)
+  const target = relicById(state.selectedId);
+  const inSpace = !!target && target.navTipo === "distancia";
+  el.coordLatLabel.textContent = inSpace ? "UA" : "N/S";
+  el.coordInputs[0].placeholder = inSpace ? "2,64" : "0,67 N";
+  el.coordInputs[0].setAttribute("aria-label", inSpace ? "Distância em UA" : "Latitude (N/S)");
+  el.coordLonWrap.style.display = inSpace ? "none" : "";
   el.btnTarget.disabled = !hasTarget || isLocked() || isWarning() || isGlassModalOpen();
   if (!hasTarget && !traveling) setFeedback("Sem alvo ativo", true);
   else if (hasTarget && el.coordFeedback.classList.contains("is-idle") && !traveling) setFeedback();

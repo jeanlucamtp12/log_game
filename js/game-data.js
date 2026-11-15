@@ -1,510 +1,795 @@
-// All static game content: missions, relics, and the placeholder narrative.
-// History/dialogue text is placeholder for now — the structure is what matters.
+// Conteúdo estático do jogo: missões, objetos (relíquias) e narrativa.
+// Os objetos vêm do arquivo oficial de cartas (objects.json, L.O.G. — Legacy of Giants),
+// com os textos originais (em inglês). As imagens são as fotos/ilustrações oficiais da NASA.
 
+// Filtros do catálogo = as 5 categorias das cartas.
 export const RELIC_TYPES = [
-  { id: "veiculo", label: "Veículo" },
-  { id: "utensilio", label: "Utensílio" },
-  { id: "peca", label: "Peça de nave" },
+  { id: "rover", label: "Rovers and vehicles" },
+  { id: "lander", label: "Landers" },
+  { id: "probe", label: "Probes and telescopes" },
+  { id: "debris", label: "Spacecraft parts and debris" },
+  { id: "objects", label: "Objects" },
 ];
 
 export const LOCATIONS = [
   { id: "Lua", label: "Lua" },
   { id: "Marte", label: "Marte" },
+  { id: "espaco", label: "Espaço" }, // mesmo valor de SPACE no main.js
 ];
 
-// Coordenadas {x, y, z} que o jogador digita no Navegador para chegar ao objeto.
-// Valores provisórios: edite à vontade.
+// Nome para exibir de um local (o valor interno do espaço é "espaco").
+export const placeName = (loc) => (loc === "espaco" ? "Espaço" : loc);
+
+// ---- Coordenadas: latitude e longitude ----
+// O jogador digita DOIS campos no Navegador:
+//   Latitude  (N/S) · Longitude (L/O)
+// Internamente: graus decimais, N e L positivos; S e O negativos.
+// Aceita "0,67", "0.67", "-3,01", "3,01 S", "23,47° L", "23.42 O"...
+export const COORD_TOLERANCE = 0.006; // as cartas trazem 2 casas decimais
+
+export const formatLat = (v) => `${Math.abs(v).toFixed(2).replace(".", ",")}° ${v < 0 ? "S" : "N"}`;
+export const formatLon = (v) => `${Math.abs(v).toFixed(2).replace(".", ",")}° ${v < 0 ? "O" : "L"}`;
+export const formatCoord = (c) => `${formatLat(c.lat)} · ${formatLon(c.lon)}`;
+
+// axis: "lat" aceita N/S · "lon" aceita L/O (E/W também). Retorna número ou null se for inválido.
+export function parseCoordInput(raw, axis) {
+  const text = String(raw)
+    .trim()
+    .toUpperCase()
+    .replace(/[\u2212\u2013]/g, "-")
+    .replace(/[°º]/g, "")
+    .replace(",", ".");
+  const m = text.match(/^([+-]?\d+(?:\.\d+)?)\s*([A-Z])?$/);
+  if (!m) return null;
+  let value = Number(m[1]);
+  const letter = m[2];
+  if (letter) {
+    const negative = axis === "lat" ? "S" : ["O", "W"];
+    const positive = axis === "lat" ? "N" : ["L", "E"];
+    const isNeg = negative.includes(letter);
+    const isPos = positive.includes(letter);
+    if (!isNeg && !isPos) return null; // letra de outro eixo (ex.: "L" na latitude)
+    if (isNeg && value > 0) value = -value;
+  }
+  return value;
+}
+
+export const coordMatches = (relic, lat, lon) =>
+  !!relic.coordenadas &&
+  Math.abs(lat - relic.coordenadas.lat) < COORD_TOLERANCE &&
+  Math.abs(lon - relic.coordenadas.lon) < COORD_TOLERANCE;
+
+// ---- Objetos no espaço: o Navegador pede a distância em UA (unidades astronômicas) ----
+// Aceita "2,64", "2.64", "142 UA", "142 AU".
+export function parseDistanceInput(raw) {
+  const m = String(raw).trim().toUpperCase().replace(",", ".").match(/^(\d+(?:\.\d+)?)\s*(UA|AU)?$/);
+  return m ? Number(m[1]) : null;
+}
+// Valores inteiros nas cartas (142, 118) aceitam ±0,5; os com decimais, ±0,006.
+export const distMatches = (relic, value) =>
+  relic.distanciaUA != null &&
+  Math.abs(value - relic.distanciaUA) < (Number.isInteger(relic.distanciaUA) ? 0.5 : COORD_TOLERANCE);
+
+export const formatTarget = (relic) =>
+  relic.coordenadas ? formatCoord(relic.coordenadas) : `${String(relic.distanciaUA).replace(".", ",")} UA`;
+
+// ---- Objetos ----
 export const RELICS = [
   {
-    id: "lrv",
-    name: "Veículo Lunar Rover",
-    codename: "Cruzeiro de Poeira",
-    type: "veiculo",
-    category: "Rover",
-    ability: "Deriva de Poeira",
-    kind: "Unidade de Mobilidade · Apollo 15",
-    weight: "210 kg",
-    height: "1,14 m",
+    id: "01-lunar-descent-stage",
+    number: 1,
+    name: "Lunar descent stage",
+    codename: "Carta 01", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "debris",
+    category: "Spacecraft parts and debris",
     location: "Lua",
-    coordenadas: { x: 26, y: 4, z: 15 },
-    image:
-      "https://images.pexels.com/photos/32083788/pexels-photo-32083788.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
-    description:
-      "O primeiro veículo tripulado dirigido em outro mundo. Suas rodas de malha ainda guardam os rastros dos astronautas que o deixaram aqui.",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: 0.67, lon: 23.47 }, // graus decimais: + = N / L, − = S / O
+    weight: "2034 kg",
+    height: "3.2 m",
+    weightKg: 2034,
+    heightM: 3.2,
+    image: "https://images-assets.nasa.gov/image/as11-40-5927/as11-40-5927~large.jpg",
+    imageCaption: "Photo on the Moon",
+    imagePage: "https://images.nasa.gov/details/as11-40-5927",
+    description: "After my passengers left, I stayed behind and served as the launch pad for their trip home. Behind my ladder there is a plaque saying we came in peace.",
     fields: {
-      peso: "210 kg",
-      altura: "1,14 m",
-      ano: "1971",
-      categoria: "Rover",
-      missao: "Apollo 15",
+      peso: "2034 kg",
+      altura: "3.2 m",
+      ano: "1969", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1969",
+      categoria: "Spacecraft parts and debris",
+      missao: "Apollo 11",
+      energia: "Battery",
     },
   },
   {
-    id: "hasselblad",
-    name: "Câmera Hasselblad",
-    codename: "Olho Suspenso",
-    type: "utensilio",
-    category: "Equipamento",
-    ability: "Última Exposição",
-    kind: "Sistema de Imagem · Apollo 17",
-    weight: "2,3 kg",
-    height: "0,18 m",
-    location: "Marte",
-    coordenadas: { x: 20, y: 31, z: 17 },
-    image:
-      "https://images.pexels.com/photos/3733981/pexels-photo-3733981.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
-    description:
-      "Uma câmera lunar modificada. O filme voltou à Terra; o corpo ficou para trás para abrir espaço às amostras de rocha.",
-    fields: {
-      peso: "2,3 kg",
-      altura: "0,18 m",
-      ano: "1972",
-      categoria: "Equipamento",
-      missao: "Apollo 17",
-    },
-  },
-  {
-    id: "sband",
-    name: "Antena S-Band",
-    codename: "Ouvido Dobrável",
-    type: "peca",
-    category: "Comunicações",
-    ability: "Chamada à Terra",
-    kind: "Comunicações · Apollo 12",
-    weight: "11,8 kg",
-    height: "3,0 m",
+    id: "02-alsep",
+    number: 2,
+    name: "ALSEP",
+    codename: "Carta 02", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "objects",
+    category: "Objects",
     location: "Lua",
-    coordenadas: { x: -3, y: -23, z: 12 },
-    image:
-      "https://images.pexels.com/photos/8476867/pexels-photo-8476867.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
-    description:
-      "Um prato dobrável usado para transmitir voz, telemetria e televisão através de 384.000 quilômetros de vazio.",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: -3.01, lon: -23.42 }, // graus decimais: + = N / L, − = S / O
+    weight: "46 kg",
+    height: "0.46 m",
+    weightKg: 46,
+    heightM: 0.46,
+    image: "https://images-assets.nasa.gov/image/as12-47-6918/as12-47-6918~large.jpg",
+    imageCaption: "Photo on the Moon",
+    imagePage: "https://images.nasa.gov/details/as12-47-6918",
+    description: "Two astronauts set me up on the ground and fitted, by hand, the plutonium rod that powered me. I measured quakes, the solar wind and the magnetic field for almost eight years.",
     fields: {
-      peso: "11,8 kg",
-      altura: "3,0 m",
-      ano: "1969",
-      categoria: "Comunicações",
+      peso: "46 kg",
+      altura: "0.46 m",
+      ano: "1977", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1969",
+      categoria: "Objects",
       missao: "Apollo 12",
+      energia: "Nuclear · 70 W",
     },
   },
   {
-    id: "boots",
-    name: "Sobrebotas Lunar",
-    codename: "Primeiro Passo",
-    type: "utensilio",
-    category: "Resíduo",
-    ability: "Um Pequeno Passo",
-    kind: "Equipamento de Tripulação · Apollo 11",
-    weight: "2,1 kg",
-    height: "0,34 m",
+    id: "03-surveyor-3",
+    number: 3,
+    name: "Surveyor 3",
+    codename: "Carta 03", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "lander",
+    category: "Landers",
     location: "Lua",
-    coordenadas: { x: 1, y: 23, z: 11 },
-    image:
-      "https://images.pexels.com/photos/5255069/pexels-photo-5255069.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
-    description:
-      "Uma sobrebota protetora contra a poeira lunar abrasiva. Seu padrão de sola fez as pegadas mais reconhecíveis da história.",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: -3.02, lon: -23.42 }, // graus decimais: + = N / L, − = S / O
+    weight: "997.9 kg",
+    height: "3 m",
+    weightKg: 997.9,
+    heightM: 3,
+    image: "https://images-assets.nasa.gov/image/AS12-48-7134/AS12-48-7134~large.jpg",
+    imageCaption: "Photo on the Moon",
+    imagePage: "https://images.nasa.gov/details/AS12-48-7134",
+    description: "On the way down, bright rocks fooled my radar and I bounced twice. Two years later, astronauts landed 180 m from me and took pieces of me back to Earth.",
     fields: {
-      peso: "2,1 kg",
-      altura: "0,34 m",
-      ano: "1969",
-      categoria: "Resíduo",
-      missao: "Apollo 11",
+      peso: "997.9 kg",
+      altura: "3 m",
+      ano: "1967", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1967",
+      categoria: "Landers",
+      missao: "Surveyor 3",
+      energia: "Solar · 85 W",
     },
   },
   {
-    id: "foil",
-    name: "Folha Térmica",
-    codename: "Estrela Dourada",
-    type: "peca",
-    category: "Detrito",
-    ability: "Brilho Solar",
-    kind: "Detrito de Módulo · Apollo 14",
-    weight: "0,6 kg",
-    height: "0,9 m",
-    location: "Lua",
-    coordenadas: { x: -4, y: -17, z: 14 },
-    image:
-      "https://images.pexels.com/photos/34034144/pexels-photo-34034144.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
-    description:
-      "Um fragmento de isolamento revestido a ouro, espalhado durante a subida. Captura o Sol como uma pequena estrela artificial.",
-    fields: {
-      peso: "0,6 kg",
-      altura: "0,9 m",
-      ano: "1971",
-      categoria: "Detrito",
-      missao: "Apollo 14",
-    },
-  },
-  {
-    id: "plaque",
-    name: "Placa da Paz",
-    codename: "Recado de Aço",
-    type: "utensilio",
-    category: "Relíquia",
-    ability: "Mensagem à Terra",
-    kind: "Comemorativa · Apollo 11",
-    weight: "0,9 kg",
-    height: "0,23 m",
-    location: "Lua",
-    coordenadas: { x: 2, y: 24, z: 33 },
-    image:
-      "https://images.pexels.com/photos/10709331/pexels-photo-10709331.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
-    description:
-      "Uma mensagem em aço inoxidável fixada ao estágio de descida: \"Viemos em paz em nome de toda a humanidade.\"",
-    fields: {
-      peso: "0,9 kg",
-      altura: "0,23 m",
-      ano: "1969",
-      categoria: "Relíquia",
-      missao: "Apollo 11",
-    },
-  },
-  {
-    id: "debris",
-    name: "Detrito Metálico",
-    codename: "Fragmento Errante",
-    type: "peca",
-    category: "Detrito",
-    ability: "Eco de Subida",
-    kind: "Fragmento de Descida · Apollo 16",
-    weight: "1,4 kg",
-    height: "0,42 m",
+    id: "04-sojourner",
+    number: 4,
+    name: "Sojourner",
+    codename: "Carta 04", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "rover",
+    category: "Rovers and vehicles",
     location: "Marte",
-    coordenadas: { x: -9, y: 16, z: 16 },
-    image:
-      "https://images.pexels.com/photos/6203909/pexels-photo-6203909.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
-    description:
-      "Restos de estágio de descida lançados em órbita de transferência. Um deles caiu, milênios depois, na planície marciana.",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: 19.33, lon: -33.55 }, // graus decimais: + = N / L, − = S / O
+    weight: "10.6 kg",
+    height: "30 cm",
+    weightKg: 10.6,
+    heightM: 0.3,
+    image: "https://images-assets.nasa.gov/image/PIA01551/PIA01551~orig.jpg",
+    imageCaption: "Photo on Mars",
+    imagePage: "https://images.nasa.gov/details/PIA01551",
+    description: "I rolled down a ramp and became the first wheeled robot to explore this planet. My name honors a civil rights fighter, and I sent 550 images of the rocks around me.",
     fields: {
-      peso: "1,4 kg",
-      altura: "0,42 m",
-      ano: "1972",
-      categoria: "Detrito",
-      missao: "Apollo 16",
+      peso: "10.6 kg",
+      altura: "30 cm",
+      ano: "1997", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1996",
+      categoria: "Rovers and vehicles",
+      missao: "Mars Pathfinder",
+      energia: "Solar · 16 W",
     },
   },
   {
-    id: "marsrover",
-    name: "Rover Marciano Autônomo",
-    codename: "Andarilho Vermelho",
-    type: "veiculo",
-    category: "Rover",
-    ability: "Poeira de Marte",
-    kind: "Unidade Autônoma · Programa Mariner",
+    id: "05-spirit",
+    number: 5,
+    name: "Spirit",
+    codename: "Carta 05", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "rover",
+    category: "Rovers and vehicles",
+    location: "Marte",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: -14.57, lon: 175.48 }, // graus decimais: + = N / L, − = S / O
     weight: "185 kg",
-    height: "1,6 m",
-    location: "Marte",
-    coordenadas: { x: 18, y: -62, z: 73 },
-    image:
-      "https://images.pexels.com/photos/73910/mars-mars-rover-space-travel-robot-73910.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
-    description:
-      "Um robô de exploração que perdeu contato com a Terra. Suas rodas congelaram na poeira vermelha, esperando um sinal.",
+    height: "1.4 m",
+    weightKg: 185,
+    heightM: 1.4,
+    image: "https://images-assets.nasa.gov/image/PIA04239/PIA04239~orig.jpg",
+    imageCaption: "NASA illustration (Spirit and Opportunity were twins)",
+    imagePage: "https://images.nasa.gov/details/PIA04239",
+    description: "I drove 7.73 km across a crater that may once have been a lake, even dragging a wheel that stopped turning. In 2009 I broke through a thin crust, got stuck in sand and never moved again.",
     fields: {
       peso: "185 kg",
-      altura: "1,6 m",
-      ano: "1973",
-      categoria: "Rover",
-      missao: "Mariner 9",
+      altura: "1.4 m",
+      ano: "2010", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "2003",
+      categoria: "Rovers and vehicles",
+      missao: "MER-A",
+      energia: "Solar · 140 W",
     },
   },
   {
-    id: "marsantenna",
-    name: "Antena de Retransmissão",
-    codename: "Voz Silenciada",
-    type: "peca",
-    category: "Comunicações",
-    ability: "Sinal Perdido",
-    kind: "Comunicações · Programa Viking",
-    weight: "9,2 kg",
-    height: "2,4 m",
+    id: "06-opportunity",
+    number: 6,
+    name: "Opportunity",
+    codename: "Carta 06", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "rover",
+    category: "Rovers and vehicles",
     location: "Marte",
-    coordenadas: { x: 23, y: -48, z: 76 },
-    image:
-      "https://images.pexels.com/photos/19738408/pexels-photo-19738408.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
-    description:
-      "Uma antena de retransmissão que silenciou durante uma tempestade de poeira global. O último pacote nunca chegou.",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: -1.95, lon: -5.53 }, // graus decimais: + = N / L, − = S / O
+    weight: "185 kg",
+    height: "1.4 m",
+    weightKg: 185,
+    heightM: 1.4,
+    image: "https://images-assets.nasa.gov/image/PIA17759/PIA17759~large.jpg",
+    imageCaption: "Self-portrait on Mars",
+    imagePage: "https://images.nasa.gov/details/PIA17759",
+    description: "I drove 45.16 km in more than 14 years, an off-Earth record that lasted until 2026. A dust storm covered the whole planet, hid the Sun from my panels and I went silent.",
     fields: {
-      peso: "9,2 kg",
-      altura: "2,4 m",
-      ano: "1976",
-      categoria: "Comunicações",
+      peso: "185 kg",
+      altura: "1.4 m",
+      ano: "2018", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "2003",
+      categoria: "Rovers and vehicles",
+      missao: "MER-B",
+      energia: "Solar · 140 W",
+    },
+  },
+  {
+    id: "07-viking-1",
+    number: 7,
+    name: "Viking 1",
+    codename: "Carta 07", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "lander",
+    category: "Landers",
+    location: "Marte",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: 22.48, lon: -47.94 }, // graus decimais: + = N / L, − = S / O
+    weight: "572 kg",
+    height: "2 m",
+    weightKg: 572,
+    heightM: 2,
+    image: "https://images-assets.nasa.gov/image/PIA09703/PIA09703~large.jpg",
+    imageCaption: "Model of the Viking lander (Viking 1 and 2 were identical)",
+    imagePage: "https://images.nasa.gov/details/PIA09703",
+    description: "I sent the first photo taken from the ground of this planet: it started arriving 25 seconds after I landed. With my arm, I scooped up soil and tested it inside me, looking for signs of life.",
+    fields: {
+      peso: "572 kg",
+      altura: "2 m",
+      ano: "1982", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1975",
+      categoria: "Landers",
       missao: "Viking 1",
+      energia: "Nuclear · 2 × 30 W",
     },
   },
   {
-    id: "flag",
-    name: "Bandeira Americana",
-    codename: "Estandarte Imóvel",
-    type: "utensilio",
-    category: "Símbolo",
-    ability: "Sem Vento",
-    kind: "Símbolo Nacional · Apollo 12",
-    weight: "0,2 kg",
-    height: "1,2 m",
-    location: "Lua",
-    coordenadas: { x: 12, y: -8, z: 21 },
-    image: "", // TODO: cole aqui a URL da imagem (vazio = placeholder)
-    description:
-      "Fincada na poeira cinzenta, ela nunca balança. O tecido desbotou sob o Sol sem filtro.",
-    fields: {
-      peso: "0,2 kg",
-      altura: "1,2 m",
-      ano: "1969",
-      categoria: "Símbolo",
-      missao: "Apollo 12",
-    },
-  },
-  {
-    id: "seismometer",
-    name: "Sismômetro Passivo",
-    codename: "Orelha do Chão",
-    type: "utensilio",
-    category: "Instrumento",
-    ability: "Escuta Profunda",
-    kind: "Instrumento Científico · Apollo 11",
-    weight: "47 kg",
-    height: "0,5 m",
-    location: "Lua",
-    coordenadas: { x: 7, y: 19, z: 5 },
-    image: "", // TODO: cole aqui a URL da imagem (vazio = placeholder)
-    description:
-      "Registrou os tremores da Lua por semanas. Hoje só escuta o próprio silêncio.",
-    fields: {
-      peso: "47 kg",
-      altura: "0,5 m",
-      ano: "1969",
-      categoria: "Instrumento",
-      missao: "Apollo 11",
-    },
-  },
-  {
-    id: "reflector",
-    name: "Refletor Laser",
-    codename: "Espelho da Terra",
-    type: "peca",
-    category: "Instrumento",
-    ability: "Reflexo Exato",
-    kind: "Instrumento Científico · Apollo 14",
-    weight: "21 kg",
-    height: "0,7 m",
-    location: "Lua",
-    coordenadas: { x: -15, y: 9, z: 28 },
-    image: "", // TODO: cole aqui a URL da imagem (vazio = placeholder)
-    description:
-      "Um painel de pequenos espelhos que devolve à Terra os feixes de laser, medindo a distância entre dois mundos.",
-    fields: {
-      peso: "21 kg",
-      altura: "0,7 m",
-      ano: "1971",
-      categoria: "Instrumento",
-      missao: "Apollo 14",
-    },
-  },
-  {
-    id: "descent",
-    name: "Estágio de Descida",
-    codename: "Berço Abandonado",
-    type: "peca",
-    category: "Módulo",
-    ability: "Base Fixa",
-    kind: "Módulo Lunar · Apollo 17",
-    weight: "2.034 kg",
-    height: "3,2 m",
-    location: "Lua",
-    coordenadas: { x: 31, y: -14, z: 9 },
-    image: "", // TODO: cole aqui a URL da imagem (vazio = placeholder)
-    description:
-      "A base do módulo lunar ficou para trás. Suas pernas douradas seguem fincadas no mesmo ponto desde a partida.",
-    fields: {
-      peso: "2.034 kg",
-      altura: "3,2 m",
-      ano: "1972",
-      categoria: "Módulo",
-      missao: "Apollo 17",
-    },
-  },
-  {
-    id: "golfball",
-    name: "Bola de Golfe",
-    codename: "Tacada Distante",
-    type: "utensilio",
-    category: "Resíduo",
-    ability: "Voo Longo",
-    kind: "Item Pessoal · Apollo 14",
-    weight: "0,046 kg",
-    height: "0,04 m",
-    location: "Lua",
-    coordenadas: { x: -21, y: -3, z: 18 },
-    image: "", // TODO: cole aqui a URL da imagem (vazio = placeholder)
-    description:
-      "Uma tacada improvisada de um astronauta. Sem ar para frear, ela ainda deve estar rolando na memória do arquivo.",
-    fields: {
-      peso: "0,046 kg",
-      altura: "0,04 m",
-      ano: "1971",
-      categoria: "Resíduo",
-      missao: "Apollo 14",
-    },
-  },
-  {
-    id: "hammer",
-    name: "Martelo Geológico",
-    codename: "Queda Livre",
-    type: "utensilio",
-    category: "Ferramenta",
-    ability: "Peso e Pena",
-    kind: "Ferramenta de Campo · Apollo 15",
-    weight: "1,3 kg",
-    height: "0,35 m",
-    location: "Lua",
-    coordenadas: { x: 14, y: 27, z: -6 },
-    image: "", // TODO: cole aqui a URL da imagem (vazio = placeholder)
-    description:
-      "Ele caiu junto com uma pena, no mesmo instante, provando que no vácuo tudo cai igual.",
-    fields: {
-      peso: "1,3 kg",
-      altura: "0,35 m",
-      ano: "1971",
-      categoria: "Ferramenta",
-      missao: "Apollo 15",
-    },
-  },
-  {
-    id: "vikinglander",
-    name: "Módulo Viking Lander",
-    codename: "Sentinela Estática",
-    type: "veiculo",
-    category: "Módulo",
-    ability: "Olho Fixo",
-    kind: "Unidade de Pouso · Programa Viking",
-    weight: "576 kg",
-    height: "2,0 m",
+    id: "08-viking-2",
+    number: 8,
+    name: "Viking 2",
+    codename: "Carta 08", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "lander",
+    category: "Landers",
     location: "Marte",
-    coordenadas: { x: 41, y: -55, z: 68 },
-    image: "", // TODO: cole aqui a URL da imagem (vazio = placeholder)
-    description:
-      "Pousou numa planície vermelha e nunca se moveu. Durante anos, seu braço mecânico coletou o que o solo escondia.",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: 47.67, lon: 134.28 }, // graus decimais: + = N / L, − = S / O
+    weight: "572 kg",
+    height: "2 m",
+    weightKg: 572,
+    heightM: 2,
+    image: "https://images-assets.nasa.gov/image/101-KSC-75P-110/101-KSC-75P-110~large.jpg",
+    imageCaption: "Photo of Viking Lander 2 itself, in testing before launch",
+    imagePage: "https://images.nasa.gov/details/101-KSC-75P-110",
+    description: "My engines fired again a split second before landing, and I ended up tilted, with one foot on a rock. I traveled 333 days to get here, inside a shield against Earth's microbes.",
     fields: {
-      peso: "576 kg",
-      altura: "2,0 m",
-      ano: "1976",
-      categoria: "Módulo",
-      missao: "Viking 1",
+      peso: "572 kg",
+      altura: "2 m",
+      ano: "1980", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1975",
+      categoria: "Landers",
+      missao: "Viking 2",
+      energia: "Nuclear · 2 × 30 W",
     },
   },
   {
-    id: "sojourner",
-    name: "Microrover Sojourner",
-    codename: "Pequeno Pioneiro",
-    type: "veiculo",
-    category: "Rover",
-    ability: "Passo Curto",
-    kind: "Unidade de Mobilidade · Mars Pathfinder",
-    weight: "10,5 kg",
-    height: "0,3 m",
+    id: "09-phoenix",
+    number: 9,
+    name: "Phoenix",
+    codename: "Carta 09", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "lander",
+    category: "Landers",
     location: "Marte",
-    coordenadas: { x: -27, y: -38, z: 80 },
-    image: "", // TODO: cole aqui a URL da imagem (vazio = placeholder)
-    description:
-      "Do tamanho de uma caixa de sapatos, rodou poucos metros e, ainda assim, mudou a forma de explorar outro planeta.",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: 68.15, lon: -125.9 }, // graus decimais: + = N / L, − = S / O
+    weight: "350 kg",
+    height: "2.2 m",
+    weightKg: 350,
+    heightM: 2.2,
+    image: "https://images-assets.nasa.gov/image/PIA09701/PIA09701~orig.jpg",
+    imageCaption: "Photo in testing, before launch",
+    imagePage: "https://images.nasa.gov/details/PIA09701",
+    description: "I landed near the north pole and dug the ground with my arm to study the ice. At first the Sun never set; when winter came, there was not enough light for my panels.",
     fields: {
-      peso: "10,5 kg",
-      altura: "0,3 m",
-      ano: "1997",
-      categoria: "Rover",
-      missao: "Mars Pathfinder",
-    },
-  },
-  {
-    id: "heatshield",
-    name: "Escudo Térmico",
-    codename: "Casca Queimada",
-    type: "peca",
-    category: "Detrito",
-    ability: "Marca de Fogo",
-    kind: "Detrito de Entrada · Mars Exploration",
-    weight: "85 kg",
-    height: "1,4 m",
-    location: "Marte",
-    coordenadas: { x: 55, y: -71, z: 64 },
-    image: "", // TODO: cole aqui a URL da imagem (vazio = placeholder)
-    description:
-      "Queimado pela atmosfera marciana na descida, ficou caído a poucos passos do local do pouso, enegrecido e dobrado.",
-    fields: {
-      peso: "85 kg",
-      altura: "1,4 m",
-      ano: "2004",
-      categoria: "Detrito",
-      missao: "Opportunity",
-    },
-  },
-  {
-    id: "parachute",
-    name: "Paraquedas de Entrada",
-    codename: "Flor Vermelha",
-    type: "peca",
-    category: "Detrito",
-    ability: "Último Freio",
-    kind: "Sistema de Descida · Phoenix",
-    weight: "2,4 kg",
-    height: "11 m",
-    location: "Marte",
-    coordenadas: { x: -34, y: -59, z: 91 },
-    image: "", // TODO: cole aqui a URL da imagem (vazio = placeholder)
-    description:
-      "Abriu-se uma única vez, freando a queda. O tecido laranja agora cobre a poeira como uma flor murcha.",
-    fields: {
-      peso: "2,4 kg",
-      altura: "11 m",
-      ano: "2008",
-      categoria: "Detrito",
+      peso: "350 kg",
+      altura: "2.2 m",
+      ano: "2008", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "2007",
+      categoria: "Landers",
       missao: "Phoenix",
+      energia: "Solar",
     },
   },
   {
-    id: "drill",
-    name: "Broca de Amostragem",
-    codename: "Dente de Aço",
-    type: "utensilio",
-    category: "Ferramenta",
-    ability: "Raspa Fria",
-    kind: "Ferramenta de Campo · Mars Exploration",
-    weight: "3,1 kg",
-    height: "0,6 m",
+    id: "10-insight",
+    number: 10,
+    name: "InSight",
+    codename: "Carta 10", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "lander",
+    category: "Landers",
     location: "Marte",
-    coordenadas: { x: 29, y: -44, z: 70 },
-    image: "", // TODO: cole aqui a URL da imagem (vazio = placeholder)
-    description:
-      "Perfurou rocha por centímetros em busca de sinais de água antiga. Ficou cravada onde a energia acabou.",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: 4.5, lon: 135.62 }, // graus decimais: + = N / L, − = S / O
+    notaPosicao: "actual landing site, reconstructed by NASA (4.502° N, 135.623° E); 135.90° E was the center of the planned landing area",
+    weight: "360 kg",
+    height: "1.08 m",
+    weightKg: 360,
+    heightM: 1.08,
+    image: "https://images-assets.nasa.gov/image/PIA22876/PIA22876~large.jpg",
+    imageCaption: "Self-portrait on Mars",
+    imagePage: "https://images.nasa.gov/details/PIA22876",
+    description: "I came to measure the planet's pulse, temperature and reflexes from the inside. I placed a seismometer on the ground to hear the quakes and even recorded the wind blowing on my panels.",
     fields: {
-      peso: "3,1 kg",
-      altura: "0,6 m",
-      ano: "2012",
-      categoria: "Ferramenta",
-      missao: "Curiosity",
+      peso: "360 kg",
+      altura: "1.08 m",
+      ano: "2022", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "2018",
+      categoria: "Landers",
+      missao: "InSight",
+      energia: "Solar",
     },
   },
   {
-    id: "capsule",
-    name: "Cápsula de Amostras",
-    codename: "Tubo do Tempo",
-    type: "utensilio",
-    category: "Relíquia",
-    ability: "Cofre de Poeira",
-    kind: "Amostra Selada · Mars 2020",
-    weight: "0,1 kg",
-    height: "0,15 m",
+    id: "11-ingenuity-helicopter",
+    number: 11,
+    name: "Ingenuity helicopter",
+    codename: "Carta 11", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "rover",
+    category: "Rovers and vehicles",
     location: "Marte",
-    coordenadas: { x: -12, y: -66, z: 85 },
-    image: "", // TODO: cole aqui a URL da imagem (vazio = placeholder)
-    description:
-      "Um tubo selado com poeira de Marte, deixado no chão para uma missão que talvez nunca chegue.",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: 18.5, lon: 77.32 }, // graus decimais: + = N / L, − = S / O
+    weight: "1.8 kg",
+    height: "0.49 m",
+    weightKg: 1.8,
+    heightM: 0.49,
+    image: "https://images-assets.nasa.gov/image/PIA25881/PIA25881~large.jpg",
+    imageCaption: "Photo on Mars, taken by Perseverance",
+    imagePage: "https://images.nasa.gov/details/PIA25881",
+    description: "I traveled tucked under another robot and made the first powered flight on another planet. I was meant to fly 5 times at most; I flew 72, until I broke my blades on the last landing.",
     fields: {
-      peso: "0,1 kg",
-      altura: "0,15 m",
-      ano: "2021",
-      categoria: "Relíquia",
+      peso: "1.8 kg",
+      altura: "0.49 m",
+      ano: "2024", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "2020",
+      categoria: "Rovers and vehicles",
       missao: "Mars 2020",
+      energia: "Solar · 350 W",
+    },
+  },
+  {
+    id: "12-dawn",
+    number: 12,
+    name: "Dawn",
+    codename: "Carta 12", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "probe",
+    category: "Probes and telescopes",
+    location: "espaco",
+    navTipo: "distancia", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: null,
+    distanciaUA: 2.64, // resposta do Navegador para objetos no espaço
+    posicao: "Ceres orbit · 2.64 AU from the Sun",
+    notaPosicao: "distance computed for 2026-11-14 (JPL Horizons)",
+    weight: "747 kg",
+    height: "1.77 m",
+    weightKg: 747,
+    heightM: 1.77,
+    image: "https://images-assets.nasa.gov/image/PIA12031/PIA12031~orig.jpg",
+    imageCaption: "NASA illustration",
+    imagePage: "https://images.nasa.gov/details/PIA12031",
+    description: "I used engines that push with xenon to visit two worlds in the asteroid belt. When I ran out of fuel, I kept circling the second one, and I am still there today.",
+    fields: {
+      peso: "747 kg",
+      altura: "1.77 m",
+      ano: "2018", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "2007",
+      categoria: "Probes and telescopes",
+      missao: "Dawn",
+      energia: "Solar · 10.3 kW",
+    },
+  },
+  {
+    id: "13-near-shoemaker",
+    number: 13,
+    name: "NEAR Shoemaker",
+    codename: "Carta 13", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "probe",
+    category: "Probes and telescopes",
+    location: "espaco",
+    navTipo: "distancia", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: null,
+    distanciaUA: 1.76, // resposta do Navegador para objetos no espaço
+    posicao: "1.76 AU from the Sun",
+    notaPosicao: "distance from asteroid Eros, where NEAR landed (just south of the Himeros formation), to the Sun on 2026-11-14, from JPL Horizons; Eros orbits the Sun between 1.13 and 1.78 AU, between the orbits of Earth and Mars (JPL Small-Body Database)",
+    weight: "487 kg",
+    height: "1.7 m",
+    weightKg: 487,
+    heightM: 1.7,
+    image: "https://images-assets.nasa.gov/image/PIA18177/PIA18177~large.jpg",
+    imageCaption: "NASA illustration",
+    imagePage: "https://images.nasa.gov/details/PIA18177",
+    description: "I was not built to land, but I came down slowly, at just 6.4 km/h, and sent data for two more weeks. On the way, I passed 1,200 km from another asteroid and photographed more than half of it.",
+    fields: {
+      peso: "487 kg",
+      altura: "1.7 m",
+      ano: "2001", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1996",
+      categoria: "Probes and telescopes",
+      missao: "NEAR",
+      energia: "Solar · 1800 W",
+    },
+  },
+  {
+    id: "14-pioneer-10",
+    number: 14,
+    name: "Pioneer 10",
+    codename: "Carta 14", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "probe",
+    category: "Probes and telescopes",
+    location: "espaco",
+    navTipo: "distancia", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: null,
+    distanciaUA: 142.0, // resposta do Navegador para objetos no espaço
+    posicao: "142 AU from the Sun · heading to Aldebaran",
+    notaPosicao: "distance computed for 2026-11-14 (JPL Horizons)",
+    weight: "258 kg",
+    height: "6.6 m",
+    weightKg: 258,
+    heightM: 6.6,
+    image: "https://images-assets.nasa.gov/image/ARC-1972-AC72-2135/ARC-1972-AC72-2135~large.jpg",
+    imageCaption: "Photo before launch",
+    imagePage: "https://images.nasa.gov/details/ARC-1972-AC72-2135",
+    description: "I was the first to cross the asteroid belt and fly past Jupiter. I carry a plaque with drawings of a man, a woman and the way to Earth, in case someone finds me.",
+    fields: {
+      peso: "258 kg",
+      altura: "6.6 m",
+      ano: "2003", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1972",
+      categoria: "Probes and telescopes",
+      missao: "Pioneer 10",
+      energia: "Nuclear · 140 W",
+    },
+  },
+  {
+    id: "15-pioneer-11",
+    number: 15,
+    name: "Pioneer 11",
+    codename: "Carta 15", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "probe",
+    category: "Probes and telescopes",
+    location: "espaco",
+    navTipo: "distancia", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: null,
+    distanciaUA: 118.0, // resposta do Navegador para objetos no espaço
+    posicao: "118 AU from the Sun · heading to the constellation Aquila",
+    notaPosicao: "distance computed for 2026-11-14 (JPL Horizons)",
+    weight: "259 kg",
+    height: "2.9 m",
+    weightKg: 259,
+    heightM: 2.9,
+    image: "https://images-assets.nasa.gov/image/ARC-2000-80-HC-251/ARC-2000-80-HC-251~large.jpg",
+    imageCaption: "NASA painting",
+    imagePage: "https://images.nasa.gov/details/ARC-2000-80-HC-251",
+    description: "I used Jupiter's gravity to change course and reach Saturn. I worked the whole trip on my backup transmitter, spinning nonstop at 4.8 turns per minute.",
+    fields: {
+      peso: "259 kg",
+      altura: "2.9 m",
+      ano: "1995", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1973",
+      categoria: "Probes and telescopes",
+      missao: "Pioneer 11",
+      energia: "Nuclear · 144 W",
+    },
+  },
+  {
+    id: "16-kepler",
+    number: 16,
+    name: "Kepler",
+    codename: "Carta 16", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "probe",
+    category: "Probes and telescopes",
+    location: "espaco",
+    navTipo: "distancia", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: null,
+    distanciaUA: 1.79, // resposta do Navegador para objetos no espaço
+    posicao: "Sun orbit · 1.79 AU from Earth",
+    notaPosicao: "distance computed for 2026-11-14 (JPL Horizons)",
+    weight: "1052 kg",
+    height: "4.7 m",
+    weightKg: 1052,
+    heightM: 4.7,
+    image: "https://images-assets.nasa.gov/image/PIA11825/PIA11825~orig.jpg",
+    imageCaption: "NASA illustration",
+    imagePage: "https://images.nasa.gov/details/PIA11825",
+    description: "For years I stared at stars, waiting for their light to dim when a planet passed in front. When two of my wheels stopped, I started balancing with the pressure of sunlight.",
+    fields: {
+      peso: "1052 kg",
+      altura: "4.7 m",
+      ano: "2018", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "2009",
+      categoria: "Probes and telescopes",
+      missao: "Kepler / K2",
+      energia: "Solar",
+    },
+  },
+  {
+    id: "17-mars-pathfinder-lander",
+    number: 17,
+    name: "Mars Pathfinder lander",
+    codename: "Carta 17", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "lander",
+    category: "Landers",
+    location: "Marte",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: 19.33, lon: -33.55 }, // graus decimais: + = N / L, − = S / O
+    weight: "463 kg",
+    height: "0.9 m",
+    weightKg: 463,
+    heightM: 0.9,
+    image: "https://images-assets.nasa.gov/image/PIA01121/PIA01121~orig.jpg",
+    imageCaption: "Photo on Mars, taken by Sojourner",
+    imagePage: "https://images.nasa.gov/details/PIA01121",
+    description: "I arrived bouncing inside airbags and opened three petals to release a small six-wheeled robot. Then I photographed its work. My name honors a famous astronomer.",
+    fields: {
+      peso: "463 kg",
+      altura: "0.9 m",
+      ano: "1997", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1996",
+      categoria: "Landers",
+      missao: "Mars Pathfinder",
+      energia: "Solar · 35 W",
+    },
+  },
+  {
+    id: "18-apollo-12-ascent-stage",
+    number: 18,
+    name: "Apollo 12 ascent stage",
+    codename: "Carta 18", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "debris",
+    category: "Spacecraft parts and debris",
+    location: "Lua",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: -3.94, lon: -21.2 }, // graus decimais: + = N / L, − = S / O
+    weight: "2383 kg",
+    height: "2.8 m",
+    weightKg: 2383,
+    heightM: 2.8,
+    image: "https://images-assets.nasa.gov/image/as12-46-6729/as12-46-6729~large.jpg",
+    imageCaption: "Photo of the whole Lunar Module on the Moon (the ascent stage is the top part)",
+    imagePage: "https://images.nasa.gov/details/as12-46-6729",
+    description: "I carried two astronauts from the ground back to the ship in orbit. Then they crashed me on purpose, and my impact made the first artificial quake recorded on this world.",
+    fields: {
+      peso: "2383 kg",
+      altura: "2.8 m",
+      ano: "1969", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1969",
+      categoria: "Spacecraft parts and debris",
+      missao: "Apollo 12",
+      energia: "Battery",
+    },
+  },
+  {
+    id: "19-apollo-15-ascent-stage",
+    number: 19,
+    name: "Apollo 15 ascent stage",
+    codename: "Carta 19", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "debris",
+    category: "Spacecraft parts and debris",
+    location: "Lua",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: 26.36, lon: 0.25 }, // graus decimais: + = N / L, − = S / O
+    weight: "2385 kg",
+    height: "2.8 m",
+    weightKg: 2385,
+    heightM: 2.8,
+    image: "https://images-assets.nasa.gov/image/S71-41511/S71-41511~large.jpg",
+    imageCaption: "TV image on the Moon, seconds before liftoff",
+    imagePage: "https://images.nasa.gov/details/S71-41511",
+    description: "I stayed landed for almost three days, and an astronaut even stood in my top hatch, describing the landscape. Released in orbit, I fell two hours later.",
+    fields: {
+      peso: "2385 kg",
+      altura: "2.8 m",
+      ano: "1971", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1971",
+      categoria: "Spacecraft parts and debris",
+      missao: "Apollo 15",
+      energia: "Battery",
+    },
+  },
+  {
+    id: "20-opportunity-heat-shield",
+    number: 20,
+    name: "Opportunity heat shield",
+    codename: "Carta 20", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "debris",
+    category: "Spacecraft parts and debris",
+    location: "Marte",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: -2.0, lon: -6.0 }, // graus decimais: + = N / L, − = S / O
+    notaPosicao: "approximate: the Meridiani Planum area where Opportunity landed and the heat shield fell (NASA, PIA21130: about 2° S, 354° E); the exact position of the heat shield was not found",
+    weight: "78 kg",
+    height: "2.65 m",
+    weightKg: 78,
+    heightM: 2.65,
+    image: "https://images-assets.nasa.gov/image/PIA07223/PIA07223~orig.jpg",
+    imageCaption: "Photo on Mars",
+    imagePage: "https://images.nasa.gov/details/PIA07223",
+    description: "I braked the descent from 19,300 km/h and, once I was no longer needed, I was dropped and fell on my own. Almost a year later, the robot I protected came back to photograph me: I was inside out.",
+    fields: {
+      peso: "78 kg",
+      altura: "2.65 m",
+      ano: "2004", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "2003",
+      categoria: "Spacecraft parts and debris",
+      missao: "MER-B",
+      energia: "None",
+    },
+  },
+  {
+    id: "21-us-flag-on-the-moon",
+    number: 21,
+    name: "US flag on the Moon",
+    codename: "Carta 21", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "objects",
+    category: "Objects",
+    location: "Lua",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: 0.67, lon: 23.47 }, // graus decimais: + = N / L, − = S / O
+    weight: "4.3 kg",
+    height: "1.5 m",
+    weightKg: 4.3,
+    heightM: 1.5,
+    image: "https://images-assets.nasa.gov/image/as11-40-5875/as11-40-5875~large.jpg",
+    imageCaption: "Photo on the Moon",
+    imagePage: "https://images.nasa.gov/details/as11-40-5875",
+    description: "A bar along my top keeps me spread out, because there is no wind here. I traveled strapped to the ship's ladder, in a heat cover, and they could only push me 15 to 23 cm into the ground.",
+    fields: {
+      peso: "4.3 kg",
+      altura: "1.5 m",
+      ano: "1969", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1969",
+      categoria: "Objects",
+      missao: "Apollo 11",
+      energia: "None",
+    },
+  },
+  {
+    id: "22-easep",
+    number: 22,
+    name: "EASEP",
+    codename: "Carta 22", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "objects",
+    category: "Objects",
+    location: "Lua",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: 0.67, lon: 23.47 }, // graus decimais: + = N / L, − = S / O
+    weight: "48 kg",
+    height: "not found",
+    weightKg: 48,
+    heightM: null,
+    image: "https://images-assets.nasa.gov/image/as11-40-5951/as11-40-5951~large.jpg",
+    imageCaption: "Photo on the Moon",
+    imagePage: "https://images.nasa.gov/details/as11-40-5951",
+    description: "I was switched on by command from Earth while the two astronauts were still walking nearby. My two panels faced east and west, so I only worked during the day.",
+    fields: {
+      peso: "48 kg",
+      altura: "not found",
+      ano: "1969", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1969",
+      categoria: "Objects",
+      missao: "Apollo 11",
+      energia: "Solar · 46 W",
+    },
+  },
+  {
+    id: "23-apollo-11-plaque",
+    number: 23,
+    name: "Apollo 11 plaque",
+    codename: "Carta 23", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "objects",
+    category: "Objects",
+    location: "Lua",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: 0.67, lon: 23.47 }, // graus decimais: + = N / L, − = S / O
+    weight: "not found",
+    height: "23 cm",
+    weightKg: null,
+    heightM: 0.23,
+    image: "https://images-assets.nasa.gov/image/as11-40-5899/as11-40-5899~large.jpg",
+    imageCaption: "Photo on the Moon",
+    imagePage: "https://images.nasa.gov/details/as11-40-5899",
+    description: "I am made of stainless steel and traveled under a thin sheet of the same metal. I was only uncovered after the second astronaut came down, and my words were read aloud to Earth.",
+    fields: {
+      peso: "not found",
+      altura: "23 cm",
+      ano: "1969", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1969",
+      categoria: "Objects",
+      missao: "Apollo 11",
+      energia: "None",
+    },
+  },
+  {
+    id: "24-apollo-15-memorial",
+    number: 24,
+    name: "Apollo 15 memorial",
+    codename: "Carta 24", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "objects",
+    category: "Objects",
+    location: "Lua",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: 26.13, lon: 3.63 }, // graus decimais: + = N / L, − = S / O
+    weight: "not found",
+    height: "not found",
+    weightKg: null,
+    heightM: null,
+    image: "https://images-assets.nasa.gov/image/as15-88-11894/as15-88-11894~large.jpg",
+    imageCaption: "Photo on the Moon",
+    imagePage: "https://images.nasa.gov/details/as15-88-11894",
+    description: "We are a small aluminum figure and a plaque with the names of 14 explorers from two countries who died before getting here. We have been on the ground since the last walk outside.",
+    fields: {
+      peso: "not found",
+      altura: "not found",
+      ano: "1971", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1971",
+      categoria: "Objects",
+      missao: "Apollo 15",
+      energia: "None",
+    },
+  },
+  {
+    id: "25-apollo-11-memorial-packet",
+    number: 25,
+    name: "Apollo 11 memorial packet",
+    codename: "Carta 25", // aparece no catálogo enquanto o objeto não foi encontrado
+    type: "objects",
+    category: "Objects",
+    location: "Lua",
+    navTipo: "coordenadas", // 'coordenadas' = lat/lon · 'distancia' = UA (objetos no espaço)
+    coordenadas: { lat: 0.67, lon: 23.47 }, // graus decimais: + = N / L, − = S / O
+    weight: "not found",
+    height: "not found",
+    weightKg: null,
+    heightM: null,
+    image: "https://images-assets.nasa.gov/image/S69-39148/S69-39148~large.jpg",
+    imageCaption: "Photo of the goodwill message disk, before flight",
+    imagePage: "https://images.nasa.gov/details/S69-39148",
+    description: "I hold a gold olive branch, a patch and medals honoring five explorers, plus a silicon disk with peace messages from 73 countries. I was left on the ground just before departure.",
+    fields: {
+      peso: "not found",
+      altura: "not found",
+      ano: "1969", // ano em que o objeto foi perdido / parou de funcionar
+      lancamento: "1969",
+      categoria: "Objects",
+      missao: "Apollo 11",
+      energia: "None",
     },
   },
 ];
@@ -515,11 +800,15 @@ export const HINT_COMMANDS = {
   peso_objeto: {
     label: "peso_objeto",
     hint: (r) =>
-      `PESO: O alvo pesa ${r.fields.peso} no envoltório de lançamento.`,
+      r.weightKg == null
+        ? "PESO: dado não encontrado nos registros da NASA."
+        : `PESO: O alvo pesa ${r.fields.peso} no envoltório de lançamento.`,
   },
   altura_objeto: {
     label: "altura_objeto",
-    hint: (r) => `ALTURA: ${r.fields.altura} do equipamento até a base.`,
+    hint: (r) => r.heightM == null
+        ? "ALTURA: dado não encontrado nos registros da NASA."
+        : `ALTURA: ${r.fields.altura} do equipamento até a base.`,
   },
   ano_perda: {
     label: "ano_perda",
@@ -549,7 +838,7 @@ export const HINT_COMMANDS = {
   },
   jean_rs: {
     label: "easterEgg",
-    hint: (r) => `COORDENADA DO OBJETO: X: ${r.coordenadas.x} Y: ${r.coordenadas.y} Z: ${r.coordenadas.z}`,
+    hint: (r) => r.coordenadas ? `COORDENADA DO OBJETO: LAT ${formatLat(r.coordenadas.lat)} · LON ${formatLon(r.coordenadas.lon)}` : `DISTÂNCIA DO OBJETO: ${r.distanciaUA} UA`,
   },
 
   leo_marq: {
@@ -673,10 +962,6 @@ export const HINT_COST_EASY = 1000;
 export const hintTier = (score) => (score <= HINT_EASY_THRESHOLD ? "easy" : "hard");
 export const hintCost = (score) => (hintTier(score) === "easy" ? HINT_COST_EASY : HINT_COST_HARD);
 
-// "2.034 kg" -> 2034 · "0,046 kg" -> 0.046 · "1,14 m" -> 1.14
-const toNumber = (txt) =>
-  parseFloat(String(txt).replace(/[^\d.,]/g, "").replace(/\.(?=\d{3}\b)/g, "").replace(",", "."));
-
 const pick = (value, buckets) => buckets.find(([max]) => value < max)[1];
 
 const WEIGHT_BUCKETS = [
@@ -696,8 +981,10 @@ const HEIGHT_BUCKETS = [
 
 // Versão difícil de cada dica: só uma faixa ou uma pista parcial, nunca o valor exato.
 export const HARD_HINTS = {
-  peso_objeto: (r) => `PESO: ${pick(toNumber(r.fields.peso), WEIGHT_BUCKETS)}.`,
-  altura_objeto: (r) => `ALTURA: ${pick(toNumber(r.fields.altura), HEIGHT_BUCKETS)}.`,
+  peso_objeto: (r) =>
+    r.weightKg == null ? "PESO: dado não encontrado nos registros da NASA." : `PESO: ${pick(r.weightKg, WEIGHT_BUCKETS)}.`,
+  altura_objeto: (r) =>
+    r.heightM == null ? "ALTURA: dado não encontrado nos registros da NASA." : `ALTURA: ${pick(r.heightM, HEIGHT_BUCKETS)}.`,
   ano_perda: (r) => `ANO DA PERDA: década de ${Math.floor(Number(r.fields.ano) / 10) * 10}.`,
   categoria_objeto: (r) =>
     `CATEGORIA: começa com "${r.fields.categoria[0].toUpperCase()}" e tem ${r.fields.categoria.length} letras.`,
