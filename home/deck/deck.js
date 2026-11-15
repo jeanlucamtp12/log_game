@@ -43,6 +43,8 @@
             proxima: 'Próxima',
             virar: 'Ver verso',
             frente: 'Ver frente',
+            ampliar: 'Ampliar',
+            reduzir: 'Reduzir',
             favoritas: 'Favoritas',
             favoritar: 'Favoritar',
             favoritada: 'Favorita',
@@ -70,6 +72,8 @@
             proxima: 'Next',
             virar: 'Show back',
             frente: 'Show front',
+            ampliar: 'Zoom in',
+            reduzir: 'Zoom out',
             favoritas: 'Favorites',
             favoritar: 'Favorite',
             favoritada: 'Favorited',
@@ -683,12 +687,25 @@ ${linhas}
     const giro = $('#giro');
     const faceFrente = $('#face-frente');
     const btnVirar = $('#btn-virar');
+    const btnZoom = $('#btn-zoom');
+    const meio = $('.visor-meio');
     const btnFav = $('#btn-fav');
     const btnAnt = $('#btn-ant');
     const btnProx = $('#btn-prox');
     const btnFechar = $('#btn-fechar');
     const elPos = $('#visor-pos');
     const elNome = $('#visor-nome');
+
+    /* ampliar: a carta fica bem maior que a tela e o jogador rola para ler os dados
+       (no celular a carta inteira cabe pequena demais para ler o texto) */
+    function zoom(ligado) {
+        const novo = ligado === undefined ? !visor.classList.contains('com-zoom') : ligado;
+        visor.classList.toggle('com-zoom', novo);
+        btnZoom.setAttribute('aria-pressed', String(novo));
+        btnZoom.textContent = novo ? UI[idioma].reduzir : UI[idioma].ampliar;
+        meio.scrollTop = 0;
+        meio.scrollLeft = novo ? Math.max(0, (meio.scrollWidth - meio.clientWidth) / 2) : 0;
+    }
 
     async function mostra(direcao, deMini) {
         const item = lista[indice];
@@ -703,6 +720,7 @@ ${linhas}
         preparaSvg(svg);
         svg.style.visibility = '';
 
+        meio.scrollTop = 0;
         elPos.textContent = `${indice + 1} / ${lista.length}`;
         elNome.textContent = nomeCarta(item);
         pintaViewerMarcas();
@@ -730,6 +748,7 @@ ${linhas}
         indice = Math.max(0, i);
         origem = botao;
         aberto = true;
+        zoom(false);
         visor.hidden = false;
         document.body.classList.add('com-visor');
         $('#verso-img').alt = UI[idioma].versoAlt;
@@ -754,6 +773,7 @@ ${linhas}
     }
 
     btnFechar.addEventListener('click', fecha);
+    btnZoom.addEventListener('click', () => zoom());
     btnAnt.addEventListener('click', () => vai(-1));
     btnProx.addEventListener('click', () => vai(1));
     btnVirar.addEventListener('click', () => {
@@ -789,6 +809,7 @@ ${linhas}
             else if (e.key === 'ArrowLeft') vai(-1);
             else if (e.key === 'ArrowRight') vai(1);
             else if (e.key === 'f' || e.key === 'F') alternaDoViewer();
+            else if (e.key === 'z' || e.key === 'Z') zoom();
             else if (e.key === 'Tab') {
                 // mantém o foco dentro do visualizador
                 const f = $$('button:not(:disabled):not([hidden])', visor);
@@ -824,9 +845,14 @@ ${linhas}
         if (!toque) return;
         const dx = e.clientX - toque.x, dy = e.clientY - toque.y;
         toque = null;
-        if (Math.abs(dx) > 56 && Math.abs(dx) > Math.abs(dy) * 1.5) vai(dx < 0 ? 1 : -1);
+        const comZoom = visor.classList.contains('com-zoom');
+        if (!comZoom && Math.abs(dx) > 56 && Math.abs(dx) > Math.abs(dy) * 1.5) return vai(dx < 0 ? 1 : -1);
+        // toque simples na carta: amplia (ou reduz). Com zoom, rolar/arrastar não conta como toque.
+        if (Math.abs(dx) < 10 && Math.abs(dy) < 10 && e.target.closest('#cartao')) zoom();
     });
     visor.addEventListener('pointercancel', () => { toque = null; });
+    // com o mouse, clicar na carta também amplia/reduz
+    cartao.addEventListener('click', e => { if (e.pointerType === 'mouse') zoom(); });
 
     /* =========================================================
        5. IDIOMA + TEXTOS FIXOS
@@ -848,6 +874,7 @@ ${linhas}
         btnProx.textContent = u.proxima;
         pintaViewerMarcas();
         btnVirar.textContent = giro.classList.contains('virada') ? u.frente : u.virar;
+        btnZoom.textContent = visor.classList.contains('com-zoom') ? u.reduzir : u.ampliar;
         $$('.idioma button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.idioma === idioma)));
     }
 

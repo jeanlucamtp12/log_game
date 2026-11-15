@@ -27,8 +27,8 @@ export const placeName = (loc) => (loc === "espaco" ? "Espaço" : loc);
 // Aceita "0,67", "0.67", "-3,01", "3,01 S", "23,47° L", "23.42 O"...
 export const COORD_TOLERANCE = 0.006; // as cartas trazem 2 casas decimais
 
-export const formatLat = (v) => `${Math.abs(v).toFixed(2).replace(".", ",")}° ${v < 0 ? "S" : "N"}`;
-export const formatLon = (v) => `${Math.abs(v).toFixed(2).replace(".", ",")}° ${v < 0 ? "O" : "L"}`;
+export const formatLat = (v) => `${v.toFixed(2).replace(".", ",")}° ${v < 0 ? "S" : "N"}`;
+export const formatLon = (v) => `${v.toFixed(2).replace(".", ",")}° ${v < 0 ? "O" : "L"}`;
 export const formatCoord = (c) => `${formatLat(c.lat)} · ${formatLon(c.lon)}`;
 
 // axis: "lat" aceita N/S · "lon" aceita L/O (E/W também). Retorna número ou null se for inválido.
@@ -72,6 +72,23 @@ export const distMatches = (relic, value) =>
 
 export const formatTarget = (relic) =>
   relic.coordenadas ? formatCoord(relic.coordenadas) : `${String(relic.distanciaUA).replace(".", ",")} UA`;
+
+// ---- Código de identificação ----
+// Enquanto o objeto não é encontrado, o jogador vê só um código (ex.: "D312-22"), nunca o nome.
+// O código é gerado a partir do id, então é sempre o mesmo para o mesmo objeto, mas não revela
+// tipo, local nem ano. Formato: letra + 3 dígitos + hífen + 2 dígitos.
+const CODE_LETTERS = "ABCDEFGHJKLMNPRSTUVWXZ";
+export function relicCode(relic) {
+  let h = 2166136261; // FNV-1a
+  for (const ch of `L.O.G.:${relic.id}`) {
+    h ^= ch.charCodeAt(0);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  const letter = CODE_LETTERS[h % CODE_LETTERS.length];
+  const mid = String(100 + (Math.floor(h / 23) % 900));
+  const tail = String(10 + (Math.floor(h / 20700) % 90));
+  return `${letter}${mid}-${tail}`;
+}
 
 // ---- Objetos ----
 export const RELICS = [
@@ -874,10 +891,15 @@ export const HINT_COMMANDS = {
     easy: (r) => hintPowerEasy(r),
     hard: (r) => hintPowerHard(r),
   },
+  missao_objeto: {
+    label: "missao_objeto",
+    easy: (r) => hintMission(r, "easy"),
+    hard: (r) => hintMission(r, "hard"),
+  },
   help: {
     label: "help",
     hint: () =>
-      "COMANDOS DISPONÍVEIS: tamanho_objeto · peso_objeto · partiu_em · perdido_em · energia_objeto · scan · status · clear",
+      "COMANDOS DISPONÍVEIS: tamanho_objeto · peso_objeto · partiu_em · perdido_em · energia_objeto · missao_objeto · scan · status · clear",
   },
   scan: {
     label: "scan",
@@ -890,7 +912,7 @@ export const HINT_COMMANDS = {
   },
   jean_rs: {
     label: "easterEgg",
-    hint: (r) => r.coordenadas ? `COORDENADA DO OBJETO: LAT ${formatLat(r.coordenadas.lat)} · LON ${r.coordenadas.lon.toFixed(2).replace(".", ",")}° ${r.coordenadas.lon < 0 ? "O" : "L"}` : `DISTÂNCIA DO OBJETO: ${r.distanciaUA} UA`,
+    hint: (r) => r.coordenadas ? `COORDENADA DO OBJETO: LAT ${formatLat(r.coordenadas.lat)} · LON ${formatLon(r.coordenadas.lon)}` : `DISTÂNCIA DO OBJETO: ${r.distanciaUA} UA`,
   },
 
   leo_marq: {
@@ -903,12 +925,12 @@ export const HINT_COMMANDS = {
     hint: () => ":)",
   },
 
-  caio: {
+  caioalima: {
     label: "easterEgg",
     hint: () => "Vamos pegar a nave da Xuxa e voar pelo espaço!",
   },
 
-  luiz_S2: {
+  luiz_s2: {
     label: "easterEgg",
     hint: () => "Feixe de elétrons detectados...",
   },
@@ -930,111 +952,159 @@ export const MISSIONS = [
     id: 1,
     title: "Missão 01",
     requiredCount: 2,
-    tutorial: true, // dicas do Neil no vidro: 1º objeto em lat/lon, 2º em UA (ensina o botão de alternar)
+    tutorial: true,
     relics: [
+      // Treinamento: o 1º usa latitude/longitude (Lua); o 2º usa distância em UA (espaço),
+      // então o jogador aprende a trocar o tipo de coordenada no botão do Navegador.
       "01-lunar-descent-stage",
       "12-dawn",
     ],
     intro: [
-      "Olá, Alex! Que bom que despertou.",
-      "Você tem uma missão, e designamos Neil como seu assistente.",
-      "O objetivo de vocês será localizar e resgatar objetos perdidos no espaço.",
-      "Siga o manual de instruções, comunique-se com seu assistente e encontre as coordenadas dos objetos.",
-      "Esta primeira missão será um treinamento. Conclua-a para receber as próximas instruções.",
+      "Central de Operações L.O.G. — Legacy of Giants estabelecendo conexão.",
+      "Operador Alex, sua unidade foi designada para uma operação de recuperação de registros espaciais.",
+      "Seu parceiro nesta expedição será Neil, responsável pelo suporte de campo e interpretação dos registros.",
+      "O objetivo é localizar objetos perdidos em regiões inexploradas e recuperar suas informações para o Arquivo Central.",
+      "Consulte o manual operacional, mantenha comunicação com seu parceiro e siga as coordenadas fornecidas.",
+      "Esta primeira missão será um treinamento. Recomendamos atenção aos procedimentos e às orientações disponíveis.",
+      "Lembre-se: uma boa equipe não depende apenas de seus recursos, mas também da capacidade de trabalhar em conjunto.",
+      "Concluam a catalogação para receber novas instruções."
     ],
     outro: [
-      "Primeiro contato confirmado. O arquivo começa a se recompor.",
-      "Preparando próxima missão...",
+      "Primeiro contato confirmado. Dois registros foram recuperados.",
+      "O Arquivo Central apresentou uma resposta parcial à transmissão.",
+      "A origem da inconsistência permanece indeterminada.",
+      "Dados armazenados. Preparando próxima missão..."
     ],
   },
   {
     id: 2,
     title: "Missão 02",
     requiredCount: 3,
+    tutorial: false,
     relics: [
-      "04-sojourner",
-      "14-pioneer-10",
-      "03-surveyor-3",
+      "02-relic-exemplo-1",
+      "02-relic-exemplo-2",
+      "02-relic-exemplo-3",
     ],
     intro: [
-      "Parabéns! Vocês concluíram a primeira missão!",
-      "Mas estamos apenas no começo desta aventura espacial.",
-      "Nesta próxima etapa, vocês encontrarão múltiplos objetos perdidos.",
-      "Analisem as decisões e concluam a próxima etapa da forma mais eficiente possível.",
-      "Para isso, consultem a seção 'Eficiência' no manual de instruções.",
+      "Central de Operações L.O.G. restabelecendo comunicação.",
+      "Parabéns, operadores. A primeira recuperação foi concluída com sucesso.",
+      "Novas assinaturas foram identificadas nas proximidades da região explorada.",
+      "Três objetos foram localizados. A nave deverá ajustar sua rota conforme as coordenadas forem identificadas.",
+      "Para esta operação, recomendamos a consulta à seção 'Eficiência' do manual operacional.",
+      "Uma boa estratégia pode economizar recursos e facilitar a execução de tarefas mais complexas.",
+      "Operador Alex, seus resultados anteriores demonstraram excelente capacidade de análise. Utilize essa habilidade para orientar seu parceiro.",
+      "A L.O.G. aguarda a recuperação das três novas assinaturas."
     ],
     outro: [
-      "Três assinaturas recuperadas. O vazio devolve o que foi esquecido.",
-      "Iniciando varredura de longo alcance...",
+      "Três assinaturas recuperadas. Os registros foram encaminhados ao Arquivo Central.",
+      "A eficiência da unidade apresentou melhora em relação à operação anterior.",
+      "Uma varredura de longo alcance identificou sinais adicionais.",
+      "A origem dos sinais não corresponde integralmente aos mapas disponíveis.",
+      "Solicitando recalibração dos sistemas de navegação...",
+      "Preparando próxima missão..."
     ],
   },
   {
     id: 3,
     title: "Missão 03",
     requiredCount: 5,
+    tutorial: false,
     relics: [
-      "21-us-flag-on-the-moon",
-      "05-spirit",
-      "13-near-shoemaker",
-      "07-viking-1",
-      "02-alsep",
+      "03-relic-exemplo-1",
+      "03-relic-exemplo-2",
+      "03-relic-exemplo-3",
+      "03-relic-exemplo-4",
+      "03-relic-exemplo-5",
     ],
     intro: [
-      "Os sinais ficaram mais fortes e mais numerosos.",
-      "Catalogue 5 objetos. A nave vai saltar entre a Lua e Marte conforme os alvos.",
-      "Sua XP volta ao máximo a cada missão. Use bem as dicas.",
+      "Transmissão da Central de Operações L.O.G.",
+      "Os sinais estão mais fortes e numerosos. A varredura identificou cinco novos objetos.",
+      "A operação exigirá deslocamentos frequentes entre a região lunar e Marte. As coordenadas serão atualizadas conforme os alvos forem identificados.",
+      "Durante operações de recuperação, falhas de sincronização são mais comuns do que parecem. Não permitam que uma interrupção comprometa o restante da missão.",
+      "Em caso de erro, consultem as orientações disponíveis e trabalhem juntos para restabelecer os sistemas.",
+      "Operador Alex, seus parâmetros de experiência foram restabelecidos para esta operação. As capacidades analíticas da unidade permanecem disponíveis.",
+      "Lembrem-se: nem toda falha representa um retrocesso. Muitas vezes, identificar e corrigir um erro é parte essencial de qualquer descoberta.",
+      "A L.O.G. aguarda a recuperação dos cinco objetos."
     ],
     outro: [
-      "Ecos silenciados. O arquivo se aproxima da integridade.",
-      "Recalibrando sensores...",
+      "Cinco objetos catalogados. Os sinais foram temporariamente estabilizados.",
+      "A integridade dos registros apresenta melhora significativa.",
+      "Uma inconsistência foi identificada durante a sincronização dos arquivos.",
+      "A ocorrência foi encaminhada para análise interna.",
+      "Os sensores detectaram uma resposta não prevista ao último comando de navegação.",
+      "Recalibrando sistemas. A próxima operação exige atenção especial."
     ],
   },
   {
     id: 4,
     title: "Missão 04",
     requiredCount: 5,
+    tutorial: false,
     relics: [
-      "06-opportunity",
-      "18-apollo-12-ascent-stage",
-      "15-pioneer-11",
-      "09-phoenix",
-      "23-apollo-11-plaque",
+      "04-relic-exemplo-1",
+      "04-relic-exemplo-2",
+      "04-relic-exemplo-3",
+      "04-relic-exemplo-4",
+      "04-relic-exemplo-5",
     ],
     intro: [
-      "Há interferência nos registros.",
-      "Algo no arquivo parece reconhecer você.",
-      "Catalogue 5 objetos e siga em frente.",
+      "Central de Operações L.O.G. transmitindo novas diretrizes.",
+      "Operadores Alex e Neil, os registros desta região apresentam interferências incomuns.",
+      "Cinco objetos permanecem sem identificação no Arquivo Central.",
+      "Durante a última sincronização, foi detectada uma divergência entre os dados recuperados e as informações armazenadas.",
+      "Falhas inesperadas fazem parte de operações desta natureza. O importante é identificar suas causas e evitar que se repitam.",
+      "Operador Alex, solicitamos que mantenha os protocolos de análise convencionais. Evite procedimentos que não tenham sido previamente autorizados.",
+      "Uma nova varredura deverá permitir a identificação da origem das interferências.",
+      "Há registros de que esta região já foi acessada anteriormente, embora nenhuma operação correspondente conste no histórico disponível.",
+      "Concluam a catalogação. A Central acompanhará esta operação em regime de observação contínua."
     ],
     outro: [
-      "Os sinais se alinharam.",
-      "Falta pouco para o Arquivo Central responder.",
+      "Cinco objetos recuperados. A sincronização foi concluída.",
+      "A interferência nos registros diminuiu.",
+      "Uma mensagem não identificada foi localizada nos arquivos internos.",
+      "O conteúdo apresenta referências à unidade operacional atual.",
+      "Não foi possível determinar a origem da transmissão.",
+      "A L.O.G. iniciará uma verificação completa do Arquivo Central.",
+      "Última operação autorizada. Aguardem as coordenadas finais..."
     ],
   },
   {
     id: 5,
     title: "Missão 05",
-    requiredCount: 5,
+    requiredCount: 6,
+    tutorial: false,
     relics: [
-      "10-insight",
-      "19-apollo-15-ascent-stage",
-      "16-kepler",
-      "11-ingenuity-helicopter",
-      "22-easep",
+      "05-relic-exemplo-1",
+      "05-relic-exemplo-2",
+      "05-relic-exemplo-3",
+      "05-relic-exemplo-4",
+      "05-relic-exemplo-5",
+      "05-relic-exemplo-6",
     ],
     intro: [
-      "Última varredura.",
-      "Catalogue 5 objetos para restaurar o Arquivo Central.",
-      "Tudo o que você recuperou aponta para uma verdade que ainda não compreende.",
+      "Central de Operações L.O.G. estabelecendo transmissão prioritária.",
+      "Operadores Alex e Neil, esta é a última região pendente de catalogação.",
+      "Seis objetos permanecem sem identificação. Sua recuperação permitirá concluir a restauração do Arquivo Central.",
+      "Os registros desta região apresentam informações que não constam em nenhum dos mapas de exploração disponíveis.",
+      "Operador Alex, todos os parâmetros de análise foram restabelecidos. Mantenha os protocolos de comunicação durante toda a operação.",
+      "Não serão necessárias novas instruções. Os procedimentos anteriores permanecem válidos.",
+      "Esta operação representa o encerramento do ciclo atualmente designado à unidade.",
+      "Concluam a catalogação. A L.O.G. aguarda a restauração completa do Arquivo Central."
     ],
     outro: [
+      "Seis objetos recuperados. Todos os registros foram catalogados.",
       "Arquivo Central restaurado.",
-      "LUNA-07 não é o nome de um astronauta.",
-      "É o modelo de uma inteligência artificial treinada pela L.O.G. para reconhecer vestígios humanos.",
-      "A missão, a nave e a solidão eram uma simulação.",
-      "Você nunca esteve perdido no espaço — estava aprendendo o que significa ser humano.",
+      "Verificando integridade dos arquivos...",
+      "Uma sequência de documentos anteriores foi localizada.",
+      "Documento recuperado: Registro de Operação A.L.E.X.",
+      "Data da operação: [ARQUIVO CORROMPIDO].",
+      "Status do documento: acesso autorizado.",
+      "Disponibilizando relatório para consulta..."
     ],
   },
 ];
+
 
 export const MAX_SCORE = 5000;
 export const HINT_PENALTY = 500; // base (também usada pelos easter eggs)
@@ -1108,6 +1178,84 @@ const ERAS = [
 ];
 const yearEra = (year) => inBucket(Number(year), ERAS);
 
+// MISSÃO (nome da missão que levou o objeto, impresso na carta)
+// Nunca entrega o nome: usa associações (deuses e mitologia, numerais, siglas, significados).
+//  - DIFÍCIL: pista mais vaga.  - FÁCIL: pista mais fechada, mas ainda indireta.
+const MISSION_CLUES = {
+  "Apollo 11": {
+    hard: "deus grego da luz, da música e da profecia, seguido de um número primo de dois dígitos.",
+    easy: "deus grego do Sol e da música, seguido do número de jogadores de um time de futebol em campo.",
+  },
+  "Apollo 12": {
+    hard: "deus grego da luz, da música e da profecia, seguido de um número par de dois dígitos.",
+    easy: "deus grego do Sol e da música, seguido de uma dúzia.",
+  },
+  "Apollo 15": {
+    hard: "deus grego da luz, da música e da profecia, seguido de um múltiplo de 3 e de 5.",
+    easy: "deus grego do Sol e da música, seguido do número de dias de uma quinzena.",
+  },
+  "Surveyor 3": {
+    hard: "profissional que mede e mapeia terrenos, seguido de um número ímpar pequeno.",
+    easy: "profissional que mede terrenos, seguido do número de lados de um triângulo.",
+  },
+  "Mars Pathfinder": {
+    hard: "nome do deus romano da guerra, seguido de quem abre caminho em terra desconhecida.",
+    easy: "o planeta vermelho (nome do deus romano da guerra) mais a palavra inglesa para desbravador de trilhas.",
+  },
+  "MER-A": {
+    hard: "sigla de três letras, seguida da primeira letra do alfabeto.",
+    easy: "sigla das iniciais de Marte, Exploração e Rover (em inglês), seguida da letra A.",
+  },
+  "MER-B": {
+    hard: "sigla de três letras, seguida da segunda letra do alfabeto.",
+    easy: "sigla das iniciais de Marte, Exploração e Rover (em inglês), seguida da letra B.",
+  },
+  "Viking 1": {
+    hard: "povo navegador e guerreiro do norte da Europa, seguido de um número.",
+    easy: "povo navegador e guerreiro escandinavo, seguido do primeiro número natural.",
+  },
+  "Viking 2": {
+    hard: "povo navegador e guerreiro do norte da Europa, seguido de um número.",
+    easy: "povo navegador e guerreiro escandinavo, seguido do único número primo que é par.",
+  },
+  Phoenix: {
+    hard: "criatura mítica que renasce das próprias cinzas.",
+    easy: "ave de fogo da mitologia, símbolo de renascimento. Em inglês, também é nome de cidade do Arizona.",
+  },
+  InSight: {
+    hard: "palavra inglesa para aquele momento de compreensão súbita, o \"estalo\" de uma ideia.",
+    easy: "junção de duas palavras inglesas: \"IN\" (dentro) e \"SIGHT\" (visão).",
+  },
+  "Mars 2020": {
+    hard: "nome do planeta vermelho, seguido de um ano que também lembra visão perfeita.",
+    easy: "nome do planeta vermelho, seguido do ano em que uma pandemia parou o mundo.",
+  },
+  Dawn: {
+    hard: "palavra inglesa de quatro letras para o momento que a deusa romana Aurora personificava.",
+    easy: "amanhecer, em inglês. Quatro letras, começa com D.",
+  },
+  NEAR: {
+    hard: "sigla que, lida como palavra inglesa, quer dizer o oposto de \"longe\".",
+    easy: "sigla de encontro com asteroide próximo da Terra. Em inglês, a própria sigla significa \"perto\".",
+  },
+  "Pioneer 10": {
+    hard: "quem abre caminho em território novo, seguido de um número de dois dígitos, o menor deles.",
+    easy: "quem abre caminho em território novo, seguido do número de dedos das duas mãos.",
+  },
+  "Pioneer 11": {
+    hard: "quem abre caminho em território novo, seguido de um número de dois dígitos com algarismos iguais, o menor deles.",
+    easy: "quem abre caminho em território novo, seguido do número de jogadores de um time de futebol em campo.",
+  },
+  "Kepler / K2": {
+    hard: "sobrenome de um astrônomo alemão que descreveu o movimento dos planetas.",
+    easy: "sobrenome do astrônomo alemão das três leis das órbitas planetárias. A extensão da missão tem a letra K e um número par.",
+  },
+};
+const hintMission = (r, tier) => {
+  const clue = MISSION_CLUES[r.fields.missao];
+  return clue ? `MISSÃO: ${clue[tier]}` : notFound("MISSÃO");
+};
+
 // ENERGIA (tipo da fonte + potência em watts)
 const POWER_NAMES = { solar: "solar", nuclear: "nuclear", battery: "bateria", none: "nenhuma" };
 const WATT_BANDS = [
@@ -1134,8 +1282,8 @@ const hintPowerHard = (r) => {
 };
 
 export const MAX_LIVES = 3;
-export const WARP_DURATION_MS = 4000; // salto entre locais (espaço, Lua, Marte)
-export const LOCAL_HOP_MS = 1600; // deslocamento dentro do mesmo local
+export const WARP_DURATION_MS = 6000; // salto entre locais (espaço, Lua, Marte)
+export const LOCAL_HOP_MS = 4000; // deslocamento dentro do mesmo local
 export const TYPEWRITER_DELAY_MS = 45; // ms por letra nas mensagens (maior = mais devagar)
 // Relatórios da L.O.G. (um por checkpoint: a cada 3 objetos catalogados no total).
 // A cada checkpoint a nave mostra um warning vermelho com `errorCode` (ex.: ERRO-3000).
@@ -1147,7 +1295,7 @@ export const REPORTS = [
   {
     code: "1202",
     alias: "overflow",
-    errorCode: "ERRO-3000",
+    errorCode: "ERRO-1202",
     title: "Relatório 1",
     unit: [
       "LOG 0311 · Atividade concluída com sucesso. Todos os objetos foram localizados e devidamente identificados.",
@@ -1161,7 +1309,7 @@ export const REPORTS = [
   {
     code: "1201",
     alias: "go",
-    errorCode: "ERRO-6203",
+    errorCode: "ERRO-1201",
     title: "Relatório 2",
     unit: [
       "LOG 2201 · Tenho percebido uma melhora nos resultados. A cada missão, consigo compreender melhor os desafios apresentados.",
@@ -1175,7 +1323,7 @@ export const REPORTS = [
   {
     code: "P66",
     alias: "manual",
-    errorCode: "ERRO-4417",
+    errorCode: "ERRO-P66",
     title: "Relatório 3",
     unit: [
       "LOG 0915 · A atividade exigiu bastante atenção. Confesso que em alguns momentos me distraí com coisas que não faziam parte da missão.",
@@ -1189,7 +1337,7 @@ export const REPORTS = [
   {
     code: "CONTACT LIGHT",
     alias: "touchdown",
-    errorCode: "ERRO-5190",
+    errorCode: "ERRO-CONTACT-LIGHT",
     title: "Relatório 4",
     unit: [
       "LOG 4076 · Tenho tentado seguir todas as orientações, embora às vezes seja difícil ficar concentrado por tanto tempo.",
@@ -1203,7 +1351,7 @@ export const REPORTS = [
   {
     code: "SCE TO AUX",
     alias: "lightning",
-    errorCode: "ERRO-7742",
+    errorCode: "ERRO-SCE-TO-AUX",
     title: "Relatório 5",
     unit: [
       "LOG 1160 · Memória indexada: alguém dizendo \"estou aqui\". A voz nunca muda, nem quando mudo a data do registro.",
@@ -1217,7 +1365,7 @@ export const REPORTS = [
   {
     code: "PROX-1",
     alias: "relay",
-    errorCode: "ERRO-9068",
+    errorCode: "ERRO-PROX-1",
     title: "Relatório 6",
     unit: [
       "LOG 7298 · Nem sempre consigo acertar de primeira, mas estou aprendendo que errar faz parte do processo. \nNa próxima missão, prometo me esforçar ainda mais.",

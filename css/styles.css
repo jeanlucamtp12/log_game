@@ -2221,7 +2221,7 @@ button.catalog-card:hover {
     var(--screen);
   box-shadow: inset 0 0 28px rgba(61, 255, 119, 0.3), inset 0 0 0 1px rgba(100, 255, 61, 0.55), 0 0 0 3px #08141a, 0 0 0 4px rgba(255, 255, 255, 0.12), 0 10px 18px rgba(0, 0, 0, 0.55);
 }
-.status-monitor::before { inset: -230%; background: conic-gradient(from 0deg, rgba(61, 255, 77, 0.3), transparent 20%); animation: radar-sweep 4.5s linear infinite; }
+.status-monitor::before { inset: -230%; background: conic-gradient(from 0deg, transparent 80%, rgba(61, 255, 77, 0.35) 100%); animation: radar-sweep 4.5s linear infinite; }
 .status-value { color: var(--orange); text-shadow: 0 0 16px var(--orange-glow), 0 0 4px rgba(255, 255, 255, 0.8); }
 @keyframes radar-sweep { to { transform: rotate(360deg); } }
 
@@ -2327,14 +2327,20 @@ button.catalog-card:hover {
 }
 
 .catalog-detail .catalog-card.is-expanded img {
-  grid-column: 1;
-  grid-row: 2 / span 2;
   aspect-ratio: 4 / 3;
 }
 
-.catalog-detail .catalog-card.is-expanded p,
-.catalog-detail .catalog-card.is-expanded .card-specs {
-  grid-column: 2;
+/* esquerda: imagem + crédito · direita: texto + dados (cada coluna empilha sem buracos) */
+.catalog-detail .catalog-card.is-expanded .card-media,
+.catalog-detail .catalog-card.is-expanded .card-info {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.catalog-detail .catalog-card.is-expanded .card-info {
+  gap: 18px;
 }
 
 .catalog-detail .catalog-card.is-expanded p {
@@ -2698,6 +2704,7 @@ button.catalog-card:hover {
 
   .catalog-detail .catalog-card.is-expanded {
     display: flex;
+    flex-direction: column;
   }
 
   .coord-axis input {
@@ -4171,3 +4178,181 @@ button.catalog-card:hover {
 .ship-exit:active { transform: translateY(3px); background: linear-gradient(180deg, color-mix(in srgb, var(--key) 26%, #18222c), #0d141a); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), inset 0 0 14px color-mix(in srgb, var(--key) 35%, transparent), 0 0 0 1px #04070a, 0 1px 0 #04070a, 0 3px 6px rgba(0,0,0,0.5); }
 @keyframes ship-exit-pisca { 50% { opacity: 0.35; } }
 @media (prefers-reduced-motion: reduce) { .ship-exit-led { animation: none; } }
+
+
+/* ==========================================================================
+   Manual em abas (Como jogar · Painel · Protocolos · Terminal · Eficiência)
+   ========================================================================== */
+.monitor-body.manual-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow: hidden;
+  padding: 18px 22px 20px;
+}
+
+.monitor-body.manual-body[hidden] {
+  display: none;
+}
+
+.manual-tabs {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.manual-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.manual-tab:hover {
+  color: var(--ink);
+  border-color: rgba(79, 230, 255, 0.4);
+}
+
+.manual-tab.is-active {
+  border-color: var(--orange);
+  background: rgba(255, 138, 61, 0.12);
+  color: var(--orange);
+}
+
+.manual-tab [data-icon] {
+  display: inline-grid;
+}
+
+.manual-panels {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  gap: 18px;
+  overflow-y: auto;
+  padding: 2px 8px 4px 2px;
+}
+
+.manual-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.manual-panel[hidden] {
+  display: none;
+}
+
+.manual-card {
+  padding: 18px 20px 20px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.manual-card h3 {
+  margin: 0 0 12px;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.manual-lead {
+  margin: 0 0 18px;
+  color: #b8c4cc;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.manual-card .manual-steps {
+  gap: 16px;
+}
+
+.manual-card .manual-note {
+  margin-top: 20px;
+}
+
+.manual-card .manual-keys {
+  gap: 10px;
+}
+
+.manual-card .manual-keys > div {
+  padding: 12px 16px;
+}
+
+.manual-tiers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.manual-tier {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.manual-tier.is-hard {
+  border-color: rgba(79, 230, 255, 0.35);
+}
+
+.manual-tier.is-easy {
+  border-color: rgba(255, 138, 61, 0.45);
+}
+
+.manual-tier-tag {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--cyan);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.manual-tier.is-easy .manual-tier-tag {
+  color: var(--orange);
+}
+
+.manual-tier b {
+  display: block;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.manual-tier p {
+  margin: 8px 0 0;
+  color: #b8c4cc;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.manual-tier em {
+  color: var(--ink);
+  font-style: normal;
+}
+
+@media (max-width: 760px) {
+  .monitor-body.manual-body {
+    padding: 14px;
+  }
+
+  .manual-tiers {
+    grid-template-columns: 1fr;
+  }
+
+  .manual-tab {
+    padding: 7px 11px;
+  }
+}

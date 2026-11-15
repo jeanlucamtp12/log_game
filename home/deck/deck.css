@@ -736,6 +736,90 @@ body.com-visor .flutuantes {
     }
 }
 
+/* ---------- carta maior no celular ---------- */
+/* Ampliar: a carta passa a ser bem maior que a tela e o jogador rola para ler os dados. */
+.visor.com-zoom .visor-meio {
+    display: block;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-x pan-y;
+}
+
+.visor.com-zoom .palco {
+    width: max-content;
+    margin: 0 auto;
+    padding-bottom: 12px;
+}
+
+.visor.com-zoom .cartao {
+    width: min(200vw, 1000px);
+}
+
+.visor .cartao {
+    cursor: zoom-in;
+}
+
+.visor.com-zoom .cartao {
+    cursor: zoom-out;
+}
+
+#btn-zoom[aria-pressed="true"] {
+    border-color: var(--teal-claro);
+}
+
+@media (max-width: 760px) {
+    /* celular em pé: usa quase toda a largura e menos moldura */
+    .visor-corpo {
+        padding: 10px 6px max(10px, env(safe-area-inset-bottom));
+        gap: 6px;
+    }
+
+    .visor:not(.com-zoom) .cartao {
+        width: min(98vw, calc((100dvh - 150px) * 0.7159));
+    }
+
+    .visor-nome {
+        font-size: 13px;
+    }
+
+    .visor-baixo {
+        gap: 8px 12px;
+    }
+
+    .visor-baixo button {
+        padding: 9px 14px;
+    }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+    /* celular deitado: nome some, barra fica compacta e a carta ganha altura */
+    .visor-nome {
+        display: none;
+    }
+
+    .visor-corpo {
+        padding: 6px 12px max(6px, env(safe-area-inset-bottom));
+        gap: 6px;
+    }
+
+    .visor:not(.com-zoom) .cartao {
+        width: min(70vw, calc((100dvh - 62px) * 0.7159));
+    }
+
+    .visor-baixo button {
+        min-height: 40px;
+        padding: 6px 14px;
+    }
+
+    .visor-fechar {
+        top: 6px;
+        right: 8px;
+        width: 40px;
+        height: 40px;
+    }
+}
+
 /* =========================================================
    CARTAS EM SVG (copiado do modelo "Carta 01")
    ========================================================= */

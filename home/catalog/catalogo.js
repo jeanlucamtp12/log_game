@@ -4,7 +4,6 @@ import { RELICS, RELIC_TYPES, LOCATIONS, MISSIONS, placeName } from "../../js/ga
 import { typeIconSvg } from "../../js/icons.js";
 
 const SAVE_KEY = "lunar07-save"; // mesma chave de js/main.js
-const SAVE_VERSION = 3;
 const TOTAL = MISSIONS.reduce((sum, m) => sum + m.requiredCount, 0);
 const YEAR_MIN = Math.min(...RELICS.map((r) => Number(r.fields.ano)));
 const YEAR_MAX = Math.max(...RELICS.map((r) => Number(r.fields.ano)));
@@ -40,7 +39,8 @@ const esc = (v) =>
 function lerColetadas() {
   try {
     const save = JSON.parse(localStorage.getItem(SAVE_KEY));
-    if (save && save.version === SAVE_VERSION && Array.isArray(save.cataloged)) {
+    // não confere a versão do save: o jogo muda esse número a cada mudança grande e o catálogo só precisa da lista
+    if (save && Array.isArray(save.cataloged)) {
       return new Set(save.cataloged);
     }
   } catch {
@@ -142,17 +142,21 @@ function mostrarDetalhe(id) {
   el.detalheCarta.innerHTML = `
     <article class="cat-carta cat-carta-aberta">
       <h3 class="cat-carta-titulo">${esc(r.name)}</h3>
-      <img src="${esc(imgSrc(r))}" alt="${esc(r.name)}" />
-      <small class="cat-credito">${esc(credito(r))}</small>
-      <p>${esc(r.description)}</p>
-      <dl class="cat-specs">
+      <div class="cat-media">
+        <img src="${esc(imgSrc(r))}" alt="${esc(r.name)}" />
+        <small class="cat-credito">${esc(credito(r))}</small>
+      </div>
+      <div class="cat-info">
+        <p>${esc(r.description)}</p>
+        <dl class="cat-specs">
         <div><dt>Peso</dt><dd>${esc(r.weight)}</dd></div>
         <div><dt>Altura</dt><dd>${esc(r.height)}</dd></div>
         <div><dt>Ano</dt><dd>${esc(r.fields.ano)}</dd></div>
         <div><dt>Missão</dt><dd>${esc(r.fields.missao)}</dd></div>
         <div><dt>Local</dt><dd>${esc(placeName(r.location))}</dd></div>
         <div><dt>Categoria</dt><dd>${esc(r.category)}</dd></div>
-      </dl>
+        </dl>
+      </div>
     </article>`;
   el.lista.hidden = true;
   el.detalhe.hidden = false;

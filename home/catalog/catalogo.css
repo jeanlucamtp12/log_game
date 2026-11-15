@@ -289,10 +289,14 @@ button.cat-carta:focus-visible {
 }
 
 .cat-carta-aberta .cat-carta-titulo { grid-column: 1 / -1; font-size: 14px; }
-.cat-carta-aberta img { grid-column: 1; grid-row: 2 / span 3; aspect-ratio: 4 / 3; }
+.cat-carta-aberta img { aspect-ratio: 4 / 3; }
+
+/* esquerda: imagem + crédito · direita: texto + dados (cada coluna empilha sem buracos) */
+.cat-media,
+.cat-info { display: flex; flex-direction: column; min-width: 0; gap: 10px; }
+.cat-info { gap: 18px; }
 
 .cat-carta-aberta p {
-    grid-column: 2;
     margin: 0;
     font-family: inherit;
     font-size: 16px;
@@ -300,10 +304,9 @@ button.cat-carta:focus-visible {
     color: #b8c4cc;
 }
 
-.cat-credito { grid-column: 1; font-size: 11px; color: var(--j-muted); }
+.cat-credito { font-size: 11px; color: var(--j-muted); }
 
 .cat-specs {
-    grid-column: 2;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
@@ -317,10 +320,6 @@ button.cat-carta:focus-visible {
 
 @media (max-width: 640px) {
     .cat-carta-aberta { grid-template-columns: 1fr; padding: 16px; }
-    .cat-carta-aberta img,
-    .cat-carta-aberta p,
-    .cat-credito,
-    .cat-specs { grid-column: 1; grid-row: auto; }
 }
 
 @media (max-width: 520px) {

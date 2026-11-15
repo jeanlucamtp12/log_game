@@ -12,11 +12,55 @@
     rel="stylesheet" />
   <link rel="stylesheet" href="./css/styles.css" />
   <link rel="stylesheet" href="./css/catalog-icons.css" />
+  <script>
+    // O modo história do Alex ainda não existe para celular: mostra um aviso no lugar do jogo.
+    if (window.matchMedia("(max-width: 760px), (pointer: coarse) and (max-width: 932px)").matches) {
+      document.documentElement.classList.add("sem-mobile");
+    }
+  </script>
+  <style>
+    .aviso-celular { display: none; }
+    .sem-mobile .ship-shell { display: none; }
+    .sem-mobile body { margin: 0; background: #07121a; }
+    .sem-mobile .aviso-celular {
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.25rem; background: #07121a; color: #8fd0d6;
+      font-family: "DM Mono", ui-monospace, Consolas, monospace; text-align: center;
+    }
+    .aviso-celular-caixa {
+      width: min(100%, 380px); padding: 1.5rem 1.25rem;
+      border: 1px solid #43dcff; border-radius: 12px; background: #12303a;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+    }
+    .aviso-celular-caixa span {
+      display: inline-block; margin-bottom: 0.7rem; padding: 0.15rem 0.6rem;
+      border: 1px solid #43dcff; border-radius: 999px; color: #43dcff;
+      font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+    }
+    .aviso-celular-caixa h1 { margin: 0 0 0.6rem; color: #fff; font-size: 1.2rem; }
+    .aviso-celular-caixa p { margin: 0 0 1.2rem; font-size: 0.9rem; line-height: 1.5; }
+    .aviso-celular-caixa a {
+      display: block; margin-top: 0.6rem; padding: 0.8rem 1rem; border-radius: 8px;
+      font-size: 0.92rem; text-decoration: none;
+    }
+    .aviso-celular-caixa a.deck { background: #c97b4a; border: 1px solid #c97b4a; color: #0b1a1e; font-weight: 700; }
+    .aviso-celular-caixa a.menu { border: 1px solid rgba(143, 208, 214, 0.45); color: #8fd0d6; }
+  </style>
 </head>
 
 <body>
+  <div class="aviso-celular" role="alert">
+    <div class="aviso-celular-caixa">
+      <span>Alex</span>
+      <h1>Indisponível no celular</h1>
+      <p>O modo história do Alex (pilotar a nave) ainda não está disponível em telas de celular. Abra no computador para jogar. Enquanto isso, você pode jogar com o deck virtual do Neil.</p>
+      <a class="deck" href="./home/deck/deck.html">Abrir o deck do Neil</a>
+      <a class="menu" href="./index.html">Voltar ao menu</a>
+    </div>
+  </div>
   <main class="ship-shell">
-    <a class="ship-exit" href="index.html" aria-label="Voltar ao menu (ESC)" title="Voltar ao menu (ESC)">
+    <a class="ship-exit" href="./index.html" aria-label="Voltar ao menu (ESC)" title="Voltar ao menu (ESC)">
       <span class="ship-exit-led" aria-hidden="true"></span>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v8"/><path d="M6.6 6.6a8 8 0 1 0 10.8 0"/></svg>
       <span class="ship-exit-label">Menu<small>ESC</small></span>
@@ -202,67 +246,152 @@
             </div>
           </section>
 
-          <section class="monitor-body" data-screen="manual" hidden>
-            <div class="manual-grid">
-              <article class="manual-block">
-                <h3>Como jogar</h3>
-                <p class="manual-note">Seu trabalho é encontrar objetos perdidos no espaço. Para cada objeto você descobre onde ele está, leva a nave até lá e guarda ele no catálogo.</p>
-                <ol class="manual-steps">
-                  <li><b>Escolha o objeto.</b> Aperte <em>Missão</em> e toque em um dos objetos da lista.</li>
-                  <li><b>Olhe a imagem.</b> Aperte <em>Alvo</em> para ver como é o objeto que você procura. Ache a carta dele no baralho.</li>
-                  <li><b>Peça dicas (se precisar).</b> Abra o <em>Terminal</em> e digite, por exemplo, <code>peso_objeto</code>. Cada dica custa pontos de XP.</li>
-                  <li><b>Digite onde ele está.</b> No <em>Navegador</em>, coloque a latitude e a longitude que estão na carta e aperte <em>Ir</em>.</li>
-                  <li><b>Guarde o objeto.</b> Quando a nave encontrar, aperte <em>Catalogar objeto</em>.</li>
-                  <li><b>Repita.</b> Catalogue todos os objetos da missão para passar para a próxima.</li>
-                </ol>
+          <section class="monitor-body manual-body" data-screen="manual" hidden>
+            <nav class="manual-tabs" role="tablist" aria-label="Seções do manual">
+              <button class="manual-tab is-active" type="button" role="tab" data-manual-tab="como" aria-selected="true"><span data-icon="guide" data-size="16"></span><span>Como jogar</span></button>
+              <button class="manual-tab" type="button" role="tab" data-manual-tab="painel" aria-selected="false"><span data-icon="scan" data-size="16"></span><span>Painel</span></button>
+              <button class="manual-tab" type="button" role="tab" data-manual-tab="protocolos" aria-selected="false"><span data-icon="alert" data-size="16"></span><span>Protocolos</span></button>
+              <button class="manual-tab" type="button" role="tab" data-manual-tab="terminal" aria-selected="false"><span data-icon="terminal" data-size="16"></span><span>Terminal</span></button>
+              <button class="manual-tab" type="button" role="tab" data-manual-tab="eficiencia" aria-selected="false"><span data-icon="bulb" data-size="16"></span><span>Eficiência</span></button>
+            </nav>
 
-                <h3>Como digitar a coordenada</h3>
-                <ul class="manual-steps">
-                  <li><b>Latitude:</b> use <code>N</code> (norte) ou <code>S</code> (sul). Ex.: <code>3,01 S</code>.</li>
-                  <li><b>Longitude:</b> use <code>L</code> (leste) ou <code>O</code> (oeste). Ex.: <code>23,42 O</code>.</li>
-                  <li><b>Ou com sinal:</b> sul e oeste são negativos. <code>3,01 S</code> é o mesmo que <code>-3,01</code>.</li>
-                  <li><b>Objeto no espaço?</b> Se a carta mostra <code>UA</code> em vez de latitude e longitude, aperte <em>N/L ⇄ UA</em> e digite só a distância.</li>
-                </ul>
-                <p class="manual-note"><b>Atenção:</b> errar a coordenada tira 1 ponto de integridade. Se a integridade chegar a zero, a missão recomeça.</p>
+            <div class="manual-panels">
+              <!-- COMO JOGAR -->
+              <div class="manual-panel" data-manual-panel="como" role="tabpanel">
+                <article class="manual-card">
+                  <h3>Seu trabalho</h3>
+                  <p class="manual-lead">Encontrar objetos perdidos no espaço. Para cada objeto você descobre onde ele está, leva a nave até lá e guarda ele no catálogo.</p>
+                  <ol class="manual-steps">
+                    <li><b>Escolha o objeto.</b> Aperte <em>Missão</em> e toque em um dos objetos da lista. Cada objeto aparece só com um código, como <code>D312-22</code>. A imagem dele abre sozinha no <em>Alvo</em>.</li>
+                    <li><b>Olhe a imagem.</b> Veja como é o objeto que você procura e ache a carta dele no baralho.</li>
+                    <li><b>Peça dicas (se precisar).</b> Abra o <em>Terminal</em> e digite, por exemplo, <code>peso_objeto</code>. Cada dica custa XP (veja a aba <em>Eficiência</em>).</li>
+                    <li><b>Digite onde ele está.</b> No <em>Navegador</em>, coloque a latitude e a longitude que estão na carta e aperte <em>Ir</em>.</li>
+                    <li><b>Guarde o objeto.</b> Quando a nave encontrar, aperte <em>Catalogar objeto</em>.</li>
+                    <li><b>Repita.</b> Catalogue todos os objetos da missão para passar para a próxima.</li>
+                  </ol>
+                </article>
 
-                <h3 id="manual-erros">Erros de sincronização</h3>
-                <p class="manual-note">Às vezes a nave perde o sinal. Um alerta vermelho aparece com um código, por exemplo <code>ERRO-3000</code>. O tempo para e só o <em>Terminal</em> e o <em>Manual</em> funcionam.</p>
-                <ol class="manual-steps">
-                  <li><b>Pegue a carta de Protocolo.</b> O Jogador 2 procura nela o protocolo certo para esse erro.</li>
-                  <li><b>Abra o Terminal</b> e digite o protocolo.</li>
-                  <li><b>Pronto.</b> O alerta some e um novo relatório aparece.</li>
-                </ol>
-                <p class="manual-note">Cada erro tem o seu protocolo. Um protocolo de outro erro não funciona.</p>
-              </article>
+                <article class="manual-card">
+                  <h3>Como digitar a coordenada</h3>
+                  <ul class="manual-steps">
+                    <li><b>Latitude:</b> use <code>N</code> (norte) ou <code>S</code> (sul). Ex.: <code>3,01 S</code>.</li>
+                    <li><b>Longitude:</b> use <code>L</code> (leste) ou <code>O</code> (oeste). Ex.: <code>23,42 O</code>.</li>
+                    <li><b>Ou com sinal:</b> sul e oeste são negativos. <code>3,01 S</code> é o mesmo que <code>-3,01</code>.</li>
+                    <li><b>Objeto no espaço?</b> Se a carta mostra <code>UA</code> em vez de latitude e longitude, aperte <em>N/L ⇄ UA</em> e digite só a distância.</li>
+                  </ul>
+                  <p class="manual-note"><b>Atenção:</b> errar a coordenada tira 1 ponto de integridade. Se a integridade chegar a zero, a missão recomeça.</p>
+                </article>
+              </div>
 
-              <article class="manual-block">
-                <h3>Botões da nave</h3>
-                <dl class="manual-keys">
-                  <div><dt><span data-icon="guide" data-size="18"></span>Missão</dt><dd>Mostra os objetos da missão e deixa você escolher qual procurar.</dd></div>
-                  <div><dt><span data-icon="terminal" data-size="18"></span>Terminal</dt><dd>Onde você digita comandos para pedir dicas ou resolver erros.</dd></div>
-                  <div><dt><span data-icon="catalog" data-size="18"></span>Catálogo</dt><dd>Os objetos que você já encontrou.</dd></div>
-                  <div><dt><span data-icon="message" data-size="18"></span>Msgs</dt><dd>Mensagens da L.O.G. O ponto vermelho avisa que tem mensagem nova.</dd></div>
-                  <div><dt><span data-icon="report" data-size="18"></span>Relat.</dt><dd>Relatórios que você liberou ao resolver erros.</dd></div>
-                  <div><dt><span data-icon="crosshair" data-size="18"></span>Alvo</dt><dd>Mostra a imagem do objeto escolhido.</dd></div>
-                  <div><dt><span data-icon="manual" data-size="18"></span>Manual</dt><dd>Abre este guia.</dd></div>
-                </dl>
+              <!-- PAINEL -->
+              <div class="manual-panel" data-manual-panel="painel" role="tabpanel" hidden>
+                <article class="manual-card">
+                  <h3>Botões da nave</h3>
+                  <dl class="manual-keys">
+                    <div><dt><span data-icon="guide" data-size="18"></span>Missão</dt><dd>Mostra os objetos da missão e deixa você escolher qual procurar.</dd></div>
+                    <div><dt><span data-icon="terminal" data-size="18"></span>Terminal</dt><dd>Onde você digita comandos para pedir dicas ou resolver erros.</dd></div>
+                    <div><dt><span data-icon="catalog" data-size="18"></span>Catálogo</dt><dd>Os objetos que você já encontrou.</dd></div>
+                    <div><dt><span data-icon="message" data-size="18"></span>Mensagens</dt><dd>Mensagens da L.O.G. O ponto vermelho avisa que tem mensagem nova.</dd></div>
+                    <div><dt><span data-icon="report" data-size="18"></span>Relatório</dt><dd>Relatórios que você liberou ao resolver erros.</dd></div>
+                    <div><dt><span data-icon="crosshair" data-size="18"></span>Alvo</dt><dd>Mostra a imagem do objeto escolhido. Abre sozinho ao escolher o objeto, mas você pode fechar e abrir de novo.</dd></div>
+                    <div><dt><span data-icon="manual" data-size="18"></span>Manual</dt><dd>Abre este guia.</dd></div>
+                  </dl>
+                </article>
 
-                <h3>Painel</h3>
-                <dl class="manual-keys">
-                  <div><dt>Integridade da Nave</dt><dd>Suas vidas. Cada erro de coordenada tira uma.</dd></div>
-                  <div><dt>Experiência (XP)</dt><dd>Seus pontos. Com mais de 2000 XP a dica é difícil e custa 500. Com 2000 ou menos, a dica é fácil e custa 1000.</dd></div>
-                  <div><dt>Navegador</dt><dd>Onde você digita a coordenada. Só funciona depois de escolher um objeto.</dd></div>
-                  <div><dt>Tempo</dt><dd>Quanto tempo a missão está levando.</dd></div>
-                  <div><dt>Luz da cabine</dt><dd>Chave ao lado de <em>Missão</em>. Liga e desliga a luz. Só enfeite.</dd></div>
-                  <div><dt>Vidro da nave</dt><dd>Trinca quando você erra. Só enfeite: volta ao normal com a integridade.</dd></div>
-                </dl>
+                <article class="manual-card">
+                  <h3>Dados da interface</h3>
+                  <dl class="manual-keys">
+                    <div><dt>Integridade da Nave</dt><dd>Suas vidas. Cada erro de coordenada tira uma.</dd></div>
+                    <div><dt>Experiência (XP)</dt><dd>Seus pontos. Gastar XP com dicas faz a barra descer. Detalhes na aba <em>Eficiência</em>.</dd></div>
+                    <div><dt>Navegador</dt><dd>Onde você digita a coordenada. Só funciona depois de escolher um objeto.</dd></div>
+                    <div><dt>Tempo</dt><dd>Quanto tempo a missão está levando.</dd></div>
+                    <div><dt>Luz da cabine</dt><dd>Chave ao lado de <em>Missão</em>. Liga e desliga a luz. Só enfeite.</dd></div>
+                    <div><dt>Vidro da nave</dt><dd>Trinca quando você erra. Só enfeite: volta ao normal com a integridade.</dd></div>
+                  </dl>
+                </article>
+              </div>
 
-                <h3>Comandos do terminal</h3>
-                <dl class="manual-keys">
-                  <div><dt><code>tamanho_objeto</code> <code>peso_objeto</code> <code>partiu_em</code> <code>perdido_em</code> <code>energia_objeto</code></dt><dd>Dicas sobre o objeto escolhido. Custam XP.</dd></div>
-                  <div><dt><code>help</code> <code>scan</code> <code>status</code> <code>clear</code></dt><dd>Grátis. Mostram a lista de comandos, a situação da nave e limpam a tela.</dd></div>
-                </dl>
-              </article>
+              <!-- PROTOCOLOS -->
+              <div class="manual-panel" data-manual-panel="protocolos" role="tabpanel" hidden>
+                <article class="manual-card" id="manual-erros">
+                  <h3>Erros de sincronização</h3>
+                  <p class="manual-lead">Às vezes a nave perde o sinal. Um alerta vermelho aparece com um código, por exemplo <code>ERRO-3000</code>. O tempo para e só o <em>Terminal</em> e o <em>Manual</em> funcionam.</p>
+                  <ol class="manual-steps">
+                    <li><b>Pegue a carta de Protocolo.</b> O Jogador 2 procura nela o protocolo certo para esse erro.</li>
+                    <li><b>Abra o Terminal</b> e digite o protocolo.</li>
+                    <li><b>Pronto.</b> O alerta some e um novo relatório aparece.</li>
+                  </ol>
+                  <p class="manual-note">Cada erro tem o seu protocolo. Um protocolo de outro erro não funciona.</p>
+                </article>
+              </div>
+
+              <!-- TERMINAL -->
+              <div class="manual-panel" data-manual-panel="terminal" role="tabpanel" hidden>
+                <article class="manual-card">
+                  <h3>Dicas sobre o objeto</h3>
+                  <p class="manual-lead">Precisam de um objeto escolhido. Cada uma custa XP.</p>
+                  <dl class="manual-keys">
+                    <div><dt><code>tamanho_objeto</code></dt><dd>Qual o tamanho aproximado do objeto.</dd></div>
+                    <div><dt><code>peso_objeto</code></dt><dd>Qual o peso aproximado do objeto.</dd></div>
+                    <div><dt><code>partiu_em</code></dt><dd>Quando o objeto saiu da Terra.</dd></div>
+                    <div><dt><code>perdido_em</code></dt><dd>Quando o objeto foi perdido.</dd></div>
+                    <div><dt><code>energia_objeto</code></dt><dd>De onde o objeto tira energia.</dd></div>
+                    <div><dt><code>missao_objeto</code></dt><dd>Uma pista sobre a missão que levou o objeto.</dd></div>
+                  </dl>
+                </article>
+
+                <article class="manual-card">
+                  <h3>Comandos grátis</h3>
+                  <dl class="manual-keys">
+                    <div><dt><code>help</code></dt><dd>Mostra a lista de comandos.</dd></div>
+                    <div><dt><code>scan</code></dt><dd>Varredura do setor.</dd></div>
+                    <div><dt><code>status</code></dt><dd>Mostra a situação da nave.</dd></div>
+                    <div><dt><code>clear</code></dt><dd>Limpa a tela do terminal.</dd></div>
+                  </dl>
+                </article>
+              </div>
+
+              <!-- EFICIÊNCIA -->
+              <div class="manual-panel" data-manual-panel="eficiencia" role="tabpanel" hidden>
+                <article class="manual-card">
+                  <h3>Dicas gastam XP</h3>
+                  <p class="manual-lead">Toda missão começa com <b>5000 XP</b>. Cada dica pedida no terminal desconta XP. Quanto menos dicas, mais XP sobra no fim da missão.</p>
+                  <div class="manual-tiers">
+                    <div class="manual-tier is-hard">
+                      <span class="manual-tier-tag">Dica difícil</span>
+                      <b>custa 500 XP</b>
+                      <p>Vale enquanto você tem <em>mais de 2000 XP</em>. A pista é indireta: uma faixa larga ou uma época.</p>
+                    </div>
+                    <div class="manual-tier is-easy">
+                      <span class="manual-tier-tag">Dica fácil</span>
+                      <b>custa 1000 XP</b>
+                      <p>Liberada quando você chega em <em>2000 XP ou menos</em>. A pista é mais direta, mas custa o dobro.</p>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="manual-card">
+                  <h3>Quando a dica fácil aparece</h3>
+                  <ol class="manual-steps">
+                    <li><b>Começo.</b> Com 5000 XP, as dicas são difíceis e baratas.</li>
+                    <li><b>Faixa laranja.</b> Depois de 6 dicas difíceis você chega a 2000 XP. A barra de XP fica laranja e as próximas dicas passam a ser fáceis.</li>
+                    <li><b>Recuperação.</b> Ao acertar uma coordenada você ganha XP. Estando na faixa laranja, o XP sobe para pelo menos 3000 e as dicas voltam a ser difíceis. Acima dela, soma 1000.</li>
+                    <li><b>Nova missão.</b> O XP volta para 5000.</li>
+                  </ol>
+                  <p class="manual-note"><b>Dica de ouro:</b> tente a coordenada com o que você já sabe da carta antes de pedir ajuda. Dica fácil gasta XP rápido e o XP baixo derruba sua patente.</p>
+                </article>
+
+                <article class="manual-card">
+                  <h3>Patentes por XP</h3>
+                  <dl class="manual-keys">
+                    <div><dt>Comandante</dt><dd>4500 XP ou mais.</dd></div>
+                    <div><dt>Piloto</dt><dd>3500 XP ou mais.</dd></div>
+                    <div><dt>Navegador</dt><dd>2500 XP ou mais.</dd></div>
+                    <div><dt>Cadete</dt><dd>1500 XP ou mais.</dd></div>
+                    <div><dt>Recruta</dt><dd>Menos de 1500 XP.</dd></div>
+                  </dl>
+                </article>
+              </div>
             </div>
           </section>
         </div>
@@ -299,7 +428,7 @@
           <b>Interferência de sincronização</b>
         </div>
         <strong class="sync-warning-code" id="sync-warning-code">ERRO-0000</strong>
-        <p class="sync-warning-text">Sinal da L.O.G. instável. Abra o <em>Manual</em> e procure a seção <em>Erros</em>. Depois informe o código no <em>Terminal</em>.</p>
+        <p class="sync-warning-text">Sinal da L.O.G. instável. Abra o <em>Manual</em> e procure a aba <em>Protocolos</em>. Depois informe o código no <em>Terminal</em>.</p>
         <p class="sync-warning-note" id="sync-warning-note" hidden>Erros de sincronização são mais corriqueiros do que você imagina.</p>
       </div>
 
@@ -507,6 +636,7 @@
       <p class="wake-skip">Clique para pular</p>
     </div>
   </main>
+  <script type="module" src="./js/audio.js"></script>
   <script type="module" src="./js/game-data.js"></script>
   <script type="module" src="./js/main.js"></script>
   <script type="module" src="./js/icons.js"></script>

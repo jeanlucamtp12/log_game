@@ -22,11 +22,13 @@ import {
   distMatches,
   formatTarget,
   placeName,
+  relicCode,
 } from "./game-data.js";
+import { tocar, iniciarLoop } from "./audio.js";
 import { iconSvg, mountIcons, typeIconSvg } from "./icons.js";
 
 const SAVE_KEY = "lunar07-save";
-const SAVE_VERSION = 4; // v4: objetos fixos por missão (missão 1 agora pede 2); saves anteriores são descartados
+const SAVE_VERSION = 5; // v5: missão 1 volta a pedir 2 objetos (1 em lat/lon + 1 em UA); saves anteriores são descartados
 const TOTAL_REQUIRED = MISSIONS.reduce((sum, m) => sum + m.requiredCount, 0);
 const SPACE = "espaco";
 const SURFACE_IMAGES = {
@@ -237,7 +239,7 @@ function placeholderSrc(text) {
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
 function imgSrc(relic) {
-  return relic.image || placeholderSrc(relic.codename || relic.name);
+  return relic.image || placeholderSrc(relicCode(relic));
 }
 // Se a imagem remota falhar (offline, link quebrado), troca por um placeholder uma única vez.
 document.addEventListener(
@@ -378,11 +380,29 @@ function openMonitor(name) {
   }
   if (name === "messages") renderThreadList();
   if (name === "reports") renderReportList();
+  // com erro de sincronização ativo o Manual já abre nos Protocolos
+  if (name === "manual") setManualTab(state.checkpointPending ? "protocolos" : manualTab);
   if (name === "terminal") {
     renderTerminal();
     setTimeout(() => el.commandInput.focus(), 80);
   }
   syncButtons();
+}
+
+// Abas do Manual (Como jogar, Painel, Protocolos, Terminal, Eficiência)
+let manualTab = "como";
+function setManualTab(tab) {
+  manualTab = tab;
+  document.querySelectorAll("[data-manual-tab]").forEach((btn) => {
+    const on = btn.dataset.manualTab === tab;
+    btn.classList.toggle("is-active", on);
+    btn.setAttribute("aria-selected", String(on));
+  });
+  document.querySelectorAll("[data-manual-panel]").forEach((panel) => {
+    panel.hidden = panel.dataset.manualPanel !== tab;
+  });
+  const panels = document.querySelector(".manual-panels");
+  if (panels) panels.scrollTop = 0;
 }
 
 function closeMonitor(side) {
@@ -690,6 +710,11 @@ function playWake(variant = "full") {
 function toggleTarget() {
   if (el.btnTarget.disabled) return;
   if (!el.targetView.hidden) return hideTarget();
+  showTarget();
+}
+
+// Abre o Alvo com a imagem do objeto escolhido (usado pelo botão e ao escolher o objeto)
+function showTarget() {
   const relic = relicById(state.selectedId);
   if (!relic) return;
   // o alvo divide o lado direito: fecha o que compete com ele
@@ -697,7 +722,7 @@ function toggleTarget() {
     if (name && !targetFitsWith(name)) closeMonitor(side);
   });
   el.targetImage.src = imgSrc(relic);
-  el.targetImage.alt = relic.name;
+  el.targetImage.alt = `Objeto ${relicCode(relic)}`;
   el.targetView.hidden = false;
   syncButtons();
 }
@@ -718,6 +743,7 @@ function selectObjective(id) {
   resetCoordForm();
   closeMonitor(SIDE.objectives);
   render();
+  showTarget(); // já mostra a imagem do objeto escolhido no Alvo
 }
 
 function clearSelection() {
@@ -732,7 +758,7 @@ function renderRadar() {
 
   
   if (relic) {
-    el.waypointTitle.textContent = `Alvo: ${relic.name}`;
+    el.waypointTitle.textContent = `Alvo: ${relicCode(relic)}`;
     //el.waypointSub.textContent = `Local: ${relic.location}`;
   }
   el.waypointLabel.hidden = !relic;
@@ -836,6 +862,7 @@ function typeInto(node, text, speed = 16) {
 }
 
 function showNavAlert({ code, text, hull = null, ms = 5200 }) {
+  tocar("alarm"); // sirene sempre que a mensagem de erro aparece
   el.navTip.hidden = true; // o alerta de erro tem prioridade sobre a dica de treinamento
   el.navAlert.hidden = false;
   el.navAlert.classList.remove("is-showing");
@@ -929,6 +956,7 @@ function rewardCorrectCoordinate() {
 }
 
 function failCoordinate(fault = null) {
+  tocar("respErro"); // som de resposta errada (coordenada rejeitada)
   state.lives = Math.max(0, state.lives - 1);
   state.missionMistakes += 1;
   saveState();
@@ -948,6 +976,8 @@ function travelTo(relic) {
   const duration = changesPlace ? WARP_DURATION_MS : LOCAL_HOP_MS;
 
   traveling = true;
+  // som da viagem: 6s para outro local, 4s no mesmo local
+  tocar(changesPlace ? "aceleracao6s" : "aceleracao4s");
   renderCoordinate();
   setFeedback("Navegando…", true);
   closeMonitor("center");
@@ -981,6 +1011,7 @@ function travelTo(relic) {
 
 // ===== Fim de jogo (integridade zerada) =====
 function showGameOver() {
+  tocar("falhaMissao"); // som da missão perdida (integridade zerada)
   closeAllMonitors();
   hideTarget();
   foundRelicId = null;
@@ -1062,11 +1093,12 @@ function checkCheckpoint() {
 }
 
 function raiseSyncWarning() {
+  tocar("alarm"); // sirene quando o warning vermelho aparece no vidro
   const data = REPORTS[state.reports.length];
   if (data) {
     const lines = [
       `ALERTA ${data.errorCode} · interferência de sincronização com a L.O.G..`,
-      "Consulte o Manual, seção Erros. O terminal só aceita o código de sincronização.",
+      "Consulte o Manual, aba Protocolos. O terminal só aceita o código de sincronização.",
     ];
     if (state.reports.length === 0) {
       lines.push("Erros de sincronização são mais corriqueiros do que você imagina.");
@@ -1089,6 +1121,8 @@ function renderWarning() {
 }
 
 const normCode = (value) => String(value ?? "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+// Resposta aceita no terminal = a senha da carta (ex.: "overflow"), não o código impresso (ex.: "1202").
+const syncAnswer = (report) => normCode(report.alias ?? report.code);
 
 // Terminal travado: qualquer entrada passa por aqui até o código certo ser digitado.
 function trySyncCode(raw) {
@@ -1103,13 +1137,13 @@ function trySyncCode(raw) {
     return appendTerminal("Sincronização restabelecida.");
   }
   const typed = normCode(raw);
-  if (typed === normCode(pending.code) || (pending.alias && typed === normCode(pending.alias))) return acceptSyncCode(pending);
-  if (REPORTS.some((r) => normCode(r.code) === typed || (r.alias && normCode(r.alias) === typed))) {
+  if (typed === syncAnswer(pending)) return acceptSyncCode(pending);
+  if (REPORTS.some((r) => syncAnswer(r) === typed)) {
     return appendTerminal(`Código válido, mas não pertence a ${pending.errorCode}. Confira a carta indicada no Manual.`);
   }
   appendTerminal(
     `TERMINAL TRAVADO · ${pending.errorCode}.`,
-    "Digite o código de sincronização. Consulte o Manual, seção Erros.",
+    "Digite o código de sincronização. Consulte o Manual, aba Protocolos.",
   );
 }
 
@@ -1544,14 +1578,14 @@ function runCommand(raw) {
     return renderScore();
   }
 
-  if (["caio"].includes(clean)) {
+  if (["caioalima"].includes(clean)) {
     state.lives = Math.min(3, state.lives + 2);
     saveState();
     renderIntegrity();
     return appendTerminal(cmd.hint(null, state));
   }
 
-  if (["luiz_S2"].includes(clean)) {
+  if (["luiz_s2"].includes(clean)) {
     state.lives = Math.max(1, state.lives - 1);
     saveState();
     renderIntegrity();
@@ -1576,7 +1610,7 @@ function runCommand(raw) {
   const text = (tier === "easy" ? cmd.easy : cmd.hard)(relic);
   state.score = Math.max(0, state.score - cost);
   state.hintsUsed += 1;
-  appendTerminal(text, `[${tier === "easy" ? "DICA FÁCIL" : "DICA DIFÍCIL"} · -${cost} XP]`);
+  appendTerminal(text);
   renderScore();
 }
 
@@ -1648,8 +1682,11 @@ function openCatalogCard(id) {
   el.catalogDetailCard.innerHTML = `
     <article class="catalog-card is-expanded">
       <div class="card-title">${escapeHtml(relic.name)}</div>
-      <img src="${escapeHtml(imgSrc(relic))}" alt="${escapeHtml(relic.name)}" />
-      <small class="card-credit">${escapeHtml(imageCredit(relic))}</small>
+      <div class="card-media">
+        <img src="${escapeHtml(imgSrc(relic))}" alt="${escapeHtml(relic.name)}" />
+        <small class="card-credit">${escapeHtml(imageCredit(relic))}</small>
+      </div>
+      <div class="card-info">
       <p>${escapeHtml(relic.description)}</p>
       <dl class="card-specs">
         <div><dt>Peso</dt><dd>${escapeHtml(relic.weight)}</dd></div>
@@ -1659,6 +1696,7 @@ function openCatalogCard(id) {
         <div><dt>Local</dt><dd>${escapeHtml(placeName(relic.location))}</dd></div>
         <div><dt>Categoria</dt><dd>${escapeHtml(relic.category)}</dd></div>
       </dl>
+      </div>
     </article>`;
   el.catalogBrowse.hidden = true;
   el.catalogDetail.hidden = false;
@@ -1685,7 +1723,7 @@ function renderObjectives() {
       return `
         <button type="button" class="objective-row${selected ? " is-selected" : ""}${done ? " is-done" : ""}" data-select="${id}" ${done ? "disabled" : ""}>
           <img src="${escapeHtml(imgSrc(relic))}" alt="" />
-          <span><b>${escapeHtml(relic.name)}</b><small></small></span>
+          <span><b>${escapeHtml(relicCode(relic))}</b><small></small></span>
           <em>${done ? "Concluído" : selected ? "Alvo" : "Selecionar"}</em>
         </button>`;
     })
@@ -1873,6 +1911,9 @@ function bindEvents() {
   el.btnMessages.addEventListener("click", () => openMonitor("messages"));
   el.btnTerminal.addEventListener("click", () => openMonitor("terminal"));
   el.btnManual.addEventListener("click", () => openMonitor("manual"));
+  document.querySelectorAll("[data-manual-tab]").forEach((btn) => {
+    btn.addEventListener("click", () => setManualTab(btn.dataset.manualTab));
+  });
   document.querySelectorAll("[data-monitor-close]").forEach((button) => {
     button.addEventListener("click", () => closeMonitor(button.dataset.monitorClose));
   });
@@ -1955,6 +1996,8 @@ function fitConsole() {
 
 // ===== Init =====
 async function init() {
+  if (document.documentElement.classList.contains("sem-mobile")) return; // celular: só o aviso
+  iniciarLoop("salaOperacoes"); // som da nave durante o jogo (a ambientação é só do menu inicial)
   fitConsole();
   window.addEventListener("resize", fitConsole);
   window.addEventListener("orientationchange", fitConsole);
@@ -1993,5 +2036,5 @@ init();
 
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
-  window.location.href = "index.html";
+  window.location.href = "./index.html";
 });

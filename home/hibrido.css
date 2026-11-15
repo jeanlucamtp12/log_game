@@ -728,3 +728,88 @@
         0 5px 9px rgba(0, 0, 0, 0.5);
 }
 .lema:hover .carta.nossa::after { transform: translateX(120%); }
+
+/* =========================================================
+   AVISO: modo história do Alex indisponível no celular
+   ========================================================= */
+.modo-celular .lado-tela { opacity: 0.6; }
+
+.aviso-mobile {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    background: rgba(5, 12, 15, 0.82);
+    backdrop-filter: blur(3px);
+}
+
+.aviso-mobile.aberto { display: flex; }
+
+.aviso-mobile-caixa {
+    width: min(100%, 380px);
+    padding: 1.4rem 1.25rem 1.2rem;
+    border: 1px solid var(--ciano);
+    border-radius: 12px;
+    background: var(--nave-escura);
+    color: var(--nave-clara);
+    font-family: var(--fonte-tela);
+    text-align: center;
+    box-shadow: 0 0 0 1px rgba(67, 220, 255, 0.18), 0 18px 40px rgba(0, 0, 0, 0.6);
+}
+
+.aviso-mobile-selo {
+    display: inline-block;
+    margin-bottom: 0.6rem;
+    padding: 0.15rem 0.6rem;
+    border: 1px solid var(--ciano);
+    border-radius: 999px;
+    color: var(--ciano);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.aviso-mobile-caixa h3 {
+    margin: 0 0 0.6rem;
+    color: #fff;
+    font-size: 1.15rem;
+}
+
+.aviso-mobile-caixa p {
+    margin: 0 0 1.1rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.aviso-mobile-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.aviso-mobile-deck,
+.aviso-mobile-fechar {
+    display: block;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 0.92rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.aviso-mobile-deck {
+    border: 1px solid var(--laranja);
+    background: var(--laranja);
+    color: var(--mesa);
+    font-weight: 700;
+}
+
+.aviso-mobile-fechar {
+    border: 1px solid rgba(143, 208, 214, 0.45);
+    background: transparent;
+    color: var(--nave-clara);
+}
