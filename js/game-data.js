@@ -934,7 +934,7 @@ export const MISSIONS = [
   {
     id: 5,
     title: "Missão 05",
-    requiredCount: 6,
+    requiredCount: 5,
     intro: [
       "Última varredura.",
       "Catalogue 6 objetos para restaurar o Arquivo Central.",

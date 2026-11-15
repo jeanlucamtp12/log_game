@@ -1,0 +1,321 @@
+/* =========================================================
+   CATÁLOGO DO MENU: janela de terminal (como os créditos)
+   com as cartas coletadas em papel.
+   Carregue DEPOIS do hibrido.css (usa as mesmas variáveis
+   e as classes .creditos-barra / .creditos-fechar).
+   ========================================================= */
+.catalogo {
+    position: fixed;
+    inset: 0;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1rem 4.2rem; /* espaço para o atalho ESC */
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-100%);
+    transition: transform 0.6s var(--mola), visibility 0s 0.6s;
+}
+
+.catalogo.aberta {
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+    transition: transform 0.6s var(--mola), visibility 0s;
+}
+
+.catalogo-janela {
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 880px);
+    max-height: 100%;
+    font-family: var(--fonte-tela);
+    color: var(--nave-clara);
+    background: rgba(6, 19, 24, 0.95);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(67, 220, 255, 0.45);
+    border-radius: 10px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 0 34px rgba(67, 220, 255, 0.18), 0 18px 40px rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+}
+
+.catalogo-corpo {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: clamp(0.8rem, 2.4vh, 1.3rem) clamp(0.9rem, 3vw, 1.5rem) clamp(1rem, 3vh, 1.5rem);
+}
+
+/* ---------- filtros ---------- */
+.cat-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.9rem 1.6rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px dotted rgba(143, 208, 214, 0.35);
+}
+
+.cat-grupo { display: grid; gap: 0.4rem; }
+
+.cat-rotulo {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: rgba(143, 208, 214, 0.7);
+}
+
+.cat-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+.cat-chip {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.1rem;
+    padding: 0 0.7rem;
+    font: inherit;
+    font-size: 0.78rem;
+    color: var(--nave-clara);
+    background: transparent;
+    border: 1px solid rgba(143, 208, 214, 0.35);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.cat-chip-icone { width: 2.4rem; padding: 0; }
+.cat-chip svg { display: block; }
+
+.cat-chip:hover,
+.cat-chip:focus-visible {
+    color: #fff;
+    border-color: var(--ciano);
+    outline: none;
+}
+
+.cat-chip.is-ativo {
+    color: #fff;
+    background: rgba(67, 220, 255, 0.18);
+    border-color: var(--ciano);
+    box-shadow: 0 0 12px rgba(67, 220, 255, 0.25);
+}
+
+/* ---------- ano: dois controles na mesma trilha ---------- */
+.cat-ano { display: grid; gap: 0.4rem; flex: 1 1 11rem; min-width: 11rem; max-width: 18rem; }
+
+.cat-ano-topo { display: flex; justify-content: space-between; align-items: baseline; }
+.cat-ano-topo b { font-size: 0.82rem; font-weight: 600; color: var(--ciano); }
+
+.cat-ano-trilha { position: relative; height: 1.5rem; }
+
+.cat-ano-trilha::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 3px;
+    margin-top: -1.5px;
+    background: rgba(143, 208, 214, 0.25);
+    border-radius: 2px;
+}
+
+.cat-ano-fill {
+    position: absolute;
+    top: 50%;
+    height: 3px;
+    margin-top: -1.5px;
+    background: var(--ciano);
+    border-radius: 2px;
+}
+
+.cat-ano-trilha input {
+    -webkit-appearance: none;
+    appearance: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    background: none;
+    pointer-events: none;
+}
+
+.cat-ano-trilha input::-webkit-slider-runnable-track { background: none; }
+.cat-ano-trilha input::-moz-range-track { background: none; }
+
+.cat-ano-trilha input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--ciano);
+    border: 2px solid #061318;
+    border-radius: 50%;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.cat-ano-trilha input::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: var(--ciano);
+    border: 2px solid #061318;
+    border-radius: 50%;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.cat-ano-trilha input:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px rgba(67, 220, 255, 0.45); }
+.cat-ano-trilha input:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px rgba(67, 220, 255, 0.45); }
+
+.cat-contagem {
+    margin-left: auto;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    color: var(--lima);
+}
+
+/* ---------- cartas (papel, como na mesa) ---------- */
+.cat-grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.9rem;
+}
+
+.cat-carta {
+    appearance: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.6rem;
+    font: inherit;
+    text-align: left;
+    color: var(--tinta);
+    background: var(--papel);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 6px 12px rgba(0, 0, 0, 0.45);
+}
+
+button.cat-carta { cursor: pointer; transition: transform 0.25s var(--mola), box-shadow 0.25s ease; }
+
+button.cat-carta:hover,
+button.cat-carta:focus-visible {
+    transform: translateY(-3px) rotate(-0.8deg);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 12px 18px rgba(0, 0, 0, 0.5), 0 0 0 2px var(--laranja);
+    outline: none;
+}
+
+.cat-carta-titulo {
+    margin: 0;
+    font-family: var(--fonte-papel);
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-style: italic;
+    line-height: 1.2;
+}
+
+.cat-carta img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    background: #07121a;
+    border: 1px solid rgba(0, 0, 0, 0.35);
+    border-radius: 3px;
+}
+
+.cat-carta-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: auto;
+    font-family: var(--fonte-tela);
+    font-size: 0.7rem;
+    color: var(--nave);
+}
+
+.cat-carta-meta span:last-child { text-align: right; }
+
+.cat-vazio {
+    grid-column: 1 / -1;
+    margin: 1.5rem 0;
+    text-align: center;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: rgba(143, 208, 214, 0.7);
+}
+
+/* ---------- detalhe ---------- */
+.cat-detalhe { display: grid; gap: 0.9rem; }
+.cat-detalhe[hidden],
+.cat-lista-view[hidden] { display: none; }
+
+.cat-voltar {
+    appearance: none;
+    justify-self: start;
+    padding: 0.4rem 0.8rem;
+    font: inherit;
+    font-size: 0.8rem;
+    color: var(--nave-clara);
+    background: transparent;
+    border: 1px solid rgba(143, 208, 214, 0.4);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.cat-voltar:hover,
+.cat-voltar:focus-visible {
+    color: #fff;
+    border-color: var(--ciano);
+    background: rgba(67, 220, 255, 0.15);
+    outline: none;
+}
+
+.cat-carta-aberta {
+    width: min(100%, 520px);
+    margin: 0 auto;
+    padding: 1rem;
+    gap: 0.7rem;
+}
+
+.cat-carta-aberta .cat-carta-titulo { font-size: 1.3rem; }
+
+.cat-carta-aberta p {
+    margin: 0;
+    font-family: var(--fonte-papel);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.cat-credito { font-size: 0.68rem; color: var(--nave); }
+
+.cat-specs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem 1rem;
+    margin: 0;
+    padding-top: 0.7rem;
+    border-top: 1px dotted rgba(29, 42, 44, 0.5);
+}
+
+.cat-specs dt { font-size: 0.66rem; letter-spacing: 0.06em; color: var(--nave); }
+.cat-specs dd { margin: 0; font-family: var(--fonte-papel); font-size: 0.9rem; font-weight: 600; }
+
+@media (max-width: 520px) {
+    .cat-grade { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+    .cat-contagem { margin-left: 0; }
+}
+
+@media (max-height: 560px) {
+    .catalogo { align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .catalogo,
+    button.cat-carta { transition: none; }
+}

@@ -24,7 +24,7 @@ import {
   formatTarget,
   placeName,
 } from "./game-data.js";
-import { iconSvg, mountIcons } from "./icons.js";
+import { iconSvg, mountIcons, typeIconSvg } from "./icons.js";
 
 const SAVE_KEY = "lunar07-save";
 const SAVE_VERSION = 3; // v3: objetos reais (ids novos) e coordenadas lat/lon; saves anteriores são descartados
@@ -1477,17 +1477,21 @@ function showCatalogBrowse() {
   el.catalogDetail.hidden = true;
 }
 
-function chipsHtml(options, active, attr) {
+// Filtro de tipo usa só o ícone (nome completo em title/aria-label); Local e "Todos" ficam com texto.
+function chipsHtml(options, active, attr, withIcons = false) {
   return [{ id: "all", label: "Todos" }, ...options]
-    .map(
-      (o) =>
-        `<button type="button" class="type-chip${active === o.id ? " is-active" : ""}" data-${attr}="${escapeHtml(o.id)}">${escapeHtml(o.label)}</button>`,
-    )
+    .map((o) => {
+      const icon = withIcons ? typeIconSvg(o.id, 18) : "";
+      const label = escapeHtml(o.label);
+      const cls = `type-chip${icon ? " type-chip-icon" : ""}${active === o.id ? " is-active" : ""}`;
+      const extra = icon ? ` title="${label}" aria-label="${label}"` : "";
+      return `<button type="button" class="${cls}" data-${attr}="${escapeHtml(o.id)}"${extra}>${icon || label}</button>`;
+    })
     .join("");
 }
 
 function renderCatalogFilters() {
-  el.typeFilters.innerHTML = chipsHtml(RELIC_TYPES, catalogFilter.type, "type");
+  el.typeFilters.innerHTML = chipsHtml(RELIC_TYPES, catalogFilter.type, "type", true);
   el.locationFilters.innerHTML = chipsHtml(LOCATIONS, catalogFilter.location, "location");
   el.yearFrom.min = el.yearTo.min = YEAR_MIN;
   el.yearFrom.max = el.yearTo.max = YEAR_MAX;
@@ -1500,9 +1504,8 @@ function renderCatalogFilters() {
 }
 
 function filteredRelics() {
-  const assigned = new Set(assignedRelicIds());
   return RELICS.filter((r) => {
-    if (!assigned.has(r.id)) return false; // objetos de missões futuras ficam ocultos
+    if (!isCataloged(r.id)) return false; // só aparece o que o jogador já catalogou
     const year = Number(r.fields.ano);
     const typeOk = catalogFilter.type === "all" || r.type === catalogFilter.type;
     const placeOk = catalogFilter.location === "all" || r.location === catalogFilter.location;
@@ -1516,17 +1519,10 @@ function renderCatalog() {
   const items = filteredRelics();
   el.catalogList.innerHTML = items.length
     ? items.map(cardHtml).join("")
-    : '<p class="catalog-empty">Nenhum objeto neste filtro.</p>';
+    : `<p class="catalog-empty">${state.cataloged.length ? "Nenhum objeto neste filtro." : "Nenhum objeto catalogado ainda."}</p>`;
 }
 
 function cardHtml(relic) {
-  if (!isCataloged(relic.id)) {
-    return `
-      <article class="catalog-card is-locked">
-        <div class="card-title">${escapeHtml(relic.codename)}</div>
-        <div class="card-mystery">?</div>
-      </article>`;
-  }
   return `
     <button type="button" class="catalog-card" data-card="${relic.id}">
       <div class="card-title">${escapeHtml(relic.name)}</div>

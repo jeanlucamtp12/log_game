@@ -7,6 +7,7 @@
     <title>L.O.G</title>
     <link rel="stylesheet" href="./home/index.css">
     <link rel="stylesheet" href="./home/hibrido.css">
+    <link rel="stylesheet" href="./home/catalog/catalogo.css">
 </head>
 
 <body>
@@ -38,7 +39,7 @@
                 <img src="./home/img/historia.png" alt="História">
             </button>
 
-            <button type="button" class="opcao-menu">
+            <button type="button" id="btnCatalogo" class="opcao-menu">
                 <img src="./home/img/catalogo.png" alt="Catálogo">
             </button>
 
@@ -129,6 +130,50 @@
             </div>
         </section>
 
+        <!-- CATÁLOGO: janela de terminal com as cartas já coletadas -->
+        <section id="catalogo" class="catalogo" aria-hidden="true" inert aria-label="Catálogo">
+            <div class="catalogo-janela">
+                <header class="creditos-barra">
+                    <span class="creditos-pontos" aria-hidden="true"><i></i><i></i><i></i></span>
+                    <span class="creditos-titulo">log@nave:~/catalogo</span>
+                    <button type="button" id="btnFecharCatalogo" class="creditos-fechar" aria-label="Fechar catálogo" tabindex="-1">✕</button>
+                </header>
+
+                <div class="catalogo-corpo">
+                    <div id="catLista" class="cat-lista-view">
+                        <div class="cat-filtros">
+                            <div class="cat-grupo">
+                                <span class="cat-rotulo">Tipo</span>
+                                <div class="cat-chips" id="catTipos"></div>
+                            </div>
+                            <div class="cat-grupo">
+                                <span class="cat-rotulo">Local</span>
+                                <div class="cat-chips" id="catLocais"></div>
+                            </div>
+                            <div class="cat-ano">
+                                <div class="cat-ano-topo">
+                                    <span class="cat-rotulo">Ano</span>
+                                    <b id="catAnoLeitura"></b>
+                                </div>
+                                <div class="cat-ano-trilha">
+                                    <div class="cat-ano-fill" id="catAnoFill"></div>
+                                    <input type="range" id="catAnoDe" aria-label="Ano inicial">
+                                    <input type="range" id="catAnoAte" aria-label="Ano final">
+                                </div>
+                            </div>
+                            <span class="cat-contagem" id="catContagem"></span>
+                        </div>
+                        <div class="cat-grade" id="catGrade"></div>
+                    </div>
+
+                    <div id="catDetalhe" class="cat-detalhe" hidden>
+                        <button type="button" id="catVoltar" class="cat-voltar">‹ Catálogo</button>
+                        <div id="catDetalheCarta"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <button type="button" id="btnVoltar" class="btn-voltar" tabindex="-1">‹ Voltar</button>
 
         <span class="atalho-menu">
@@ -182,6 +227,7 @@
     </script>
 
     <script type="module" src="./home/home.js"></script>
+    <script type="module" src="./home/catalog/catalogo.js"></script>
     
 </body>
 </html>

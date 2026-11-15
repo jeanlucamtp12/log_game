@@ -1,0 +1,19 @@
+/* Filtros de tipo do catálogo: só o ícone, centralizado */
+.type-chip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  padding: 0.38rem 0.55rem;
+}
+
+.type-chip-icon svg {
+  display: block;
+}
+
+/* Filtro de ano centralizado, em linha própria */
+.year-filter {
+  flex: 1 1 100%;
+  width: min(100%, 340px);
+  max-width: 340px;
+}
