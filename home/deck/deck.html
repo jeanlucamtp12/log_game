@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Deck virtual · L.O.G.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;800&family=Barlow+Semi+Condensed:wght@400;700&family=JetBrains+Mono:wght@500&family=Montserrat:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="deck.css">
+</head>
+<body>
+
+    <header class="topo">
+        <a id="voltar" class="voltar" href="../../index.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+            <span id="t-menu">Menu</span>
+        </a>
+        <div class="idioma" role="group" aria-label="Idioma / Language">
+            <button type="button" data-idioma="pt" aria-pressed="true">PT</button>
+            <button type="button" data-idioma="en" aria-pressed="false">EN</button>
+        </div>
+    </header>
+
+    <main class="pagina">
+        <section class="intro">
+            <img class="logo" src="img/logo.png" alt="L.O.G." onerror="this.remove()">
+            <h1 id="t-titulo">Deck virtual</h1>
+            <p id="t-sub" class="sub">Todas as cartas do jogo, sem precisar das físicas. Toque em uma carta para ampliar.</p>
+        </section>
+
+        <section id="filtros" class="filtros" aria-label="Filtros">
+            <div class="grupo">
+                <h2 id="t-local" class="rotulo">Local</h2>
+                <div id="f-local" class="f-lista" role="group" aria-labelledby="t-local"></div>
+            </div>
+            <div class="grupo">
+                <h2 id="t-cat" class="rotulo">Categoria</h2>
+                <div id="f-cat" class="f-lista f-lista-cat" role="group" aria-labelledby="t-cat"></div>
+            </div>
+        </section>
+
+        <div class="barra-status">
+            <p id="contagem" class="contagem" aria-live="polite"></p>
+            <button id="limpar" type="button" class="limpar" hidden>Limpar filtros</button>
+        </div>
+
+        <section class="secao">
+            <h2 id="t-obj" class="secao-titulo">Cartas de objeto</h2>
+            <ul id="grade" class="grade-cartas"></ul>
+        </section>
+
+        <section class="secao">
+            <h2 id="t-man" class="secao-titulo">Manuais</h2>
+            <ul id="grade-manuais" class="grade-cartas grade-manuais"></ul>
+        </section>
+    </main>
+
+    <!-- visualizador: carta grande, animada, com verso -->
+    <div id="visor" class="visor" role="dialog" aria-modal="true" aria-labelledby="visor-nome" hidden>
+        <div class="visor-corpo">
+            <button id="btn-fechar" type="button" class="visor-fechar" aria-label="Fechar">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+
+            <p id="visor-nome" class="visor-nome"></p>
+
+            <div class="visor-meio">
+                <div id="palco" class="palco">
+                    <div id="cartao" class="cartao">
+                        <div id="giro" class="giro">
+                            <div id="face-frente" class="face frente"></div>
+                            <div class="face verso">
+                                <img id="verso-img" src="img/verso.jpg" alt="" draggable="false">
+                            </div>
+                        </div>
+                        <div class="brilho"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="visor-baixo">
+                <div class="nav">
+                    <button id="btn-ant" type="button">Anterior</button>
+                    <span id="visor-pos" class="visor-pos"></span>
+                    <button id="btn-prox" type="button">Próxima</button>
+                </div>
+                <div class="acoes">
+                    <button id="btn-virar" type="button">Ver verso</button>
+                    <button id="btn-rever" type="button">Rever animação</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="deck_arte.js"></script>
+    <script src="deck_dados.js"></script>
+    <script src="deck.js"></script>
+</body>
+</html>

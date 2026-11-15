@@ -1,12 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
-    function init() {
-        window.location.href = 'jogo.html';
-    }
+    // lado da TELA: joga controlando a nave
+    // lado da MESA: joga com as cartas (deck virtual, papel do Neil)
+    const destinos = {
+        '.lado-tela': 'jogo.html',
+        '.lado-mesa': './home/deck/deck.html'
+    };
 
     document.addEventListener('click', (e) => {
-        const ladoTela = e.target.closest('.lado-tela');
-        if (ladoTela) {
-            init();
+        for (const [seletor, pagina] of Object.entries(destinos)) {
+            if (e.target.closest(seletor)) {
+                window.location.href = pagina;
+                return;
+            }
         }
     });
 });

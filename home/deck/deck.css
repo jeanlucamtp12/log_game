@@ -1,0 +1,1118 @@
+/* =========================================================
+   L.O.G · DECK VIRTUAL — ESTILO
+   ---------------------------------------------------------
+   1. Página (topo, filtros, grade)
+   2. Visualizador (carta grande + verso)
+   3. Estilo das cartas em SVG (copiado do modelo "Carta 01")
+   ========================================================= */
+:root {
+    color-scheme: dark;
+    --fundo: #05080f;
+    --fundo-2: #121a2e;
+    --ouro: #E2B84A;
+    --teal: #5F9396;
+    --teal-claro: #9FD4D6;
+    --linha: #4F6C88;
+    --texto: #DDEBEF;
+    --texto-suave: #9DB3C6;
+    --fonte: 'Barlow Semi Condensed', system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--fonte);
+    color: var(--texto);
+    background: radial-gradient(ellipse at 50% 0%, var(--fundo-2) 0%, var(--fundo) 70%) fixed;
+    overflow-x: hidden;
+}
+
+body.com-visor {
+    overflow: hidden;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--ouro);
+    outline-offset: 3px;
+}
+
+/* ---------- topo ---------- */
+.topo {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px clamp(14px, 4vw, 40px);
+    background: linear-gradient(180deg, rgba(5, 8, 15, .92), rgba(5, 8, 15, 0));
+    backdrop-filter: blur(6px);
+}
+
+.voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px 8px 8px;
+    font: 700 15px var(--fonte);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--texto);
+    text-decoration: none;
+    border: 1px solid var(--linha);
+    border-radius: 999px;
+    background: rgba(26, 36, 67, .7);
+}
+
+.voltar:hover {
+    border-color: var(--teal-claro);
+}
+
+.voltar svg,
+.visor-fechar svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.idioma {
+    display: inline-flex;
+    border: 1px solid var(--linha);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.idioma button {
+    padding: 8px 14px;
+    font: 700 14px var(--fonte);
+    letter-spacing: .08em;
+    color: var(--texto-suave);
+    background: rgba(26, 36, 67, .7);
+    border: 0;
+}
+
+.idioma button[aria-pressed="true"] {
+    color: #141B30;
+    background: var(--ouro);
+}
+
+/* ---------- página ---------- */
+.pagina {
+    width: min(1180px, 100%);
+    margin: 0 auto;
+    padding: 8px clamp(14px, 4vw, 40px) 64px;
+}
+
+.intro {
+    text-align: center;
+    padding: 8px 0 20px;
+}
+
+.intro .logo {
+    display: block;
+    height: clamp(56px, 11vh, 96px);
+    margin: 0 auto 10px;
+}
+
+.intro h1 {
+    margin: 0;
+    font: 800 clamp(30px, 6vw, 52px) / 1.05 Barlow, sans-serif;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--teal);
+}
+
+.sub {
+    margin: 10px auto 0;
+    max-width: 52ch;
+    font-size: clamp(15px, 2.2vw, 18px);
+    line-height: 1.45;
+    color: var(--texto-suave);
+}
+
+/* ---------- filtros ---------- */
+.filtros {
+    display: grid;
+    gap: 16px;
+    padding: 16px;
+    margin-top: 8px;
+    border: 1px solid rgba(111, 142, 166, .55);
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(35, 45, 82, .75), rgba(26, 34, 66, .75));
+}
+
+.grupo {
+    display: grid;
+    gap: 8px;
+}
+
+.rotulo {
+    margin: 0;
+    font: 700 14px var(--fonte);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ouro);
+}
+
+.f-lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.f-pill,
+.f-cat {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 6px 14px;
+    font: 700 15px var(--fonte);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #AFC0CE;
+    background: transparent;
+    border: 1.5px solid #6F8EA6;
+    border-radius: 999px;
+    transition: background .2s, color .2s, border-color .2s, transform .15s;
+}
+
+.f-pill:hover:not(:disabled),
+.f-cat:hover:not(:disabled) {
+    border-color: var(--teal-claro);
+    color: #fff;
+}
+
+.f-pill:active:not(:disabled),
+.f-cat:active:not(:disabled) {
+    transform: scale(.97);
+}
+
+.f-pill[aria-pressed="true"],
+.f-cat[aria-pressed="true"] {
+    color: #141B30;
+    background: var(--ouro);
+    border-color: var(--ouro);
+}
+
+.f-pill:disabled,
+.f-cat:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+}
+
+.f-cat {
+    text-transform: none;
+    letter-spacing: .02em;
+    font-size: 15px;
+}
+
+.ico-f {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: none;
+}
+
+.f-n {
+    min-width: 22px;
+    padding: 1px 6px;
+    font-size: 12px;
+    text-align: center;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .1);
+}
+
+[aria-pressed="true"]>.f-n {
+    background: rgba(20, 27, 48, .2);
+}
+
+.barra-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    margin: 14px 2px 4px;
+}
+
+.contagem {
+    margin: 0;
+    font-size: 14px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--texto-suave);
+}
+
+.limpar {
+    padding: 7px 14px;
+    font: 700 14px var(--fonte);
+    color: var(--ouro);
+    background: transparent;
+    border: 1px solid var(--ouro);
+    border-radius: 999px;
+}
+
+.limpar:hover {
+    background: rgba(226, 184, 74, .12);
+}
+
+[hidden] {
+    display: none !important;
+}
+
+/* ---------- grade de cartas ---------- */
+.secao {
+    margin-top: 18px;
+}
+
+.secao-titulo {
+    margin: 0 0 12px;
+    font: 700 15px var(--fonte);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--teal-claro);
+}
+
+.grade-cartas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr));
+    gap: clamp(10px, 2vw, 20px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.grade-manuais {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 190px));
+}
+
+.mini {
+    display: block;
+    width: 100%;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 4.4%;
+    box-shadow: 0 14px 24px -14px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .04);
+    transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s;
+}
+
+.mini:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 22px 30px -14px rgba(0, 0, 0, .95), 0 0 0 1px rgba(159, 212, 214, .4);
+}
+
+.mini svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* miniaturas ficam paradas (não gastam bateria) */
+.mini svg *,
+.mini svg {
+    animation: none !important;
+}
+
+/* ---------- visualizador ---------- */
+.visor {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(3, 6, 12, .93);
+    backdrop-filter: blur(8px);
+    animation: aparece .25s ease both;
+}
+
+@keyframes aparece {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.visor-corpo {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    height: 100%;
+    padding: 14px 12px max(14px, env(safe-area-inset-bottom));
+}
+
+.visor-fechar {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    color: var(--texto);
+    background: rgba(26, 36, 67, .85);
+    border: 1px solid var(--linha);
+    border-radius: 50%;
+}
+
+.visor-fechar:hover {
+    border-color: var(--teal-claro);
+}
+
+.visor-nome {
+    margin: 4px 56px 0;
+    min-height: 22px;
+    text-align: center;
+    font: 700 15px var(--fonte);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--texto-suave);
+}
+
+.visor-meio {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    place-items: center;
+    width: 100%;
+}
+
+.palco {
+    perspective: 1100px;
+}
+
+.cartao {
+    position: relative;
+    width: min(90vw, calc((100dvh - 170px) * 0.7159), 520px);
+    aspect-ratio: 630 / 880;
+    transform-style: preserve-3d;
+    transition: transform .5s cubic-bezier(.2, .8, .2, 1);
+    border-radius: 4.4%;
+    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .8), 0 0 0 1px rgba(255, 255, 255, .03);
+}
+
+.cartao.mexendo {
+    transition: transform .08s linear;
+}
+
+.giro {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transition: transform .75s cubic-bezier(.3, .8, .2, 1);
+}
+
+.giro.virada {
+    transform: rotateY(180deg);
+}
+
+.face {
+    position: absolute;
+    inset: 0;
+    border-radius: 4.4%;
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.face.verso {
+    transform: rotateY(180deg);
+    background: #0B1120;
+}
+
+.face.verso img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+}
+
+.face.frente svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.brilho {
+    position: absolute;
+    inset: 0;
+    border-radius: 4.4%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .4s;
+    mix-blend-mode: soft-light;
+    background: radial-gradient(circle at var(--bx, 50%) var(--by, 30%), rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 45%);
+}
+
+.cartao:hover .brilho {
+    opacity: 1;
+}
+
+.visor-baixo {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px 22px;
+}
+
+.nav,
+.acoes {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.visor-pos {
+    min-width: 64px;
+    text-align: center;
+    font: 700 15px var(--fonte);
+    letter-spacing: .1em;
+    color: var(--texto-suave);
+}
+
+.visor-baixo button {
+    min-height: 44px;
+    padding: 9px 18px;
+    font: 600 15px var(--fonte);
+    color: var(--texto);
+    background: #1A2443;
+    border: 1px solid var(--linha);
+    border-radius: 8px;
+}
+
+.visor-baixo button:hover:not(:disabled) {
+    border-color: var(--teal-claro);
+}
+
+.visor-baixo button:disabled {
+    opacity: .35;
+    cursor: default;
+}
+
+@media (max-width: 520px) {
+
+    .grade-cartas,
+    .grade-manuais {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .f-cat {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+}
+
+/* =========================================================
+   CARTAS EM SVG (copiado do modelo "Carta 01")
+   ========================================================= */
+.ico {
+    fill: none;
+    stroke: #9FD4D6;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round
+}
+
+.ico .acento {
+    stroke: #E0735F
+}
+
+.ico .acento-cheio {
+    fill: #E0735F;
+    stroke: none
+}
+
+.ico .alerta {
+    stroke: #F0B44C
+}
+
+.t-a {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 27px;
+    fill: #ECF1F4
+}
+
+.t-c {
+    font-family: Barlow, sans-serif;
+    font-weight: 400;
+    font-size: 24.5px;
+    fill: #E4ECF0
+}
+
+.lab {
+    font-weight: 700
+}
+
+.val {
+    font-weight: 400;
+    fill: #D9E3EA
+}
+
+.tag {
+    font-family: Montserrat, sans-serif;
+    font-weight: 600;
+    font-size: 19px;
+    letter-spacing: 7px;
+    fill: #E3E9EE
+}
+
+.titulo {
+    font-family: Barlow, sans-serif;
+    font-weight: 800;
+    font-size: 52px;
+    letter-spacing: 1px;
+    fill: #5F9396
+}
+
+.num {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: .4px;
+    fill: #ECF1F4
+}
+
+.grade {
+    fill: none;
+    stroke: #3A4A72;
+    stroke-width: 1;
+    opacity: .5
+}
+
+.circ {
+    fill: none;
+    stroke: #2E4068;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: .8
+}
+
+.circ .ponta {
+    fill: #0F1628;
+    stroke: #3C5585
+}
+
+.circ .pulso {
+    stroke: none
+}
+
+.caixa {
+    fill: url(#gCaixa);
+    fill-opacity: .86;
+    stroke: #6F8EA6;
+    stroke-width: 1.6
+}
+
+.rot {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 1.7px;
+    fill: #E2B84A
+}
+
+.mis-v {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 1px;
+    fill: #ECF1F4
+}
+
+.v-txt {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 21px;
+    letter-spacing: 1px;
+    fill: #ECF1F4
+}
+
+.v-txt.v-2 {
+    font-size: 21px;
+    letter-spacing: .6px
+}
+
+.v-sub {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    letter-spacing: .6px;
+    fill: #C9D6DE
+}
+
+.div {
+    fill: none;
+    stroke: #6F8EA6;
+    stroke-width: 1.4;
+    opacity: .75
+}
+
+.div.fina {
+    opacity: .4
+}
+
+.p-tit {
+    font-family: Barlow, sans-serif;
+    font-weight: 800;
+    font-size: 50px;
+    letter-spacing: 1px;
+    fill: #5F9396
+}
+
+.m-tit {
+    font-size: 41px
+}
+
+.m-cont {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1.2px;
+    fill: #8FA9BE
+}
+
+.m-ex {
+    font-family: Barlow, sans-serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 15px;
+    fill: #9DB3C6
+}
+
+.m-num {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    fill: #141B30
+}
+
+.m-txt {
+    font-family: Barlow, sans-serif;
+    font-weight: 400;
+    font-size: 17px;
+    fill: #E4ECF0
+}
+
+.m-aspas {
+    font-family: Barlow, sans-serif;
+    font-weight: 800;
+    font-size: 76px;
+    fill: #E2B84A
+}
+
+.p-sub {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 19px;
+    letter-spacing: 5px;
+    fill: #E2B84A
+}
+
+.p-cod,
+.p-sen {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 22px;
+    fill: #ECF1F4
+}
+
+.p-sen {
+    fill: #E2B84A
+}
+
+.p-desc {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 400;
+    font-size: 14.5px;
+    letter-spacing: .3px;
+    fill: #9DB3C6
+}
+
+.p-cod.p-off,
+.p-sen.p-off {
+    fill: #5E7690
+}
+
+.ico.ouro {
+    stroke: #E2B84A
+}
+
+.ico.apag {
+    stroke: #5E7690
+}
+
+.cat-v {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 27px;
+    fill: #ECF1F4
+}
+
+.v {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 32px;
+    fill: #ECF1F4
+}
+
+.v .u {
+    font-weight: 400;
+    font-size: 22px;
+    fill: #C9D6DE
+}
+
+.chip .bg {
+    fill: #18203C;
+    stroke: #6F8EA6;
+    stroke-width: 1.4
+}
+
+.chip .ico {
+    stroke: #8FC3C6;
+    opacity: .85
+}
+
+.chip.on .bg {
+    fill: #E2B84A;
+    stroke: #E2B84A
+}
+
+.chip.on .ico {
+    stroke: #141B30;
+    opacity: 1;
+    stroke-width: 2.1
+}
+
+.pill .bg {
+    fill: none;
+    stroke: #6F8EA6;
+    stroke-width: 1.5
+}
+
+.pill .dot {
+    fill: none;
+    stroke: #8FA9BE;
+    stroke-width: 1.6
+}
+
+.pill-t {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: .8px;
+    fill: #AFC0CE
+}
+
+.pill.on .bg {
+    fill: #E2B84A;
+    stroke: #E2B84A
+}
+
+.pill.on .dot {
+    fill: #141B30;
+    stroke: #141B30
+}
+
+.pill.on .pill-t {
+    fill: #141B30
+}
+
+/* ---- o movimento ---- */
+.tw {
+    animation: tw var(--d) var(--dl) ease-in-out infinite alternate
+}
+
+@keyframes tw {
+    from {
+        opacity: .12
+    }
+
+    to {
+        opacity: 1
+    }
+}
+
+.sweep {
+    transform-box: view-box;
+    transform-origin: 315px 610px;
+    animation: gira 16s linear infinite
+}
+
+@keyframes gira {
+    to {
+        transform: rotate(360deg)
+    }
+}
+
+.circ .pulso {
+    stroke: #86DADC;
+    stroke-width: 2.2;
+    stroke-dasharray: 18 900;
+    stroke-dashoffset: 918;
+    opacity: .9;
+    animation: corre var(--d) var(--dl) linear infinite
+}
+
+@keyframes corre {
+    to {
+        stroke-dashoffset: 0
+    }
+}
+
+.sinal {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: sinal 2.8s ease-out infinite
+}
+
+@keyframes sinal {
+    from {
+        transform: scale(1);
+        opacity: .9
+    }
+
+    to {
+        transform: scale(3.2);
+        opacity: 0
+    }
+}
+
+.onda {
+    animation: onda 2.4s steps(1) infinite
+}
+
+.o2 {
+    animation-delay: .3s
+}
+
+@keyframes onda {
+    0% {
+        opacity: 1
+    }
+
+    50% {
+        opacity: .15
+    }
+}
+
+/* entrada: a carta "chega" como uma transmissão */
+.anim .filete {
+    stroke-dasharray: 1000;
+    animation: desenha 1.3s cubic-bezier(.6, 0, .2, 1) both
+}
+
+@keyframes desenha {
+    from {
+        stroke-dashoffset: 1000
+    }
+
+    to {
+        stroke-dashoffset: 0
+    }
+}
+
+.anim .tag {
+    animation: sobe .5s .2s both
+}
+
+.anim .box {
+    transform-box: fill-box;
+    transform-origin: center top;
+    animation: abre .55s .95s cubic-bezier(.2, .8, .2, 1) both
+}
+
+@keyframes abre {
+    from {
+        opacity: 0;
+        transform: scaleY(.94)
+    }
+
+    to {
+        opacity: 1;
+        transform: none
+    }
+}
+
+.anim .row {
+    animation: entra .45s both;
+    animation-delay: calc(.75s + var(--i) * 85ms)
+}
+
+@keyframes entra {
+    from {
+        opacity: 0;
+        transform: translateX(-14px)
+    }
+
+    to {
+        opacity: 1;
+        transform: none
+    }
+}
+
+.anim .rodape {
+    animation: sobe .6s 1.75s both
+}
+
+@keyframes sobe {
+    from {
+        opacity: 0;
+        transform: translateY(8px)
+    }
+
+    to {
+        opacity: 1;
+        transform: none
+    }
+}
+
+.chip,
+.pill {
+    transform-box: fill-box;
+    transform-origin: center
+}
+
+.anim .chip.on {
+    animation: pop .5s 1.35s both
+}
+
+.anim .chip.on .bg {
+    animation: ouro .35s 1.35s both
+}
+
+.anim .chip.on .ico {
+    animation: icoOn .35s 1.35s both
+}
+
+.anim .pill.on {
+    animation: pop .5s 1.55s both
+}
+
+.anim .pill.on .bg {
+    animation: ouro .35s 1.55s both
+}
+
+.anim .pill.on .dot {
+    animation: dotOn .35s 1.55s both
+}
+
+.anim .pill.on .pill-t {
+    animation: txtOn .35s 1.55s both
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(1)
+    }
+
+    45% {
+        transform: scale(1.12)
+    }
+
+    100% {
+        transform: scale(1)
+    }
+}
+
+@keyframes ouro {
+    from {
+        fill: #18203C;
+        stroke: #6F8EA6
+    }
+
+    to {
+        fill: #E2B84A;
+        stroke: #E2B84A
+    }
+}
+
+@keyframes icoOn {
+    from {
+        stroke: #8FC3C6
+    }
+
+    to {
+        stroke: #141B30
+    }
+}
+
+@keyframes dotOn {
+    from {
+        fill: rgba(0, 0, 0, 0);
+        stroke: #8FA9BE
+    }
+
+    to {
+        fill: #141B30;
+        stroke: #141B30
+    }
+}
+
+@keyframes txtOn {
+    from {
+        fill: #AFC0CE
+    }
+
+    to {
+        fill: #141B30
+    }
+}
+
+.sync {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: gira 14s linear infinite
+}
+
+@media (prefers-reduced-motion:reduce) {
+    * {
+        animation: none !important;
+        transition: none !important
+    }
+}
+
+@media print {
+    * {
+        animation: none !important
+    }
+
+    .topo,
+    .filtros,
+    .visor {
+        display: none
+    }
+}
