@@ -190,6 +190,8 @@ function defaultState() {
     missionStartedAt: Date.now(),
     missionElapsedMs: 0,
     missionSummary: null,
+    outroPending: false, // a transmissão final da missão está no vidro; o resumo só abre quando o jogador fechar
+    outroFrom: 0, // 1ª linha da transmissão final dentro da conversa (a conversa abre só a partir daqui)
     terminalLines: [
       "SISTEMA DE ARQUIVO LUNAR v4.7",
       'Digite "help" para ver os comandos disponíveis.',
@@ -214,7 +216,7 @@ const missionCatalogedCount = () => currentRelicIds().length - missionRemaining(
 const assignedRelicIds = () => Object.values(state.missionRelics).flat();
 const totalUnread = () => Object.values(state.unread).reduce((a, b) => a + b, 0);
 // Enquanto houver transmissão não lida, só Msgs e Manual ficam liberados.
-const isLocked = () => totalUnread() > 0;
+const isLocked = () => totalUnread() > 0 || state.outroPending;
 // Enquanto houver erro de sincronização, só Terminal (para o código) e Manual ficam liberados.
 const isWarning = () => state.checkpointPending;
 // "Objeto encontrado" e "Missão concluída" ficam no vidro até o jogador responder:
@@ -390,6 +392,7 @@ function closeMonitor(side) {
   el.monitors[side].hidden = true;
   syncButtons();
   if (was === "report") afterReport();
+  if (was === "messages" && state.outroPending && totalUnread() === 0) showMissionEnd();
 }
 
 function closeAllMonitors() {
@@ -1215,8 +1218,13 @@ function renderReportList() {
 
 // ===== Mission flow =====
 function completeMission() {
+  // recarregou (ou chamou de novo) com a missão já concluída
+  if (state.missionSummary) {
+    if (!state.outroPending) return showMissionEnd();
+    return focusMessages(state.missionIndex, state.outroFrom);
+  }
   const mission = currentMission();
-  const elapsed = state.missionSummary ? state.missionElapsedMs : elapsedMs();
+  const elapsed = elapsedMs();
   state.missionElapsedMs = elapsed;
   state.missionSummary = {
     score: state.score,
@@ -1237,13 +1245,28 @@ function completeMission() {
       elapsedMs: elapsed,
     });
   }
-  // a transmissão final também fica no histórico da conversa da missão
-  const thread = (state.messages[state.missionIndex] ??= []);
-  if (!thread.includes(mission.outro[0])) thread.push(...mission.outro);
-  state.readLines[state.missionIndex] = thread.length; // o desfecho fica só no histórico de Msgs (já lido)
-  state.unread[state.missionIndex] = 0;
+  closeAllMonitors();
+  hideTarget();
+
+  // Antes do resumo, chega a transmissão final (mission.outro): ela é adicionada à conversa
+  // da missão, bloqueia o console como as outras transmissões e abre mostrando só o texto novo.
+  // O histórico anterior continua salvo e aparece completo ao abrir a conversa pela lista.
+  const outro = mission.outro ?? [];
+  if (!outro.length) {
+    saveState();
+    return showMissionEnd();
+  }
+  state.outroFrom = (state.messages[state.missionIndex] ?? []).length;
+  state.outroPending = true;
+  receiveMessages(outro, state.missionIndex, { focus: true, from: state.outroFrom });
+}
+
+// Resumo de "Missão concluída": aparece quando o jogador fecha a transmissão final.
+function showMissionEnd() {
+  const mission = currentMission();
+  state.outroPending = false;
+  state.outroFrom = 0;
   saveState();
-  renderBadges();
 
   el.endEyebrow.textContent =
     state.missionIndex >= MISSIONS.length - 1
@@ -1327,20 +1350,22 @@ const bumpRun = (container) => {
 
 // Chega uma transmissão nova. Fica salva na conversa da missão e conta como "não lida"
 // até o jogador ver o texto terminar de ser digitado. Com focus, a conversa abre sozinha.
-function receiveMessages(lines, index = state.missionIndex, { focus = false } = {}) {
+function receiveMessages(lines, index = state.missionIndex, { focus = false, from = 0 } = {}) {
   const thread = (state.messages[index] ??= []);
   thread.push(...lines);
   state.unread[index] = (state.unread[index] || 0) + 1;
   saveState();
   renderBadges();
-  if (isOpen("messages") && openThread === index) showThread(index); // continua digitando de onde parou
-  else if (focus) focusMessages(index);
+  if (isOpen("messages") && openThread === index) showThread(index, from); // continua digitando de onde parou
+  else if (focus) focusMessages(index, from);
   else if (isOpen("messages") && openThread === null) renderThreadList();
 }
 
-function focusMessages(index = state.missionIndex) {
+// from > 0: a conversa abre mostrando só as linhas a partir dali (o resto continua salvo e
+// aparece inteiro quando a conversa é aberta pela lista de Mensagens).
+function focusMessages(index = state.missionIndex, from = 0) {
   if (!isOpen("messages")) openMonitor("messages");
-  showThread(index);
+  showThread(index, from);
 }
 
 // Marca linhas como lidas conforme terminam de ser digitadas.
@@ -1382,19 +1407,20 @@ function renderThreadList() {
   el.threadList.innerHTML = rows.join("");
 }
 
-function showThread(index) {
+function showThread(index, from = 0) {
   if (!MISSIONS[index] || index > state.missionIndex) return;
   openThread = index;
   const lines = state.messages[index] ?? [];
+  from = Math.min(Math.max(0, from), lines.length);
   // linhas já lidas aparecem de uma vez; só as novas são digitadas aos poucos
-  const seen = Math.min(state.readLines[index] ?? (state.unread[index] ? 0 : lines.length), lines.length);
+  const seen = Math.max(from, Math.min(state.readLines[index] ?? (state.unread[index] ? 0 : lines.length), lines.length));
   bumpRun(el.chatLog);
   el.threadList.hidden = true;
   el.threadView.hidden = false;
   el.threadTitle.textContent = MISSIONS[index].title;
   el.threadBack.hidden = false; // o botão Voltar e o título ficam no cabeçalho, ao lado de "Mensagens"
   el.threadTitle.hidden = false;
-  el.chatLog.innerHTML = lines.slice(0, seen).map((line) => bubbleHtml(line)).join("");
+  el.chatLog.innerHTML = lines.slice(from, seen).map((line) => bubbleHtml(line)).join("");
   const scroller = el.chatLog.closest(".monitor-body");
   if (scroller) scroller.scrollTop = scroller.scrollHeight;
   if (seen < lines.length) {
