@@ -1249,7 +1249,7 @@ function renderReportList() {
           </button>`,
         )
         .join("")
-    : '<p class="modal-text">Nenhum relatório ainda. A cada 3 objetos catalogados a nave sofre uma interferência de sincronização. Resolva o erro com o código da carta coringa para liberar o relatório.</p>';
+    : '<p class="modal-text">Nenhum relatório ainda.</p>';
 }
 
 // ===== Mission flow =====
