@@ -13,6 +13,7 @@ import {
   LOCAL_HOP_MS,
   TYPEWRITER_DELAY_MS,
   REPORTS,
+  recoveredReport,
   CHECKPOINT_EVERY,
   HINT_EASY_THRESHOLD,
   parseCoordInput,
@@ -1244,12 +1245,36 @@ function showReport(n, fresh = false) {
   const entry = state.reports.find((r) => r.n === n);
   const data = REPORTS[n - 1];
   if (!entry || !data) return;
+  renderReport(data, entry.stats, n, fresh);
+}
+
+// Relatório especial: aparece depois da última missão; ao fechar, o jogo reinicia.
+let finalReportFlow = false;
+function showRecoveredReport() {
+  const log = state.missionLog;
+  const sum = (key) => log.reduce((acc, e) => acc + (e[key] || 0), 0);
+  const stats = {
+    lives: state.lives,
+    xpSpent: sum("xpSpent"),
+    hints: sum("hints"),
+    mistakes: sum("mistakes"),
+    time: formatTime(sum("elapsedMs")),
+    found: state.cataloged.length,
+    mission: MISSIONS.length,
+  };
+  finalReportFlow = true;
+  renderReport(recoveredReport, stats, null, true);
+}
+
+function renderReport(data, s, n, fresh) {
   reportFlow = fresh;
-  const s = entry.stats;
+  const isFinal = n === null;
   const metric = (label, value) => `<div><dt>${label}</dt><dd>${value}</dd></div>`;
   const lines = (list) => list.map((l) => `<p>${escapeHtml(l)}</p>`).join("");
+  const num = isFinal ? "ARCHIVE" : pad(n);
+  const cards = isFinal ? MISSIONS.length : n;
   el.reportContent.innerHTML = `
-    <span class="eyebrow">${L("Relatório de Missão L.O.G. · Nº", "L.O.G. Mission Report · No.")} ${pad(n)}</span>
+    <span class="eyebrow">${L("Relatório de Missão L.O.G. · Nº", "L.O.G. Mission Report · No.")} ${num}</span>
     <h3>${escapeHtml(data.title)}</h3>
     <div class="report-split">
       <section class="report-side">
@@ -1269,7 +1294,7 @@ function showReport(n, fresh = false) {
         <h4>${L("Analista de Campo", "Field Analyst")}</h4>
         <small>${L("Base L.O.G. · Jogador 2", "L.O.G. Base · Player 2")}</small>
         <dl class="report-metrics">
-          ${metric(L("Cartas processadas", "Cards processed"), n)}
+          ${metric(L("Cartas processadas", "Cards processed"), cards)}
           ${metric(L("Objetos verificados", "Objects checked"), s.found)}
           ${metric(L("Intervenções da unidade", "Unit interventions"), s.hints + s.mistakes)}
           ${metric(L("Observação", "Observation"), L("Contínua", "Ongoing"))}
@@ -1292,6 +1317,12 @@ function closeReport() {
 
 // Roda sempre que o relatório sai do vidro (botão Continuar, X ou troca de painel).
 function afterReport() {
+  if (finalReportFlow) {
+    finalReportFlow = false;
+    reportFlow = false;
+    resetGame();
+    return;
+  }
   if (isLocked() && !state.checkpointPending) {
     const idx = unreadIndex();
     if (idx !== null) focusMessages(idx);
@@ -1387,7 +1418,7 @@ function showMissionEnd() {
 function nextMission() {
   el.endModal.classList.add("hidden");
   if (state.missionIndex >= MISSIONS.length - 1) {
-    resetGame();
+    showRecoveredReport(); // ao fechar, afterReport() reinicia o jogo
     return;
   }
   state.missionIndex += 1;

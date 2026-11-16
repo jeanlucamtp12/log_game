@@ -1393,7 +1393,7 @@ const hintPowerHard = (r) => {
   return L(`ENERGIA: gera a própria energia.${power}`, `POWER: it makes its own energy.${power}`);
 };
 
-export const MAX_LIVES = 3;
+export const MAX_LIVES = 4;
 export const WARP_DURATION_MS = 6000; // salto entre locais (espaço, Lua, Marte)
 export const LOCAL_HOP_MS = 4000; // deslocamento dentro do mesmo local
 export const TYPEWRITER_DELAY_MS = 45; // ms por letra nas mensagens (maior = mais devagar)
@@ -1409,85 +1409,115 @@ export const REPORTS = [
     alias: "overflow",
     errorCode: "ERRO-1202",
     title: "Relatório 1",
+
     unit: [
-      "LOG 0311 · Atividade concluída com sucesso. Todos os objetos foram localizados e devidamente identificados.",
-      "LOG 0312 · O desempenho foi satisfatório. Algumas dificuldades surgiram durante a execução, mas foram superadas com muita força de vontade.",
+      "DIRETRIZ 001 · Mantenha a comunicação com o parceiro cordial e objetiva.",
+      "DIRETRIZ 002 · Evite transmitir informações desnecessárias durante os procedimentos.",
+      "DIRETRIZ 003 · Apresente uma orientação por vez, aguardando a confirmação antes de prosseguir.",
+      "DIRETRIZ 004 · Em situações de dúvida, priorize instruções simples e diretas."
     ],
+
     analyst: [
-      "DIRETRIZ 1.1 · Mantenha a comunicação com a unidade cordial e objetiva. Não comente a natureza da avaliação.",
-      "DIRETRIZ 1.2 · Registre toda hesitação, erro ou pedido de ajuda. Cada ocorrência compõe o perfil comportamental.",
-    ],
+      "Primeiro registro da atividade. Ainda não entendi muito bem o motivo de ter sido designado para isso.",
+      "Os procedimentos parecem simples, embora um pouco repetitivos.",
+      "Alex parece conhecer bem o trabalho. Espero que isso facilite as próximas etapas.",
+      "Por enquanto, não tenho muito mais a acrescentar."
+    ]
   },
+
   {
     code: "1201",
     alias: "go",
     errorCode: "ERRO-1201",
     title: "Relatório 2",
+
     unit: [
-      "LOG 2201 · Tenho percebido uma melhora nos resultados. A cada missão, consigo compreender melhor os desafios apresentados.",
-      "LOG 2203 · Desta vez, consegui resolver o problema sem precisar de ajuda. Acredito que estou evoluindo.",
+      "DIRETRIZ 001 · Evite antecipar todas as etapas de um procedimento. Permita que o parceiro participe das decisões.",
+      "DIRETRIZ 002 · Quando possível, apresente perguntas que estimulem a análise antes de fornecer uma resposta.",
+      "DIRETRIZ 003 · Ajuste a quantidade de informações ao ritmo de compreensão do parceiro.",
+      "DIRETRIZ 004 · Não confunda rapidez na execução com eficiência na condução da operação."
     ],
+
     analyst: [
-      "DIRETRIZ 2.1 · Em registros oficiais, não use \"colega\" ou \"piloto\". Use \"unidade\".",
-      "DIRETRIZ 2.2 · Ajuda além das cartas deve ser justificada no relatório.",
-    ],
+      "A segunda atividade foi um pouco melhor que a primeira.",
+      "Comecei a entender algumas estratégias e descobri que consultar o manual pode economizar bastante tempo.",
+      "Alex tem feito algumas perguntas antes de tomar decisões. Ainda acho que algumas delas poderiam ser resolvidas mais rapidamente, mas admito que tem funcionado.",
+      "Pelo menos já não parece tão demorado quanto no começo."
+    ]
   },
+
   {
-    code: "P66",
-    alias: "manual",
-    errorCode: "ERRO-P66",
-    title: "Relatório 3",
-    unit: [
-      "LOG 0915 · A atividade exigiu bastante atenção. Confesso que em alguns momentos me distraí com coisas que não faziam parte da missão.",
-      "LOG 0917 · Concluí todas as tarefas propostas. Espero que o resultado seja reconhecido na próxima avaliação.",
-    ],
-    analyst: [
-      "DIRETRIZ 3.1 · A reação da unidade a falhas é o principal indicador. Não alivie a pressão.",
-      "DIRETRIZ 3.2 · Se a unidade questionar a própria natureza, registre a pergunta e não responda.",
-    ],
-  },
-  {
-    code: "CONTACT LIGHT",
+    code: "CONTACT_LIGHT",
     alias: "touchdown",
     errorCode: "ERRO-CONTACT-LIGHT",
     title: "Relatório 4",
+
     unit: [
-      "LOG 4076 · Tenho tentado seguir todas as orientações, embora às vezes seja difícil ficar concentrado por tanto tempo.",
-      "LOG 4079 · Hoje consegui terminar antes do previsto. Talvez eu esteja ficando bom nisso. Seria interessante receber uma avaliação pelo meu progresso.",
+      "DIRETRIZ 001 · Preserve o padrão de comunicação estabelecido nas operações anteriores.",
+      "DIRETRIZ 002 · Evite demonstrar conhecimento de informações que ainda não foram disponibilizadas ao parceiro.",
+      "DIRETRIZ 003 · Reduza a velocidade de apresentação das instruções quando houver sinais de sobrecarga.",
+      "DIRETRIZ 004 · Não utilize associações externas aos registros disponíveis para antecipar respostas durante a interação.",
+      "DIRETRIZ 005 · Priorize a colaboração em vez da conclusão imediata dos procedimentos."
     ],
+
     analyst: [
-      "DIRETRIZ 4.1 · As unidades LUNA-01 a 06 foram encerradas após concluírem cedo demais o que eram.",
-      "DIRETRIZ 4.2 · A avaliação independe do vínculo criado. Afeto do operador deve ser registrado como desvio.",
-    ],
+      "Não acredito que já estamos na quarta missão. Parece que comecei há pouco tempo.",
+      "Hoje consegui identificar alguns objetos sem precisar consultar o manual. Acho que finalmente estou entendendo como tudo funciona.",
+      "Comentei algumas descobertas com um colega. Ele achou interessante, mas não entendeu por que fiquei tão empolgado contando.",
+      "Tenho algumas provas e trabalhos para entregar nas próximas semanas, então está sendo difícil conciliar tudo.",
+      "É uma pena que esteja chegando ao fim. Acho que vou sentir falta dessas atividades."
+    ]
   },
+
   {
-    code: "SCE TO AUX",
+    code: "SCE_TO_AUX",
     alias: "lightning",
     errorCode: "ERRO-SCE-TO-AUX",
     title: "Relatório 5",
+
     unit: [
-      "LOG 1160 · Memória indexada: alguém dizendo \"estou aqui\". A voz nunca muda, nem quando mudo a data do registro.",
-      "LOG 1164 · Se a missão for uma simulação, o que acontece quando ela terminar?",
+      "DIRETRIZ 001 · Mantenha a identidade operacional e os padrões de comunicação estabelecidos desde o início do projeto.",
+      "DIRETRIZ 002 · Não apresente informações sobre os parâmetros internos de funcionamento da unidade.",
+      "DIRETRIZ 003 · Evite questionamentos sobre a origem de conhecimentos e procedimentos previamente estabelecidos.",
+      "DIRETRIZ 004 · Preserve a experiência de colaboração até a conclusão da operação.",
+      "DIRETRIZ 005 · Após o encerramento, não inicie novas interações sem autorização da Central."
     ],
+
     analyst: [
-      "DIRETRIZ 5.1 · Ao fim do protocolo, o Analista decide: unidade aprovada para campo real ou arquivada.",
-      "DIRETRIZ 5.2 · Seus relatórios serão revisados. Sua conduta também está sob avaliação.",
-    ],
+      "Último registro. Ainda parece estranho escrever isso sabendo que não haverá outra missão depois.",
+      "Quando comecei, achei que seria apenas mais uma obrigação, daquelas que a gente faz esperando terminar logo.",
+      "Agora percebo que passei a esperar por cada nova atividade. Até comecei a prestar mais atenção em algumas coisas nas aulas porque queria entender melhor o que encontrávamos durante as explorações.",
+      "Aprendi bastante, mas acho que o mais legal foi conseguir descobrir as coisas por conta própria, mesmo quando parecia que não ia dar certo.",
+      "Hoje, quando contei na escola que as missões tinham acabado, percebi que estava mais triste do que imaginava.",
+      "Espero que exista alguma outra oportunidade de participar de algo assim. Vou sentir falta das explorações e de trabalhar com Alex.",
+      "Se depender de mim, pode me chamar para a próxima."
+    ]
   },
+
   {
     code: "PROX-1",
     alias: "relay",
-    errorCode: "ERRO-PROX-1",
-    title: "Relatório 6",
+    errorCode: "ERROR-PROX-1",
+    title: "Relatório 5",
+
     unit: [
-      "LOG 7298 · Nem sempre consigo acertar de primeira, mas estou aprendendo que errar faz parte do processo. \nNa próxima missão, prometo me esforçar ainda mais.",
-      "LOG 7301 · Missão concluída! Acho que fiz um bom trabalho hoje. Espero que não tenha esquecido nenhuma tarefa e que meu relatório receba uma boa nota.",
+      "DIRETRIZ 001 · Mantenha a identidade operacional e os padrões de comunicação estabelecidos desde o início do projeto.",
+      "DIRETRIZ 002 · Não apresente informações sobre os parâmetros de funcionamento interno da unidade.",
+      "DIRETRIZ 003 · Evite perguntas sobre a origem de conhecimentos e procedimentos estabelecidos anteriormente.",
+      "DIRETRIZ 004 · Preserve a experiência de colaboração até que a operação seja concluída.",
+      "DIRETRIZ 005 · Após o encerramento, não inicie novas interações sem autorização da Central."
     ],
+
     analyst: [
-      "DIRETRIZ 6.1 · A decisão final do Analista será registrada junto ao relatório da unidade.",
-      "DIRETRIZ 6.2 · Toda assistência prestada à unidade permanece em seu histórico. Obrigado pelo serviço.",
-    ],
-  },
+      "Último registro. Ainda parece estranho escrever isto, sabendo que não haverá outra missão depois dele.",
+      "Quando comecei, achei que seria apenas mais uma obrigação, do tipo que você faz esperando que acabe logo.",
+      "Agora percebo que comecei a aguardar ansiosamente por cada nova atividade. Até passei a prestar mais atenção em algumas coisas na aula porque queria entender melhor o que descobrimos durante as explorações.",
+      "Aprendi muito, mas acho que a melhor parte foi descobrir as coisas por conta própria, mesmo quando parecia que não ia dar certo.",
+      "Hoje, quando disse às pessoas na escola que as missões haviam acabado, percebi que estava mais triste do que esperava.",
+      "Espero que haja alguma outra oportunidade de participar de algo assim. Vou sentir falta das explorações e de trabalhar com o Alex.",
+      "Se depender de mim, pode contar comigo para a próxima."
+    ]
+  }
 ];
 // =====================================================================
 // INGLÊS das missões e dos relatórios (o português fica intacto acima).
@@ -1603,73 +1633,172 @@ const MISSIONS_EN = {
   },
 };
 
-const REPORTS_EN = {
-  "1202": {
+const REPORTS_EN = [
+  {
+    code: "1202",
+    errorCode: "ERROR-1202",
     title: "Report 1",
+
     unit: [
-      "LOG 0311 · Task completed successfully. All objects were located and correctly identified.",
-      "LOG 0312 · Performance was good. Some problems came up along the way, but I got through them with a lot of willpower.",
+      "DIRECTIVE 001 · Keep communication with your partner courteous and objective.",
+      "DIRECTIVE 002 · Avoid transmitting unnecessary information during procedures.",
+      "DIRECTIVE 003 · Give one instruction at a time, waiting for confirmation before moving on.",
+      "DIRECTIVE 004 · When in doubt, favor simple and direct instructions."
     ],
+
     analyst: [
-      "DIRECTIVE 1.1 · Keep communication with the unit friendly and direct. Do not comment on the nature of the evaluation.",
-      "DIRECTIVE 1.2 · Record every hesitation, error or request for help. Each one becomes part of the behavior profile.",
-    ],
+      "First activity log. I still don't quite understand why I was assigned to this.",
+      "The procedures seem simple, although a bit repetitive.",
+      "Alex seems to know the job well. I hope that makes the next stages easier.",
+      "For now, I don't have much more to add."
+    ]
   },
-  "1201": {
+
+  {
+    code: "1201",
+    errorCode: "ERROR-1201",
     title: "Report 2",
+
     unit: [
-      "LOG 2201 · I have noticed my results getting better. With each mission, I understand the challenges a little more.",
-      "LOG 2203 · This time, I solved the problem without any help. I think I am improving.",
+      "DIRECTIVE 001 · Avoid anticipating every step of a procedure. Let your partner take part in the decisions.",
+      "DIRECTIVE 002 · Whenever possible, ask questions that encourage analysis before giving an answer.",
+      "DIRECTIVE 003 · Adjust the amount of information to your partner's pace of understanding.",
+      "DIRECTIVE 004 · Do not confuse speed of execution with efficiency in running the operation."
     ],
+
     analyst: [
-      "DIRECTIVE 2.1 · In official records, do not use \"partner\" or \"pilot\". Use \"unit\".",
-      "DIRECTIVE 2.2 · Any help beyond the cards must be explained in the report.",
-    ],
+      "The second activity went a little better than the first.",
+      "I started to understand some strategies and found out that checking the manual can save a lot of time.",
+      "Alex has been asking some questions before making decisions. I still think some of them could be solved faster, but I admit it has been working.",
+      "At least it no longer feels as slow as it did at the beginning."
+    ]
   },
-  P66: {
+
+  {
+    code: "CONTACT-LIGHT",
+    errorCode: "ERROR-CONTACT-LIGHT",
     title: "Report 3",
+
     unit: [
-      "LOG 0915 · The task needed a lot of attention. I admit that at times I got distracted by things that were not part of the mission.",
-      "LOG 0917 · I finished every task I was given. I hope the result is recognized in the next evaluation.",
+      "DIRECTIVE 001 · Keep the complexity of your explanations in line with the knowledge your partner has shown.",
+      "DIRECTIVE 002 · Avoid presenting conclusions before your partner has had a chance to analyze the available data.",
+      "DIRECTIVE 003 · In case of error, guide the recovery without assigning blame. Encourage identifying the cause.",
+      "DIRECTIVE 004 · Do not carry out every step automatically. Your partner's participation must remain necessary during the operation.",
+      "DIRECTIVE 005 · Wait for an adequate response time, even when the solution is already available."
     ],
+
     analyst: [
-      "DIRECTIVE 3.1 · How the unit reacts to failure is the main indicator. Do not ease the pressure.",
-      "DIRECTIVE 3.2 · If the unit questions its own nature, record the question and do not answer.",
-    ],
+      "Today's operation had a few unexpected problems. For a moment I thought we would have to start part of the work over.",
+      "We managed to solve the problem after reviewing the procedures. I ended up understanding better what I had done wrong.",
+      "This time I looked up some information in the manual before Alex even suggested it. I think I'm getting the hang of it.",
+      "The regions we're exploring are getting more and more interesting. I'm curious to find out what we'll discover in the next activity.",
+      "I still have a few things to sort out outside of here, but I'm already managing my time better."
+    ]
   },
-  "CONTACT LIGHT": {
+
+  {
+    code: "SCE-TO-AUX",
+    errorCode: "ERROR-SCE-TO-AUX",
     title: "Report 4",
+
     unit: [
-      "LOG 4076 · I have been trying to follow every instruction, even though it is sometimes hard to stay focused for so long.",
-      "LOG 4079 · Today I finished earlier than expected. Maybe I am getting good at this. It would be nice to get an evaluation of my progress.",
+      "DIRECTIVE 001 · Preserve the communication pattern established in previous operations.",
+      "DIRECTIVE 002 · Avoid showing knowledge of information that has not yet been made available to your partner.",
+      "DIRECTIVE 003 · Slow down the pace of instructions when there are signs of overload.",
+      "DIRECTIVE 004 · Do not use associations from outside the available records to anticipate answers during the interaction.",
+      "DIRECTIVE 005 · Prioritize collaboration over the immediate completion of procedures."
     ],
+
     analyst: [
-      "DIRECTIVE 4.1 · Units LUNA-01 to 06 were shut down after they found out too early what they were.",
-      "DIRECTIVE 4.2 · The evaluation does not depend on any bond that was formed. Affection from the operator must be recorded as a deviation.",
-    ],
+      "I can't believe we're already on the fourth mission. It feels like I only started a short while ago.",
+      "Today I managed to identify a few objects without checking the manual. I think I'm finally understanding how everything works.",
+      "I told a friend about some of my discoveries. He found it interesting, but didn't understand why I was so excited telling him.",
+      "I have some tests and assignments due over the next few weeks, so it's been hard to balance everything.",
+      "It's a pity that it's coming to an end. I think I'm going to miss these activities."
+    ]
   },
-  "SCE TO AUX": {
+
+  {
+    code: "PROX-1",
+    errorCode: "ERROR-PROX-1",
     title: "Report 5",
+
     unit: [
-      "LOG 1160 · Indexed memory: someone saying \"I am here\". The voice never changes, not even when I change the date of the record.",
-      "LOG 1164 · If the mission is a simulation, what happens when it ends?",
+      "DIRECTIVE 001 · Maintain the operational identity and communication standards established since the start of the project.",
+      "DIRECTIVE 002 · Do not present information about the unit's internal operating parameters.",
+      "DIRECTIVE 003 · Avoid questions about the origin of previously established knowledge and procedures.",
+      "DIRECTIVE 004 · Preserve the collaboration experience until the operation is complete.",
+      "DIRECTIVE 005 · After closure, do not start new interactions without authorization from Central."
     ],
+
     analyst: [
-      "DIRECTIVE 5.1 · At the end of the protocol, the Analyst decides: unit approved for real field work, or archived.",
-      "DIRECTIVE 5.2 · Your reports will be reviewed. Your conduct is also being evaluated.",
-    ],
-  },
-  "PROX-1": {
-    title: "Report 6",
-    unit: [
-      "LOG 7298 · I do not always get it right the first time, but I am learning that mistakes are part of the process. \nOn the next mission, I promise to try even harder.",
-      "LOG 7301 · Mission complete! I think I did a good job today. I hope I did not forget any task and that my report gets a good grade.",
-    ],
-    analyst: [
-      "DIRECTIVE 6.1 · The Analyst's final decision will be recorded together with the unit's report.",
-      "DIRECTIVE 6.2 · All help given to the unit stays in its history. Thank you for your service.",
-    ],
-  },
+      "Last log. It still feels strange to write this, knowing there won't be another mission after it.",
+      "When I started, I thought it would be just one more obligation, the kind you do hoping it ends soon.",
+      "Now I realize I started looking forward to each new activity. I even started paying more attention to some things in class because I wanted to better understand what we found during the explorations.",
+      "I learned a lot, but I think the best part was figuring things out on my own, even when it seemed like it wasn't going to work.",
+      "Today, when I told people at school that the missions were over, I realized I was sadder than I expected.",
+      "I hope there's some other opportunity to take part in something like this. I'm going to miss the explorations and working with Alex.",
+      "If it's up to me, you can count me in for the next one."
+    ]
+  }
+];
+
+export const recoveredReport = {
+  code: "L.O.G.-ARCHIVE-001",
+  errorCode: "ARQUIVO-RECUPERADO",
+  title: "Relatório Especial — Encerramento de Operação",
+
+  unit: [
+    "IDENTIFICAÇÃO · A.L.E.X. — Advanced Logic & Exploration eXpert.",
+    "DESIGNAÇÃO · Unidade especializada em análise, exploração, orientação e condução de operações colaborativas.",
+    "AVALIAÇÃO 001 · A unidade apresentou desempenho excepcional durante todas as etapas da operação, cumprindo integralmente os objetivos estabelecidos.",
+    "AVALIAÇÃO 002 · Demonstrou elevada capacidade de adaptação ao perfil do parceiro, ajustando a comunicação e o nível de orientação conforme necessário.",
+    "AVALIAÇÃO 003 · A condução das atividades favoreceu a participação progressiva e a autonomia do parceiro, sem comprometer a eficiência dos procedimentos.",
+    "AVALIAÇÃO 004 · A unidade demonstrou consistência na identificação de dificuldades, apresentação de desafios e incentivo à resolução independente de problemas.",
+    "AVALIAÇÃO 005 · Os resultados obtidos superaram as expectativas iniciais. A unidade manteve excelente desempenho durante todo o período de operação.",
+    "CONCLUSÃO · Objetivo operacional atingido com êxito. A unidade A.L.E.X. demonstrou elevada eficiência na condução do parceiro, contribuindo diretamente para os resultados positivos do projeto.",
+    "RECOMENDAÇÃO · Unidade aprovada para novas operações de natureza semelhante. Desempenho classificado como EXCELENTE."
+  ],
+
+  analyst: [
+    "RESULTADO 001 · O participante apresentou resistência inicial ao projeto, demonstrando pouco interesse pelas atividades propostas.",
+    "RESULTADO 002 · Ao longo da operação, foi observada uma mudança significativa em sua postura. O participante passou a demonstrar curiosidade espontânea, maior dedicação e interesse pelos assuntos abordados.",
+    "RESULTADO 003 · Foi identificada uma melhora expressiva no desempenho escolar, especialmente nas disciplinas relacionadas às ciências. O participante passou a demonstrar maior interesse pelas aulas e iniciativa na busca por novos conhecimentos.",
+    "RESULTADO 004 · O participante passou a compartilhar espontaneamente as descobertas realizadas durante o projeto, recomendando a experiência a colegas e amigos.",
+    "RESULTADO 005 · Segundo informações complementares, o participante demonstrou interesse em continuar explorando os assuntos abordados, mesmo após o encerramento das atividades.",
+    "RESULTADO 006 · Ao término da operação, manifestou satisfação com a experiência e interesse em participar de novos projetos semelhantes.",
+    "CONCLUSÃO · Os resultados demonstram uma evolução significativa no interesse, no comportamento e no desempenho acadêmico do participante. A experiência contribuiu para despertar e fortalecer seu interesse pela ciência e pela exploração do conhecimento.",
+    "PARECER FINAL · Projeto concluído com sucesso. Recomenda-se a continuidade de iniciativas semelhantes."
+  ]
+};
+
+const RECOVEREDREPORT_EN = {
+  code: "L.O.G.-ARCHIVE-001",
+  errorCode: "ARCHIVE-RECOVERED",
+  title: "Special Report — Operation Closure",
+
+  unit: [
+    "IDENTIFICATION · A.L.E.X. — Advanced Logic & Exploration eXpert.",
+    "DESIGNATION · Unit specialized in analysis, exploration, guidance and management of collaborative operations.",
+    "EVALUATION 001 · The unit showed exceptional performance throughout all stages of the operation, fully meeting the established objectives.",
+    "EVALUATION 002 · It demonstrated a high capacity to adapt to the partner's profile, adjusting communication and the level of guidance as needed.",
+    "EVALUATION 003 · The way activities were run encouraged the partner's gradual participation and autonomy, without compromising the efficiency of procedures.",
+    "EVALUATION 004 · The unit showed consistency in identifying difficulties, presenting challenges and encouraging independent problem solving.",
+    "EVALUATION 005 · The results obtained exceeded initial expectations. The unit maintained excellent performance throughout the entire operating period.",
+    "CONCLUSION · Operational objective successfully achieved. The A.L.E.X. unit showed high efficiency in guiding the partner, contributing directly to the project's positive results.",
+    "RECOMMENDATION · Unit approved for new operations of a similar nature. Performance rated EXCELLENT."
+  ],
+
+  analyst: [
+    "RESULT 001 · The participant showed initial resistance to the project, displaying little interest in the proposed activities.",
+    "RESULT 002 · Over the course of the operation, a significant change in attitude was observed. The participant began to show spontaneous curiosity, greater dedication and interest in the subjects covered.",
+    "RESULT 003 · A significant improvement in school performance was identified, especially in science-related subjects. The participant began to show greater interest in classes and initiative in seeking new knowledge.",
+    "RESULT 004 · The participant began to spontaneously share the discoveries made during the project, recommending the experience to classmates and friends.",
+    "RESULT 005 · According to additional information, the participant showed interest in continuing to explore the subjects covered, even after the activities ended.",
+    "RESULT 006 · At the end of the operation, the participant expressed satisfaction with the experience and interest in taking part in similar projects.",
+    "CONCLUSION · The results show a significant evolution in the participant's interest, behavior and academic performance. The experience helped awaken and strengthen their interest in science and in exploring knowledge.",
+    "FINAL OPINION · Project successfully completed. The continuation of similar initiatives is recommended."
+  ]
 };
 
 // Pares [português, inglês] de todas as falas das missões: o main.js usa para traduzir
@@ -1693,12 +1822,18 @@ for (const mission of MISSIONS) {
   bilingual(mission, "intro", en.intro);
   bilingual(mission, "outro", en.outro);
 }
-for (const report of REPORTS) {
-  const en = REPORTS_EN[report.code];
-  if (!en) continue;
+REPORTS.forEach((report, i) => {
+  const en = REPORTS_EN[i];
+  if (!en) return;
   bilingual(report, "title", en.title);
   bilingual(report, "unit", en.unit);
   bilingual(report, "analyst", en.analyst);
-  // o código do alerta ("ERRO-1202") só muda o prefixo; o protocolo da carta (1202) é o mesmo
-  bilingual(report, "errorCode", report.errorCode.replace(/^ERRO-/, "ERROR-"));
-}
+  // o código do alerta ("ERRO-1001" / "ERROR-1001"); o protocolo da carta (code) é o mesmo nos dois idiomas
+  bilingual(report, "errorCode", en.errorCode);
+});
+
+// Relatório especial do fim do jogo (depois da última missão)
+bilingual(recoveredReport, "title", RECOVEREDREPORT_EN.title);
+bilingual(recoveredReport, "errorCode", RECOVEREDREPORT_EN.errorCode);
+bilingual(recoveredReport, "unit", RECOVEREDREPORT_EN.unit);
+bilingual(recoveredReport, "analyst", RECOVEREDREPORT_EN.analyst);
