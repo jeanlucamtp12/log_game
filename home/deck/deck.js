@@ -87,8 +87,10 @@
     };
 
     /* ---------- estado ---------- */
+    // idioma compartilhado com a capa e a nave (js/idioma.js): sem escolha salva, vale o padrão de lá
     let idioma = 'pt';
-    try { idioma = localStorage.getItem('log-deck-idioma') === 'en' ? 'en' : 'pt'; } catch (e) { /* sem armazenamento */ }
+    if (window.LOG_IDIOMA) idioma = window.LOG_IDIOMA.get();
+    else try { idioma = localStorage.getItem('log-deck-idioma') === 'en' ? 'en' : 'pt'; } catch (e) { /* sem armazenamento */ }
     const filtro = { local: new Set(), cat: new Set(), fav: false };   // vários locais/categorias ao mesmo tempo
 
     /* favoritas do jogador, salvas no aparelho (pelo id do JSON) */
@@ -869,6 +871,7 @@ ${linhas}
         $('#t-obj').textContent = u.secObj;
         $('#t-man').textContent = u.secMan;
         $('#t-limpar').textContent = u.limpar;
+        elFiltros.setAttribute('aria-label', idioma === 'pt' ? 'Filtros' : 'Filters');
         btnFechar.setAttribute('aria-label', u.fechar);
         btnAnt.textContent = u.anterior;
         btnProx.textContent = u.proxima;
@@ -882,7 +885,8 @@ ${linhas}
         const b = e.target.closest('button');
         if (!b || b.dataset.idioma === idioma) return;
         idioma = b.dataset.idioma;
-        try { localStorage.setItem('log-deck-idioma', idioma); } catch (err) { /* ok */ }
+        if (window.LOG_IDIOMA) window.LOG_IDIOMA.set(idioma);
+        else try { localStorage.setItem('log-deck-idioma', idioma); } catch (err) { /* ok */ }
         aplicaTextos();
         fontesProntas.then(() => {
             if (!cartas.length) return;   // ainda carregando: o carregamento desenha no idioma atual

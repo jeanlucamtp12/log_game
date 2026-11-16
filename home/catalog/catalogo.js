@@ -1,6 +1,6 @@
 // Catálogo do menu inicial: mostra só as cartas que o jogador já catalogou no jogo.
 // Lê o mesmo save do jogo (localStorage) e usa os mesmos dados e filtros.
-import { RELICS, RELIC_TYPES, LOCATIONS, MISSIONS, placeName } from "../../js/game-data.js";
+import { RELICS, RELIC_TYPES, LOCATIONS, MISSIONS, placeName, L } from "../../js/game-data.js";
 import { typeIconSvg } from "../../js/icons.js";
 
 const SAVE_KEY = "lunar07-save"; // mesma chave de js/main.js
@@ -63,14 +63,14 @@ el.janela.addEventListener(
     const img = e.target;
     if (!(img instanceof HTMLImageElement) || img.dataset.fallback === "1") return;
     img.dataset.fallback = "1";
-    img.src = placeholder("Imagem indisponível");
+    img.src = placeholder(L("Imagem indisponível", "Image unavailable"));
   },
   true,
 );
 
 // ---- filtros ----
 function chips(opcoes, ativo, attr, comIcone) {
-  return [{ id: "all", label: "Todos" }, ...opcoes]
+  return [{ id: "all", label: L("Todos", "All") }, ...opcoes]
     .map((o) => {
       const icone = comIcone ? typeIconSvg(o.id, 18) : "";
       const nome = esc(o.label);
@@ -118,15 +118,18 @@ function cartaHtml(r) {
 
 function renderLista() {
   renderFiltros();
-  el.contagem.textContent = `${pad(coletadas.size)} / ${pad(TOTAL)} coletadas`;
+  el.contagem.textContent = L(`${pad(coletadas.size)} / ${pad(TOTAL)} coletadas`, `${pad(coletadas.size)} / ${pad(TOTAL)} collected`);
   const itens = filtradas();
   if (itens.length) {
     el.grade.innerHTML = itens.map(cartaHtml).join("");
   } else if (!coletadas.size) {
     el.grade.innerHTML =
-      '<p class="cat-vazio">Nenhum objeto catalogado ainda.<br>Jogue pela tela, encontre objetos e catalogue-os para vê-los aqui.</p>';
+      L(
+        '<p class="cat-vazio">Nenhum objeto catalogado ainda.<br>Jogue pela tela, encontre objetos e catalogue-os para vê-los aqui.</p>',
+        '<p class="cat-vazio">No objects cataloged yet.<br>Play on the screen, find objects and catalog them to see them here.</p>',
+      );
   } else {
-    el.grade.innerHTML = '<p class="cat-vazio">Nenhum objeto neste filtro.</p>';
+    el.grade.innerHTML = L('<p class="cat-vazio">Nenhum objeto neste filtro.</p>', '<p class="cat-vazio">No objects match this filter.</p>');
   }
 }
 
@@ -136,9 +139,11 @@ function mostrarLista() {
   el.lista.hidden = false;
 }
 
+let detalheId = null; // carta aberta no detalhe (para redesenhar se o idioma mudar)
 function mostrarDetalhe(id) {
   const r = RELICS.find((x) => x.id === id);
   if (!r || !coletadas.has(id)) return;
+  detalheId = id;
   el.detalheCarta.innerHTML = `
     <article class="cat-carta cat-carta-aberta">
       <h3 class="cat-carta-titulo">${esc(r.name)}</h3>
@@ -149,12 +154,12 @@ function mostrarDetalhe(id) {
       <div class="cat-info">
         <p>${esc(r.description)}</p>
         <dl class="cat-specs">
-        <div><dt>Peso</dt><dd>${esc(r.weight)}</dd></div>
-        <div><dt>Altura</dt><dd>${esc(r.height)}</dd></div>
-        <div><dt>Ano</dt><dd>${esc(r.fields.ano)}</dd></div>
-        <div><dt>Missão</dt><dd>${esc(r.fields.missao)}</dd></div>
-        <div><dt>Local</dt><dd>${esc(placeName(r.location))}</dd></div>
-        <div><dt>Categoria</dt><dd>${esc(r.category)}</dd></div>
+        <div><dt>${L("Peso", "Weight")}</dt><dd>${esc(r.weight)}</dd></div>
+        <div><dt>${L("Altura", "Height")}</dt><dd>${esc(r.height)}</dd></div>
+        <div><dt>${L("Ano", "Year")}</dt><dd>${esc(r.fields.ano)}</dd></div>
+        <div><dt>${L("Missão", "Mission")}</dt><dd>${esc(r.fields.missao)}</dd></div>
+        <div><dt>${L("Local", "Location")}</dt><dd>${esc(placeName(r.location))}</dd></div>
+        <div><dt>${L("Categoria", "Category")}</dt><dd>${esc(r.category)}</dd></div>
         </dl>
       </div>
     </article>`;
@@ -222,6 +227,13 @@ function anoMudou(quem) {
 }
 el.de.addEventListener("input", () => anoMudou("from"));
 el.ate.addEventListener("input", () => anoMudou("to"));
+
+// troca de idioma na capa com o catálogo aberto: redesenha no idioma novo
+document.addEventListener("log-idioma", () => {
+  if (!aberto()) return;
+  if (!el.detalhe.hidden && detalheId) return mostrarDetalhe(detalheId);
+  renderLista();
+});
 
 el.grade.addEventListener("click", (e) => {
   const c = e.target.closest("[data-carta]");

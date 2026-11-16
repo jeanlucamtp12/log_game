@@ -2,6 +2,14 @@
 // Os objetos vêm do arquivo oficial de cartas (objects.json, L.O.G. — Legacy of Giants),
 // com os textos originais (em inglês). As imagens são as fotos/ilustrações oficiais da NASA.
 
+// ---- Idioma (EN | PT) ----
+// O idioma vem de js/idioma.js (window.LOG_IDIOMA), carregado no <head> de cada página.
+// L("texto em português", "English text") escolhe na hora, então a troca na capa vale sem recarregar.
+const idiomaAtual = () => (typeof window !== "undefined" && window.LOG_IDIOMA ? window.LOG_IDIOMA.get() : "pt");
+export const isEnglish = () => idiomaAtual() === "en";
+export const L = (pt, en) => (isEnglish() ? en : pt);
+const decimal = (text) => (isEnglish() ? String(text) : String(text).replace(".", ","));
+
 // Filtros do catálogo = as 5 categorias das cartas.
 export const RELIC_TYPES = [
   { id: "rover", label: "Rovers and vehicles" },
@@ -12,13 +20,15 @@ export const RELIC_TYPES = [
 ];
 
 export const LOCATIONS = [
-  { id: "Lua", label: "Lua" },
-  { id: "Marte", label: "Marte" },
-  { id: "espaco", label: "Espaço" }, // mesmo valor de SPACE no main.js
+  { id: "Lua", get label() { return L("Lua", "Moon"); } },
+  { id: "Marte", get label() { return L("Marte", "Mars"); } },
+  { id: "espaco", get label() { return L("Espaço", "Space"); } }, // mesmo valor de SPACE no main.js
 ];
 
 // Nome para exibir de um local (o valor interno do espaço é "espaco").
-export const placeName = (loc) => (loc === "espaco" ? "Espaço" : loc);
+// Os ids internos ("Lua", "Marte", "espaco") não mudam: só o nome exibido segue o idioma.
+const PLACE_EN = { Lua: "Moon", Marte: "Mars", espaco: "Space" };
+export const placeName = (loc) => (isEnglish() ? PLACE_EN[loc] ?? loc : loc === "espaco" ? "Espaço" : loc);
 
 // ---- Coordenadas: latitude e longitude ----
 // O jogador digita DOIS campos no Navegador:
@@ -27,8 +37,9 @@ export const placeName = (loc) => (loc === "espaco" ? "Espaço" : loc);
 // Aceita "0,67", "0.67", "-3,01", "3,01 S", "23,47° L", "23.42 O"...
 export const COORD_TOLERANCE = 0.006; // as cartas trazem 2 casas decimais
 
-export const formatLat = (v) => `${v.toFixed(2).replace(".", ",")}° ${v < 0 ? "S" : "N"}`;
-export const formatLon = (v) => `${v.toFixed(2).replace(".", ",")}° ${v < 0 ? "O" : "L"}`;
+// Em inglês: ponto decimal e E/W (como nas cartas em inglês); em português: vírgula e L/O.
+export const formatLat = (v) => `${decimal(v.toFixed(2))}° ${v < 0 ? "S" : "N"}`;
+export const formatLon = (v) => `${decimal(v.toFixed(2))}° ${v < 0 ? L("O", "W") : L("L", "E")}`;
 export const formatCoord = (c) => `${formatLat(c.lat)} · ${formatLon(c.lon)}`;
 
 // axis: "lat" aceita N/S · "lon" aceita L/O (E/W também). Retorna número ou null se for inválido.
@@ -71,7 +82,7 @@ export const distMatches = (relic, value) =>
   Math.abs(value - relic.distanciaUA) < (Number.isInteger(relic.distanciaUA) ? 0.5 : COORD_TOLERANCE);
 
 export const formatTarget = (relic) =>
-  relic.coordenadas ? formatCoord(relic.coordenadas) : `${String(relic.distanciaUA).replace(".", ",")} UA`;
+  relic.coordenadas ? formatCoord(relic.coordenadas) : `${decimal(relic.distanciaUA)} ${L("UA", "AU")}`;
 
 // ---- Código de identificação ----
 // Enquanto o objeto não é encontrado, o jogador vê só um código (ex.: "D312-22"), nunca o nome.
@@ -866,6 +877,8 @@ export const RELICS = [
 export const HINT_COMMANDS = {
   // As 5 dicas do alvo. Cada uma tem duas versões (ver "Dicas por nível" mais abaixo):
   //   easy -> XP <= 2000 (faixa estreita, bem direta)   hard -> XP > 2000 (faixa larga / pista indireta)
+  // Os comandos em português continuam valendo nos dois idiomas; os nomes em inglês
+  // (object_size, object_weight...) são apelidos, aceitos também nos dois idiomas (ver HINT_ALIASES).
   tamanho_objeto: {
     label: "tamanho_objeto",
     easy: (r) => hintSize(r, SIZE_EASY),
@@ -878,13 +891,13 @@ export const HINT_COMMANDS = {
   },
   partiu_em: {
     label: "partiu_em",
-    easy: (r) => `PARTIU EM: entre ${yearWindow(r.fields.lancamento)}.`,
-    hard: (r) => `PARTIU EM: ${yearEra(r.fields.lancamento)}.`,
+    easy: (r) => L(`PARTIU EM: entre ${yearWindow(r.fields.lancamento)}.`, `LAUNCHED: between ${yearWindow(r.fields.lancamento)}.`),
+    hard: (r) => L(`PARTIU EM: ${yearEra(r.fields.lancamento)}.`, `LAUNCHED: ${yearEra(r.fields.lancamento)}.`),
   },
   perdido_em: {
     label: "perdido_em",
-    easy: (r) => `PERDIDO EM: entre ${yearWindow(r.fields.ano)}.`,
-    hard: (r) => `PERDIDO EM: ${yearEra(r.fields.ano)}.`,
+    easy: (r) => L(`PERDIDO EM: entre ${yearWindow(r.fields.ano)}.`, `LOST IN: between ${yearWindow(r.fields.ano)}.`),
+    hard: (r) => L(`PERDIDO EM: ${yearEra(r.fields.ano)}.`, `LOST IN: ${yearEra(r.fields.ano)}.`),
   },
   energia_objeto: {
     label: "energia_objeto",
@@ -899,25 +912,31 @@ export const HINT_COMMANDS = {
   help: {
     label: "help",
     hint: () =>
-      "COMANDOS DISPONÍVEIS: tamanho_objeto · peso_objeto · partiu_em · perdido_em · energia_objeto · missao_objeto · scan · status · clear",
+      L(
+        "COMANDOS DISPONÍVEIS: tamanho_objeto · peso_objeto · partiu_em · perdido_em · energia_objeto · missao_objeto · scan · status · clear",
+        "AVAILABLE COMMANDS: object_size · object_weight · launched_in · lost_in · object_power · object_mission · scan · status · clear",
+      ),
   },
   scan: {
     label: "scan",
-    hint: () => "Varredura do setor ativa. Selecione um objetivo para focar.",
+    hint: () => L("Varredura do setor ativa. Selecione um objetivo para focar.", "Sector scan active. Select a target to focus on."),
   },
   status: {
     label: "status",
     hint: (r, st) =>
-      `MISSÃO ATUAL: ${st.missionIndex + 1}. LOCAL: ${st.location === "espaco" ? "Espaço" : st.location}. CATALOGADOS: ${st.cataloged.length}. INTEGRIDADE: ${st.lives}.`,
+      L(
+        `MISSÃO ATUAL: ${st.missionIndex + 1}. LOCAL: ${st.location === "espaco" ? "Espaço" : st.location}. CATALOGADOS: ${st.cataloged.length}. INTEGRIDADE: ${st.lives}.`,
+        `CURRENT MISSION: ${st.missionIndex + 1}. LOCATION: ${placeName(st.location)}. CATALOGED: ${st.cataloged.length}. INTEGRITY: ${st.lives}.`,
+      ),
   },
   jean_rs: {
     label: "easterEgg",
-    hint: (r) => r.coordenadas ? `COORDENADA DO OBJETO: LAT ${formatLat(r.coordenadas.lat)} · LON ${formatLon(r.coordenadas.lon)}` : `DISTÂNCIA DO OBJETO: ${r.distanciaUA} UA`,
+    hint: (r) => r.coordenadas ? L(`COORDENADA DO OBJETO: LAT ${formatLat(r.coordenadas.lat)} · LON ${formatLon(r.coordenadas.lon)}`, `OBJECT COORDINATES: LAT ${formatLat(r.coordenadas.lat)} · LON ${formatLon(r.coordenadas.lon)}`) : L(`DISTÂNCIA DO OBJETO: ${r.distanciaUA} UA`, `OBJECT DISTANCE: ${r.distanciaUA} AU`),
   },
 
   leo_marq: {
     label: "easterEgg",
-    hint: () => `Não se pode confiar em tudo que é falado.`,
+    hint: () => L(`Não se pode confiar em tudo que é falado.`, `You cannot trust everything you hear.`),
   },
 
   nay: {
@@ -927,19 +946,31 @@ export const HINT_COMMANDS = {
 
   caioalima: {
     label: "easterEgg",
-    hint: () => "Vamos pegar a nave da Xuxa e voar pelo espaço!",
+    hint: () => L("Vamos pegar a nave da Xuxa e voar pelo espaço!", "Let's take Xuxa's spaceship and fly through space!"),
   },
 
   luiz_s2: {
     label: "easterEgg",
-    hint: () => "Feixe de elétrons detectados...",
+    hint: () => L("Feixe de elétrons detectados...", "Electron beam detected..."),
   },
 
   ocapitaloliveira: {
     label: "easterEgg",
-    hint: () => "Durma bem...",
+    hint: () => L("Durma bem...", "Sleep well..."),
   },
 };
+
+// Nomes dos comandos de dica em inglês (os que o modo inglês mostra no help e no Manual).
+// Valem nos dois idiomas, junto com os nomes em português.
+export const HINT_ALIASES = {
+  object_size: "tamanho_objeto",
+  object_weight: "peso_objeto",
+  launched_in: "partiu_em",
+  lost_in: "perdido_em",
+  object_power: "energia_objeto",
+  object_mission: "missao_objeto",
+};
+for (const [en, pt] of Object.entries(HINT_ALIASES)) HINT_COMMANDS[en] = HINT_COMMANDS[pt];
 
 // Os objetos de cada missão são FIXOS: a lista `relics` (ids de RELICS) define o que a missão pede,
 // na ordem em que aparecem no menu Missão. Para mudar a ordem, é só reordenar/trocar os ids.
@@ -1123,58 +1154,64 @@ export const hintCost = (score) => (hintTier(score) === "easy" ? HINT_COST_EASY 
 //  - FÁCIL (XP <= 2000): faixa estreita. Dá uma boa direção "de cara", mas nunca o valor exato.
 //  - DIFÍCIL (XP > 2000): faixa larga ou ordem de grandeza. O jogador precisa deduzir mais.
 // Cada faixa é [limite superior (inclusive), texto]; vale a primeira em que o valor cabe.
-const inBucket = (value, buckets) => buckets.find(([max]) => value <= max)[1];
-const notFound = (label) => `${label}: dado não encontrado nos registros da NASA.`;
+// Cada faixa agora tem o texto nos dois idiomas: [limite, português, inglês].
+const inBucket = (value, buckets) => {
+  const bucket = buckets.find(([max]) => value <= max);
+  return L(bucket[1], bucket[2]);
+};
+const notFound = (label, labelEn) => L(`${label}: dado não encontrado nos registros da NASA.`, `${labelEn}: no data in NASA records.`);
 
 // TAMANHO (em metros)
 const SIZE_EASY = [
-  [0.25, "menos de 25 cm"],
-  [0.5, "entre 25 cm e 50 cm"],
-  [1, "entre 50 cm e 1 m"],
-  [2, "entre 1 m e 2 m"],
-  [3, "entre 2 m e 3 m"],
-  [5, "entre 3 m e 5 m"],
-  [Infinity, "mais de 5 m"],
+  [0.25, "menos de 25 cm", "less than 25 cm"],
+  [0.5, "entre 25 cm e 50 cm", "between 25 cm and 50 cm"],
+  [1, "entre 50 cm e 1 m", "between 50 cm and 1 m"],
+  [2, "entre 1 m e 2 m", "between 1 m and 2 m"],
+  [3, "entre 2 m e 3 m", "between 2 m and 3 m"],
+  [5, "entre 3 m e 5 m", "between 3 m and 5 m"],
+  [Infinity, "mais de 5 m", "more than 5 m"],
 ];
 const SIZE_HARD = [
-  [1, "menor que 1 m"],
-  [3, "entre 1 m e 3 m"],
-  [Infinity, "maior que 3 m"],
+  [1, "menor que 1 m", "smaller than 1 m"],
+  [3, "entre 1 m e 3 m", "between 1 m and 3 m"],
+  [Infinity, "maior que 3 m", "bigger than 3 m"],
 ];
-const hintSize = (r, buckets) => (r.heightM == null ? notFound("TAMANHO") : `TAMANHO: ${inBucket(r.heightM, buckets)}.`);
+const hintSize = (r, buckets) =>
+  r.heightM == null ? notFound("TAMANHO", "SIZE") : L(`TAMANHO: ${inBucket(r.heightM, buckets)}.`, `SIZE: ${inBucket(r.heightM, buckets)}.`);
 
 // PESO (em kg)
 const WEIGHT_EASY = [
-  [1, "menos de 1 kg"],
-  [5, "entre 1 kg e 5 kg"],
-  [20, "entre 5 kg e 20 kg"],
-  [50, "entre 20 kg e 50 kg"],
-  [100, "entre 50 kg e 100 kg"],
-  [250, "entre 100 kg e 250 kg"],
-  [500, "entre 250 kg e 500 kg"],
-  [1000, "entre 500 kg e 1 tonelada"],
-  [2000, "entre 1 e 2 toneladas"],
-  [Infinity, "mais de 2 toneladas"],
+  [1, "menos de 1 kg", "less than 1 kg"],
+  [5, "entre 1 kg e 5 kg", "between 1 kg and 5 kg"],
+  [20, "entre 5 kg e 20 kg", "between 5 kg and 20 kg"],
+  [50, "entre 20 kg e 50 kg", "between 20 kg and 50 kg"],
+  [100, "entre 50 kg e 100 kg", "between 50 kg and 100 kg"],
+  [250, "entre 100 kg e 250 kg", "between 100 kg and 250 kg"],
+  [500, "entre 250 kg e 500 kg", "between 250 kg and 500 kg"],
+  [1000, "entre 500 kg e 1 tonelada", "between 500 kg and 1 ton"],
+  [2000, "entre 1 e 2 toneladas", "between 1 and 2 tons"],
+  [Infinity, "mais de 2 toneladas", "more than 2 tons"],
 ];
 const WEIGHT_HARD = [
-  [10, "na casa das unidades de kg"],
-  [100, "na casa das dezenas de kg"],
-  [1000, "na casa das centenas de kg"],
-  [Infinity, "na casa dos milhares de kg"],
+  [10, "na casa das unidades de kg", "a few kg (under 10 kg)"],
+  [100, "na casa das dezenas de kg", "tens of kg"],
+  [1000, "na casa das centenas de kg", "hundreds of kg"],
+  [Infinity, "na casa dos milhares de kg", "thousands of kg"],
 ];
-const hintWeight = (r, buckets) => (r.weightKg == null ? notFound("PESO") : `PESO: ${inBucket(r.weightKg, buckets)}.`);
+const hintWeight = (r, buckets) =>
+  r.weightKg == null ? notFound("PESO", "WEIGHT") : L(`PESO: ${inBucket(r.weightKg, buckets)}.`, `WEIGHT: ${inBucket(r.weightKg, buckets)}.`);
 
 // PARTIU EM (lançamento) e PERDIDO EM (ano em que parou de funcionar)
 // Fácil: janela de 5 anos. Difícil: era de ~20 anos.
 const yearWindow = (year) => {
   const start = Math.floor(Number(year) / 5) * 5;
-  return `${start} e ${start + 4}`;
+  return L(`${start} e ${start + 4}`, `${start} and ${start + 4}`);
 };
 const ERAS = [
-  [1969, "em 1969 ou antes"],
-  [1989, "entre 1970 e 1989"],
-  [2009, "entre 1990 e 2009"],
-  [Infinity, "depois de 2009"],
+  [1969, "em 1969 ou antes", "in 1969 or earlier"],
+  [1989, "entre 1970 e 1989", "between 1970 and 1989"],
+  [2009, "entre 1990 e 2009", "between 1990 and 2009"],
+  [Infinity, "depois de 2009", "after 2009"],
 ];
 const yearEra = (year) => inBucket(Number(year), ERAS);
 
@@ -1251,34 +1288,109 @@ const MISSION_CLUES = {
     easy: "sobrenome do astrônomo alemão das três leis das órbitas planetárias. A extensão da missão tem a letra K e um número par.",
   },
 };
+// As mesmas pistas em inglês. Onde a pista em português dependia da língua (quinzena = 15 dias;
+// "palavra inglesa para..."), a versão inglesa troca a associação e mantém a mesma resposta.
+const MISSION_CLUES_EN = {
+  "Apollo 11": {
+    hard: "Greek god of light, music and prophecy, followed by a two-digit prime number.",
+    easy: "Greek god of the Sun and music, followed by the number of players a soccer team has on the field.",
+  },
+  "Apollo 12": {
+    hard: "Greek god of light, music and prophecy, followed by an even two-digit number.",
+    easy: "Greek god of the Sun and music, followed by a dozen.",
+  },
+  "Apollo 15": {
+    hard: "Greek god of light, music and prophecy, followed by a number that is a multiple of both 3 and 5.",
+    easy: "Greek god of the Sun and music, followed by the number of minutes in a quarter of an hour.",
+  },
+  "Surveyor 3": {
+    hard: "a person whose job is to measure and map land, followed by a small odd number.",
+    easy: "a person whose job is to measure land, followed by the number of sides of a triangle.",
+  },
+  "Mars Pathfinder": {
+    hard: "name of the Roman god of war, followed by someone who opens a path through unknown land.",
+    easy: "the red planet (named after the Roman god of war), plus a word for someone who finds a new trail.",
+  },
+  "MER-A": {
+    hard: "a three-letter acronym, followed by the first letter of the alphabet.",
+    easy: "the initials of Mars, Exploration and Rover, followed by the letter A.",
+  },
+  "MER-B": {
+    hard: "a three-letter acronym, followed by the second letter of the alphabet.",
+    easy: "the initials of Mars, Exploration and Rover, followed by the letter B.",
+  },
+  "Viking 1": {
+    hard: "seafaring warrior people from northern Europe, followed by a number.",
+    easy: "seafaring warrior people from Scandinavia, followed by the smallest positive whole number.",
+  },
+  "Viking 2": {
+    hard: "seafaring warrior people from northern Europe, followed by a number.",
+    easy: "seafaring warrior people from Scandinavia, followed by the only even prime number.",
+  },
+  Phoenix: {
+    hard: "a mythical creature that is born again from its own ashes.",
+    easy: "a fire bird from mythology, a symbol of rebirth. It is also the name of a city in Arizona.",
+  },
+  InSight: {
+    hard: "a word for a moment of sudden understanding, when an idea finally makes sense.",
+    easy: "two words joined together: \"IN\" (inside) and \"SIGHT\" (vision).",
+  },
+  "Mars 2020": {
+    hard: "name of the red planet, followed by a year that also means perfect vision.",
+    easy: "name of the red planet, followed by the year a pandemic stopped the world.",
+  },
+  Dawn: {
+    hard: "a four-letter word for the moment the Roman goddess Aurora stood for.",
+    easy: "the first light of the morning, sunrise. Four letters, starts with D.",
+  },
+  NEAR: {
+    hard: "an acronym that, read as a word, means the opposite of \"far\".",
+    easy: "acronym for a meeting with an asteroid close to Earth. The acronym itself means \"close\".",
+  },
+  "Pioneer 10": {
+    hard: "someone who opens the way into new land, followed by the smallest two-digit number.",
+    easy: "someone who opens the way into new land, followed by the number of fingers on two hands.",
+  },
+  "Pioneer 11": {
+    hard: "someone who opens the way into new land, followed by the smallest two-digit number with two equal digits.",
+    easy: "someone who opens the way into new land, followed by the number of players a soccer team has on the field.",
+  },
+  "Kepler / K2": {
+    hard: "last name of a German astronomer who described how the planets move.",
+    easy: "last name of the German astronomer of the three laws of planetary orbits. The extended mission has the letter K and an even number.",
+  },
+};
 const hintMission = (r, tier) => {
   const clue = MISSION_CLUES[r.fields.missao];
-  return clue ? `MISSÃO: ${clue[tier]}` : notFound("MISSÃO");
+  const clueEn = MISSION_CLUES_EN[r.fields.missao];
+  if (!clue) return notFound("MISSÃO", "MISSION");
+  return L(`MISSÃO: ${clue[tier]}`, `MISSION: ${clueEn[tier]}`);
 };
 
 // ENERGIA (tipo da fonte + potência em watts)
 const POWER_NAMES = { solar: "solar", nuclear: "nuclear", battery: "bateria", none: "nenhuma" };
+const POWER_NAMES_EN = { solar: "solar", nuclear: "nuclear", battery: "battery", none: "none" };
 const WATT_BANDS = [
-  [50, "abaixo de 50 W"],
-  [100, "entre 50 W e 100 W"],
-  [200, "entre 100 W e 200 W"],
-  [1000, "entre 200 W e 1 kW"],
-  [Infinity, "acima de 1 kW"],
+  [50, "abaixo de 50 W", "below 50 W"],
+  [100, "entre 50 W e 100 W", "between 50 W and 100 W"],
+  [200, "entre 100 W e 200 W", "between 100 W and 200 W"],
+  [1000, "entre 200 W e 1 kW", "between 200 W and 1 kW"],
+  [Infinity, "acima de 1 kW", "above 1 kW"],
 ];
 const hintPowerEasy = (r) => {
   const { energiaTipo: tipo, energiaW: watts } = r.fields;
-  if (tipo === "none") return "ENERGIA: nenhuma. O objeto não tem fonte de energia.";
-  if (tipo === "battery") return "ENERGIA: bateria.";
+  if (tipo === "none") return L("ENERGIA: nenhuma. O objeto não tem fonte de energia.", "POWER: none. The object has no power source.");
+  if (tipo === "battery") return L("ENERGIA: bateria.", "POWER: battery.");
   return watts == null
-    ? `ENERGIA: ${POWER_NAMES[tipo]} (potência não registrada).`
-    : `ENERGIA: ${POWER_NAMES[tipo]}, com potência ${inBucket(watts, WATT_BANDS)}.`;
+    ? L(`ENERGIA: ${POWER_NAMES[tipo]} (potência não registrada).`, `POWER: ${POWER_NAMES_EN[tipo]} (power output not recorded).`)
+    : L(`ENERGIA: ${POWER_NAMES[tipo]}, com potência ${inBucket(watts, WATT_BANDS)}.`, `POWER: ${POWER_NAMES_EN[tipo]}, with an output ${inBucket(watts, WATT_BANDS)}.`);
 };
 const hintPowerHard = (r) => {
   const { energiaTipo: tipo, energiaW: watts } = r.fields;
-  if (tipo === "none") return "ENERGIA: não usa nenhuma fonte de energia.";
-  if (tipo === "battery") return "ENERGIA: funciona com energia armazenada; não gera a própria.";
-  const power = watts == null ? "" : watts < 100 ? " Potência abaixo de 100 W." : " Potência de 100 W ou mais.";
-  return `ENERGIA: gera a própria energia.${power}`;
+  if (tipo === "none") return L("ENERGIA: não usa nenhuma fonte de energia.", "POWER: it does not use any power source.");
+  if (tipo === "battery") return L("ENERGIA: funciona com energia armazenada; não gera a própria.", "POWER: it runs on stored energy; it does not make its own.");
+  const power = watts == null ? "" : watts < 100 ? L(" Potência abaixo de 100 W.", " Output below 100 W.") : L(" Potência de 100 W ou mais.", " Output of 100 W or more.");
+  return L(`ENERGIA: gera a própria energia.${power}`, `POWER: it makes its own energy.${power}`);
 };
 
 export const MAX_LIVES = 3;
@@ -1377,3 +1489,216 @@ export const REPORTS = [
     ],
   },
 ];
+// =====================================================================
+// INGLÊS das missões e dos relatórios (o português fica intacto acima).
+// Cada campo vira um "getter": devolve o inglês quando o idioma é EN.
+// =====================================================================
+const MISSIONS_EN = {
+  1: {
+    title: "Mission 01",
+    intro: [
+      "L.O.G. Operations Center — Legacy of Giants. Establishing connection.",
+      "Operator Alex, your unit has been assigned to a space records recovery operation.",
+      "Your partner on this expedition is Neil. He is in charge of field support and of reading the records.",
+      "The goal is to find lost objects in unexplored regions and recover their data for the Central Archive.",
+      "Check the operations manual, keep talking with your partner and follow the coordinates you receive.",
+      "This first mission is a training run. Pay attention to the procedures and to the guidance available.",
+      "Remember: a good team does not depend only on its resources, but also on its ability to work together.",
+      "Complete the cataloging to receive new instructions.",
+    ],
+    outro: [
+      "First contact confirmed. Two records were recovered.",
+      "The Central Archive gave a partial answer to the transmission.",
+      "The source of the inconsistency is still unknown.",
+      "Data stored. Preparing next mission...",
+    ],
+  },
+  2: {
+    title: "Mission 02",
+    intro: [
+      "L.O.G. Operations Center restoring communication.",
+      "Congratulations, operators. The first recovery was a success.",
+      "New signatures were found near the region you explored.",
+      "Three objects were located. The ship must adjust its route as the coordinates are found.",
+      "For this operation, we recommend reading the 'Efficiency' section of the operations manual.",
+      "A good strategy can save resources and make harder tasks easier.",
+      "Operator Alex, your previous results showed excellent analysis skills. Use them to guide your partner.",
+      "L.O.G. is waiting for the recovery of the three new signatures.",
+    ],
+    outro: [
+      "Three signatures recovered. The records were sent to the Central Archive.",
+      "The unit's efficiency improved compared with the last operation.",
+      "A long-range scan found more signals.",
+      "The source of the signals does not fully match the available maps.",
+      "Requesting recalibration of the navigation systems...",
+      "Preparing next mission...",
+    ],
+  },
+  3: {
+    title: "Mission 03",
+    intro: [
+      "Transmission from the L.O.G. Operations Center.",
+      "The signals are stronger and there are more of them. The scan found five new objects.",
+      "This operation will need frequent trips between the Moon region and Mars. The coordinates will be updated as the targets are found.",
+      "During recovery operations, sync failures are more common than they seem. Do not let one interruption ruin the rest of the mission.",
+      "If an error happens, check the guidance available and work together to restore the systems.",
+      "Operator Alex, your experience settings have been restored for this operation. The unit's analysis tools are still available.",
+      "Remember: not every failure is a step back. Often, finding and fixing an error is a key part of any discovery.",
+      "L.O.G. is waiting for the recovery of the five objects.",
+    ],
+    outro: [
+      "Five objects cataloged. The signals are stable for now.",
+      "The integrity of the records is much better.",
+      "An inconsistency was found while syncing the files.",
+      "The case was sent for internal review.",
+      "The sensors picked up an unexpected response to the last navigation command.",
+      "Recalibrating systems. The next operation needs special attention.",
+    ],
+  },
+  4: {
+    title: "Mission 04",
+    intro: [
+      "L.O.G. Operations Center sending new directives.",
+      "Operators Alex and Neil, the records in this region show unusual interference.",
+      "Five objects are still unidentified in the Central Archive.",
+      "During the last sync, a mismatch was found between the recovered data and the stored information.",
+      "Unexpected failures are part of operations like this one. What matters is finding their causes and keeping them from happening again.",
+      "Operator Alex, please keep to the standard analysis protocols. Avoid any procedure that was not authorized first.",
+      "A new scan should help find the source of the interference.",
+      "Records show that this region was accessed before, even though no matching operation appears in the available history.",
+      "Complete the cataloging. The Center will watch this operation at all times.",
+    ],
+    outro: [
+      "Five objects recovered. The sync is complete.",
+      "The interference in the records went down.",
+      "An unidentified message was found in the internal files.",
+      "The content mentions the current operating unit.",
+      "The source of the transmission could not be found.",
+      "L.O.G. will start a full check of the Central Archive.",
+      "Last authorized operation. Wait for the final coordinates...",
+    ],
+  },
+  5: {
+    title: "Mission 05",
+    intro: [
+      "L.O.G. Operations Center opening a priority transmission.",
+      "Operators Alex and Neil, this is the last region still waiting to be cataloged.",
+      "Six objects are still unidentified. Recovering them will finish the restoration of the Central Archive.",
+      "The records in this region contain information that does not appear on any of the available exploration maps.",
+      "Operator Alex, all analysis settings have been restored. Keep the communication protocols during the whole operation.",
+      "No new instructions will be needed. The previous procedures are still valid.",
+      "This operation closes the cycle currently assigned to the unit.",
+      "Complete the cataloging. L.O.G. is waiting for the full restoration of the Central Archive.",
+    ],
+    outro: [
+      "Six objects recovered. All records have been cataloged.",
+      "Central Archive restored.",
+      "Checking file integrity...",
+      "A series of older documents was found.",
+      "Document recovered: Operation Record A.L.E.X.",
+      "Operation date: [CORRUPTED FILE].",
+      "Document status: access granted.",
+      "Making the report available...",
+    ],
+  },
+};
+
+const REPORTS_EN = {
+  "1202": {
+    title: "Report 1",
+    unit: [
+      "LOG 0311 · Task completed successfully. All objects were located and correctly identified.",
+      "LOG 0312 · Performance was good. Some problems came up along the way, but I got through them with a lot of willpower.",
+    ],
+    analyst: [
+      "DIRECTIVE 1.1 · Keep communication with the unit friendly and direct. Do not comment on the nature of the evaluation.",
+      "DIRECTIVE 1.2 · Record every hesitation, error or request for help. Each one becomes part of the behavior profile.",
+    ],
+  },
+  "1201": {
+    title: "Report 2",
+    unit: [
+      "LOG 2201 · I have noticed my results getting better. With each mission, I understand the challenges a little more.",
+      "LOG 2203 · This time, I solved the problem without any help. I think I am improving.",
+    ],
+    analyst: [
+      "DIRECTIVE 2.1 · In official records, do not use \"partner\" or \"pilot\". Use \"unit\".",
+      "DIRECTIVE 2.2 · Any help beyond the cards must be explained in the report.",
+    ],
+  },
+  P66: {
+    title: "Report 3",
+    unit: [
+      "LOG 0915 · The task needed a lot of attention. I admit that at times I got distracted by things that were not part of the mission.",
+      "LOG 0917 · I finished every task I was given. I hope the result is recognized in the next evaluation.",
+    ],
+    analyst: [
+      "DIRECTIVE 3.1 · How the unit reacts to failure is the main indicator. Do not ease the pressure.",
+      "DIRECTIVE 3.2 · If the unit questions its own nature, record the question and do not answer.",
+    ],
+  },
+  "CONTACT LIGHT": {
+    title: "Report 4",
+    unit: [
+      "LOG 4076 · I have been trying to follow every instruction, even though it is sometimes hard to stay focused for so long.",
+      "LOG 4079 · Today I finished earlier than expected. Maybe I am getting good at this. It would be nice to get an evaluation of my progress.",
+    ],
+    analyst: [
+      "DIRECTIVE 4.1 · Units LUNA-01 to 06 were shut down after they found out too early what they were.",
+      "DIRECTIVE 4.2 · The evaluation does not depend on any bond that was formed. Affection from the operator must be recorded as a deviation.",
+    ],
+  },
+  "SCE TO AUX": {
+    title: "Report 5",
+    unit: [
+      "LOG 1160 · Indexed memory: someone saying \"I am here\". The voice never changes, not even when I change the date of the record.",
+      "LOG 1164 · If the mission is a simulation, what happens when it ends?",
+    ],
+    analyst: [
+      "DIRECTIVE 5.1 · At the end of the protocol, the Analyst decides: unit approved for real field work, or archived.",
+      "DIRECTIVE 5.2 · Your reports will be reviewed. Your conduct is also being evaluated.",
+    ],
+  },
+  "PROX-1": {
+    title: "Report 6",
+    unit: [
+      "LOG 7298 · I do not always get it right the first time, but I am learning that mistakes are part of the process. \nOn the next mission, I promise to try even harder.",
+      "LOG 7301 · Mission complete! I think I did a good job today. I hope I did not forget any task and that my report gets a good grade.",
+    ],
+    analyst: [
+      "DIRECTIVE 6.1 · The Analyst's final decision will be recorded together with the unit's report.",
+      "DIRECTIVE 6.2 · All help given to the unit stays in its history. Thank you for your service.",
+    ],
+  },
+};
+
+// Pares [português, inglês] de todas as falas das missões: o main.js usa para traduzir
+// conversas já salvas quando o jogador troca de idioma no meio do jogo.
+export const MISSION_TEXT_PAIRS = [];
+
+function bilingual(obj, field, en) {
+  const pt = obj[field];
+  Object.defineProperty(obj, field, {
+    get: () => (isEnglish() ? en : pt),
+    enumerable: true,
+    configurable: true,
+  });
+  if (Array.isArray(pt) && Array.isArray(en)) pt.forEach((line, i) => en[i] != null && MISSION_TEXT_PAIRS.push([line, en[i]]));
+}
+
+for (const mission of MISSIONS) {
+  const en = MISSIONS_EN[mission.id];
+  if (!en) continue;
+  bilingual(mission, "title", en.title);
+  bilingual(mission, "intro", en.intro);
+  bilingual(mission, "outro", en.outro);
+}
+for (const report of REPORTS) {
+  const en = REPORTS_EN[report.code];
+  if (!en) continue;
+  bilingual(report, "title", en.title);
+  bilingual(report, "unit", en.unit);
+  bilingual(report, "analyst", en.analyst);
+  // o código do alerta ("ERRO-1202") só muda o prefixo; o protocolo da carta (1202) é o mesmo
+  bilingual(report, "errorCode", report.errorCode.replace(/^ERRO-/, "ERROR-"));
+}

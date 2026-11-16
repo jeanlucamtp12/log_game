@@ -23,6 +23,9 @@ import {
   formatTarget,
   placeName,
   relicCode,
+  L,
+  isEnglish,
+  MISSION_TEXT_PAIRS,
 } from "./game-data.js";
 import { tocar, iniciarLoop } from "./audio.js";
 import { iconSvg, mountIcons, typeIconSvg } from "./icons.js";
@@ -159,11 +162,11 @@ const isWide = () => window.matchMedia("(min-width: 761px)").matches;
 const targetFitsWith = (name) => isWide() && SIDE[name] === "left";
 const XP_SEGMENTS = 10;
 const XP_RANKS = [
-  [4500, "Comandante"],
-  [3500, "Piloto"],
-  [2500, "Navegador"],
-  [1500, "Cadete"],
-  [0, "Recruta"],
+  [4500, "Comandante", "Commander"],
+  [3500, "Piloto", "Pilot"],
+  [2500, "Navegador", "Navigator"],
+  [1500, "Cadete", "Cadet"],
+  [0, "Recruta", "Recruit"],
 ];
 
 function defaultState() {
@@ -195,10 +198,37 @@ function defaultState() {
     outroPending: false, // a transmissão final da missão está no vidro; o resumo só abre quando o jogador fechar
     outroFrom: 0, // 1ª linha da transmissão final dentro da conversa (a conversa abre só a partir daqui)
     terminalLines: [
-      "SISTEMA DE ARQUIVO LUNAR v4.7",
-      'Digite "help" para ver os comandos disponíveis.',
+      L("SISTEMA DE ARQUIVO LUNAR v4.7", "LUNAR ARCHIVE SYSTEM v4.7"),
+      L('Digite "help" para ver os comandos disponíveis.', 'Type "help" to see the available commands.'),
     ],
+    lang: isEnglish() ? "en" : "pt", // idioma em que as conversas e o terminal foram gravados
   };
+}
+
+// ---- Troca de idioma no meio do jogo ----
+// As conversas e o terminal ficam salvos como texto. Se o jogador trocou de idioma desde o
+// último save, as falas conhecidas são traduzidas pelos pares PT/EN (o resto fica como estava).
+const STATIC_TEXT_PAIRS = [
+  ["SISTEMA DE ARQUIVO LUNAR v4.7", "LUNAR ARCHIVE SYSTEM v4.7"],
+  ['Digite "help" para ver os comandos disponíveis.', 'Type "help" to see the available commands.'],
+  ["Missão reiniciada. Integridade e XP restauradas.", "Mission restarted. Integrity and XP restored."],
+  ["Missão concluída. Integridade do casco restaurada.", "Mission complete. Hull integrity restored."],
+  ["Consulte o Manual, aba Protocolos. O terminal só aceita o código de sincronização.", "Check the Manual, Protocols tab. The terminal only accepts the sync code."],
+  ["Erros de sincronização são mais corriqueiros do que você imagina.", "Sync errors happen more often than you think."],
+  ["Digite o código de sincronização. Consulte o Manual, aba Protocolos.", "Type the sync code. Check the Manual, Protocols tab."],
+  ["CÓDIGO ACEITO. Sincronização restabelecida. Abrindo relatório da L.O.G.…", "CODE ACCEPTED. Sync restored. Opening the L.O.G. report…"],
+  ["Sincronização restabelecida.", "Sync restored."],
+];
+function translateSavedText(st, from, to) {
+  const pairs = [...MISSION_TEXT_PAIRS, ...STATIC_TEXT_PAIRS];
+  const map = new Map(pairs.map(([pt, en]) => (from === "pt" ? [pt, en] : [en, pt])));
+  const tr = (line) => (map.has(line) ? map.get(line) : line);
+  if (st.messages && typeof st.messages === "object") {
+    for (const k of Object.keys(st.messages)) {
+      if (Array.isArray(st.messages[k])) st.messages[k] = st.messages[k].map(tr);
+    }
+  }
+  if (Array.isArray(st.terminalLines)) st.terminalLines = st.terminalLines.map(tr);
 }
 
 const pad = (n, len = 2) => String(n).padStart(len, "0");
@@ -248,7 +278,7 @@ document.addEventListener(
     const img = event.target;
     if (!(img instanceof HTMLImageElement) || img.dataset.fallback === "1") return;
     img.dataset.fallback = "1";
-    img.src = placeholderSrc("Imagem indisponível");
+    img.src = placeholderSrc(L("Imagem indisponível", "Image unavailable"));
   },
   true,
 );
@@ -334,6 +364,10 @@ function loadState() {
   const saved = loadSaved();
   const valid = saved && saved.version === SAVE_VERSION;
   state = valid ? { ...defaultState(), ...saved } : defaultState();
+  const lang = isEnglish() ? "en" : "pt";
+  const savedLang = valid ? saved.lang ?? "pt" : lang; // save sem idioma = jogo original, em português
+  if (savedLang !== lang) translateSavedText(state, savedLang, lang);
+  state.lang = lang;
   // F5 zera o cronômetro da missão em andamento (se estiver pausado no erro de sincronização, continua pausado em 00:00)
   state.missionStartedAt = Date.now();
   if (state.pauseAt != null) state.pauseAt = state.missionStartedAt;
@@ -344,13 +378,13 @@ function loadState() {
 
 // ===== Monitor (vidro da nave) =====
 const SCREEN_TITLES = {
-  objectives: "Selecionar missão",
-  catalog: "Catálogo",
-  manual: "Manual da nave",
-  messages: "Mensagens",
-  reports: "Relatórios L.O.G.",
-  report: "Relatório L.O.G.",
-  terminal: "Terminal",
+  objectives: ["Selecionar missão", "Select target"],
+  catalog: ["Catálogo", "Catalog"],
+  manual: ["Manual da nave", "Ship manual"],
+  messages: ["Mensagens", "Messages"],
+  reports: ["Relatórios L.O.G.", "L.O.G. Reports"],
+  report: ["Relatório L.O.G.", "L.O.G. Report"],
+  terminal: ["Terminal", "Terminal"],
 };
 
 function openMonitor(name) {
@@ -371,7 +405,7 @@ function openMonitor(name) {
   overlay.querySelectorAll("[data-screen]").forEach((section) => {
     section.hidden = section.dataset.screen !== name;
   });
-  overlay.querySelector(".eyebrow").textContent = SCREEN_TITLES[name];
+  overlay.querySelector(".eyebrow").textContent = L(...SCREEN_TITLES[name]);
 
   if (name === "objectives") renderObjectives();
   if (name === "catalog") {
@@ -722,7 +756,7 @@ function showTarget() {
     if (name && !targetFitsWith(name)) closeMonitor(side);
   });
   el.targetImage.src = imgSrc(relic);
-  el.targetImage.alt = `Objeto ${relicCode(relic)}`;
+  el.targetImage.alt = L(`Objeto ${relicCode(relic)}`, `Object ${relicCode(relic)}`);
   el.targetView.hidden = false;
   syncButtons();
 }
@@ -758,7 +792,7 @@ function renderRadar() {
 
   
   if (relic) {
-    el.waypointTitle.textContent = `Alvo: ${relicCode(relic)}`;
+    el.waypointTitle.textContent = L(`Alvo: ${relicCode(relic)}`, `Target: ${relicCode(relic)}`);
     //el.waypointSub.textContent = `Local: ${relic.location}`;
   }
   el.waypointLabel.hidden = !relic;
@@ -786,12 +820,17 @@ function setFeedback(text = "", idle = false) {
 
 // Falhas do computador de navegação: soam como a nave falando, não como um formulário.
 // Nenhuma mensagem revela qual eixo errou.
+// Cada falha tem o texto nos dois idiomas; os getters escolhem na hora de mostrar.
+const fault = (codePt, codeEn, textPt, textEn) => ({
+  get code() { return L(codePt, codeEn); },
+  get text() { return L(textPt, textEn); },
+});
 const NAV_FAULTS = [
-  { code: "NAV-217 · VETOR REJEITADO", text: "Sem correspondência na carta estelar. Salto abortado antes da ignição." },
-  { code: "NAV-304 · TRAVAMENTO FALHOU", text: "O giroscópio recusou o vetor e a manobra foi interrompida. Recalcule a rota." },
-  { code: "NAV-118 · FORA DA TOLERÂNCIA", text: "O alvo não está onde o vetor aponta. O impulsor descarregou no vazio." },
-  { code: "NAV-452 · ALINHAMENTO PERDIDO", text: "Os propulsores corrigiram à força e o casco sentiu o esforço. Confirme os eixos." },
-  { code: "NAV-096 · SINAL NÃO CONFERE", text: "O transponder do alvo não respondeu a esse vetor. Verifique a ficha do objeto." },
+  fault("NAV-217 · VETOR REJEITADO", "NAV-217 · VECTOR REJECTED", "Sem correspondência na carta estelar. Salto abortado antes da ignição.", "No match on the star chart. Jump stopped before ignition."),
+  fault("NAV-304 · TRAVAMENTO FALHOU", "NAV-304 · LOCK FAILED", "O giroscópio recusou o vetor e a manobra foi interrompida. Recalcule a rota.", "The gyroscope refused the vector and the maneuver was stopped. Recalculate the route."),
+  fault("NAV-118 · FORA DA TOLERÂNCIA", "NAV-118 · OUT OF RANGE", "O alvo não está onde o vetor aponta. O impulsor descarregou no vazio.", "The target is not where the vector points. The thruster fired into empty space."),
+  fault("NAV-452 · ALINHAMENTO PERDIDO", "NAV-452 · ALIGNMENT LOST", "Os propulsores corrigiram à força e o casco sentiu o esforço. Confirme os eixos.", "The thrusters forced a correction and the hull felt the strain. Check the axes."),
+  fault("NAV-096 · SINAL NÃO CONFERE", "NAV-096 · SIGNAL DOES NOT MATCH", "O transponder do alvo não respondeu a esse vetor. Verifique a ficha do objeto.", "The target's transponder did not answer this vector. Check the object's card."),
 ];
 // ---- Treinamento da missão 1 ----
 // Quando a missão tem `tutorial: true`, o Neil explica no vidro qual tipo de coordenada o alvo usa
@@ -828,21 +867,32 @@ function updateTutorialTip() {
   let text;
   if (mismatch) {
     text = targetInSpace
-      ? "Esta carta informa a posição em UA (distância), mas o Navegador está em latitude e longitude. Aperte o botão ⇄ ao lado do Ir para trocar o tipo."
-      : "Esta carta traz latitude e longitude, mas o Navegador está em UA. Aperte o botão ⇄ ao lado do Ir para voltar a N/L.";
+      ? L(
+          "Esta carta informa a posição em UA (distância), mas o Navegador está em latitude e longitude. Aperte o botão ⇄ ao lado do Ir para trocar o tipo.",
+          "This card gives the position in AU (distance), but the Navigator is set to latitude and longitude. Press the ⇄ button next to Go to change the type.",
+        )
+      : L(
+          "Esta carta traz latitude e longitude, mas o Navegador está em UA. Aperte o botão ⇄ ao lado do Ir para voltar a N/L.",
+          "This card shows latitude and longitude, but the Navigator is set to AU. Press the ⇄ button next to Go to switch back to N/E.",
+        );
   } else {
     text = targetInSpace
-      ? "Navegador em UA. Digite a distância que está na carta e aperte Ir."
-      : "Esta carta usa latitude (N/S) e longitude (L/O). Preencha os dois campos e aperte Ir. Atenção: o próximo objeto pode usar outro tipo.";
+      ? L("Navegador em UA. Digite a distância que está na carta e aperte Ir.", "Navigator set to AU. Type the distance shown on the card and press Go.")
+      : L(
+          "Esta carta usa latitude (N/S) e longitude (L/O). Preencha os dois campos e aperte Ir. Atenção: o próximo objeto pode usar outro tipo.",
+          "This card uses latitude (N/S) and longitude (E/W). Fill in both fields and press Go. Careful: the next object may use another type.",
+        );
   }
   el.navTipText.textContent = text;
 }
 
 // Tipo de coordenada errado (ex.: lat/lon para um objeto que usa UA): também custa integridade.
-const WRONG_MODE_FAULT = {
-  code: "NAV-071 · TIPO DE COORDENADA",
-  text: "O alvo informa a posição em outro tipo de coordenada. Confira a ficha do objeto e o seletor do Navegador.",
-};
+const WRONG_MODE_FAULT = fault(
+  "NAV-071 · TIPO DE COORDENADA",
+  "NAV-071 · COORDINATE TYPE",
+  "O alvo informa a posição em outro tipo de coordenada. Confira a ficha do objeto e o seletor do Navegador.",
+  "The target gives its position in another coordinate type. Check the object's card and the Navigator switch.",
+);
 let navFaultIndex = 0;
 let navAlertTimer = null;
 let navTypeTimer = null;
@@ -869,7 +919,7 @@ function showNavAlert({ code, text, hull = null, ms = 5200 }) {
   void el.navAlert.offsetWidth; // reinicia a animação se falhar duas vezes seguidas
   el.navAlert.classList.add("is-showing");
   el.navAlertCode.textContent = code;
-  el.navAlertHull.textContent = hull ? `CASCO ${hull}` : "";
+  el.navAlertHull.textContent = hull ? L(`CASCO ${hull}`, `HULL ${hull}`) : "";
   el.navAlertHull.hidden = !hull;
   typeInto(el.navAlertText, text);
   el.coordForm.classList.remove("is-fault");
@@ -896,8 +946,8 @@ function resetCoordForm() {
 
 // Formato ilegível: avisa, mas não custa integridade.
 function invalidVector(text) {
-  showNavAlert({ code: "NAV-063 · FORMATO INVÁLIDO", text, ms: 4200 });
-  setFeedback("FORMATO INVÁLIDO");
+  showNavAlert({ code: L("NAV-063 · FORMATO INVÁLIDO", "NAV-063 · INVALID FORMAT"), text, ms: 4200 });
+  setFeedback(L("FORMATO INVÁLIDO", "INVALID FORMAT"));
 }
 
 function submitCoordinate(event) {
@@ -911,27 +961,32 @@ function submitCoordinate(event) {
   const typed = el.coordInputs.map((input) => input.value.trim());
   if (typed[0] === "" || (!inSpace && typed[1] === "")) {
     showNavAlert({
-      code: "NAV-051 · VETOR INCOMPLETO",
+      code: L("NAV-051 · VETOR INCOMPLETO", "NAV-051 · INCOMPLETE VECTOR"),
       text: inSpace
-        ? "O computador precisa da distância em UA para fechar a rota."
-        : "O computador precisa da latitude e da longitude para fechar a rota.",
+        ? L("O computador precisa da distância em UA para fechar a rota.", "The computer needs the distance in AU to set the route.")
+        : L("O computador precisa da latitude e da longitude para fechar a rota.", "The computer needs the latitude and the longitude to set the route."),
       ms: 3600,
     });
-    setFeedback("VETOR INCOMPLETO");
+    setFeedback(L("VETOR INCOMPLETO", "INCOMPLETE VECTOR"));
     return;
   }
 
   let correct;
   if (inSpace) {
     const dist = parseDistanceInput(typed[0]);
-    if (dist === null) return invalidVector("Não entendi a distância. Use um número em UA. Ex.: 2,64.");
+    if (dist === null) return invalidVector(L("Não entendi a distância. Use um número em UA. Ex.: 2,64.", "I could not read the distance. Use a number in AU. Ex.: 2.64."));
     if (!relicInSpace) return failCoordinate(WRONG_MODE_FAULT);
     correct = distMatches(relic, dist);
   } else {
     const lat = parseCoordInput(typed[0], "lat");
     const lon = parseCoordInput(typed[1], "lon");
     if (lat === null || lon === null) {
-      return invalidVector("Não entendi o vetor. Use números, com N/S na latitude e L/O na longitude. Ex.: 0,67 N e 23,47 L.");
+      return invalidVector(
+        L(
+          "Não entendi o vetor. Use números, com N/S na latitude e L/O na longitude. Ex.: 0,67 N e 23,47 L.",
+          "I could not read the vector. Use numbers, with N/S for latitude and E/W for longitude. Ex.: 0.67 N and 23.47 E.",
+        ),
+      );
     }
     if (relicInSpace) return failCoordinate(WRONG_MODE_FAULT);
     correct = coordMatches(relic, lat, lon);
@@ -952,7 +1007,7 @@ function rewardCorrectCoordinate() {
   state.score = target;
   saveState();
   renderScore();
-  appendTerminal(`ROTA CONFIRMADA · +${gain} XP`);
+  appendTerminal(L(`ROTA CONFIRMADA · +${gain} XP`, `ROUTE CONFIRMED · +${gain} XP`));
 }
 
 function failCoordinate(fault = null) {
@@ -967,7 +1022,7 @@ function failCoordinate(fault = null) {
   }
   const shown = fault ?? NAV_FAULTS[navFaultIndex++ % NAV_FAULTS.length];
   showNavAlert({ ...shown, hull: `${pad(state.lives)}/${pad(MAX_LIVES)}` });
-  setFeedback("ROTA REJEITADA");
+  setFeedback(L("ROTA REJEITADA", "ROUTE REJECTED"));
 }
 
 // Se o objeto está em outro local, a nave salta até lá (e fica lá). No mesmo local, é só um deslocamento curto.
@@ -979,11 +1034,13 @@ function travelTo(relic) {
   // som da viagem: 6s para outro local, 4s no mesmo local
   tocar(changesPlace ? "aceleracao6s" : "aceleracao4s");
   renderCoordinate();
-  setFeedback("Navegando…", true);
+  setFeedback(L("Navegando…", "Navigating…"), true);
   closeMonitor("center");
 
   el.viewport.style.setProperty("--warp-ms", `${duration}ms`);
-  el.warpTitle.textContent = changesPlace ? `Salto até ${placeName(relic.location)}` : "Deslocamento local";
+  el.warpTitle.textContent = changesPlace
+    ? L(`Salto até ${placeName(relic.location)}`, `Jump to ${placeName(relic.location)}`)
+    : L("Deslocamento local", "Local move");
   el.warpCoord.textContent = formatTarget(relic);
   el.viewport.classList.add("is-warping");
   el.warpLayer.classList.add("is-active");
@@ -1037,7 +1094,7 @@ async function restartMission() {
   render();
   await playWake("short");
   startClock();
-  receiveMessages(["Missão reiniciada. Integridade e XP restauradas."], state.missionIndex, { focus: true });
+  receiveMessages([L("Missão reiniciada. Integridade e XP restauradas.", "Mission restarted. Integrity and XP restored.")], state.missionIndex, { focus: true });
 }
 
 function showObjectFound(relic) {
@@ -1097,11 +1154,11 @@ function raiseSyncWarning() {
   const data = REPORTS[state.reports.length];
   if (data) {
     const lines = [
-      `ALERTA ${data.errorCode} · interferência de sincronização com a L.O.G..`,
-      "Consulte o Manual, aba Protocolos. O terminal só aceita o código de sincronização.",
+      L(`ALERTA ${data.errorCode} · interferência de sincronização com a L.O.G..`, `ALERT ${data.errorCode} · sync interference with L.O.G.`),
+      L("Consulte o Manual, aba Protocolos. O terminal só aceita o código de sincronização.", "Check the Manual, Protocols tab. The terminal only accepts the sync code."),
     ];
     if (state.reports.length === 0) {
-      lines.push("Erros de sincronização são mais corriqueiros do que você imagina.");
+      lines.push(L("Erros de sincronização são mais corriqueiros do que você imagina.", "Sync errors happen more often than you think."));
     }
     appendTerminal(...lines);
   }
@@ -1113,10 +1170,10 @@ function renderWarning() {
   const warn = isWarning();
   el.viewport.classList.toggle("has-warning", warn);
   el.syncWarning.hidden = !warn;
-  el.commandInput.placeholder = warn ? "código de sincronização" : "digite um comando";
+  el.commandInput.placeholder = warn ? L("código de sincronização", "sync code") : L("digite um comando", "type a command");
   if (!warn) return;
   const data = REPORTS[state.reports.length];
-  el.syncCode.textContent = data?.errorCode ?? "ERRO-0000";
+  el.syncCode.textContent = data?.errorCode ?? L("ERRO-0000", "ERROR-0000");
   el.syncNote.hidden = state.reports.length > 0; // aviso extra só no primeiro erro
 }
 
@@ -1134,16 +1191,21 @@ function trySyncCode(raw) {
     state.pauseAt = null;
     saveState();
     renderBadges();
-    return appendTerminal("Sincronização restabelecida.");
+    return appendTerminal(L("Sincronização restabelecida.", "Sync restored."));
   }
   const typed = normCode(raw);
   if (typed === syncAnswer(pending)) return acceptSyncCode(pending);
   if (REPORTS.some((r) => syncAnswer(r) === typed)) {
-    return appendTerminal(`Código válido, mas não pertence a ${pending.errorCode}. Confira a carta indicada no Manual.`);
+    return appendTerminal(
+      L(
+        `Código válido, mas não pertence a ${pending.errorCode}. Confira a carta indicada no Manual.`,
+        `Valid code, but it does not belong to ${pending.errorCode}. Check the card shown in the Manual.`,
+      ),
+    );
   }
   appendTerminal(
-    `TERMINAL TRAVADO · ${pending.errorCode}.`,
-    "Digite o código de sincronização. Consulte o Manual, aba Protocolos.",
+    L(`TERMINAL TRAVADO · ${pending.errorCode}.`, `TERMINAL LOCKED · ${pending.errorCode}.`),
+    L("Digite o código de sincronização. Consulte o Manual, aba Protocolos.", "Type the sync code. Check the Manual, Protocols tab."),
   );
 }
 
@@ -1155,7 +1217,7 @@ function acceptSyncCode(card) {
   state.missionStartedAt += Date.now() - (state.pauseAt ?? Date.now()); // desconta o tempo pausado
   state.pauseAt = null;
   saveState();
-  appendTerminal("CÓDIGO ACEITO. Sincronização restabelecida. Abrindo relatório da L.O.G.…");
+  appendTerminal(L("CÓDIGO ACEITO. Sincronização restabelecida. Abrindo relatório da L.O.G.…", "CODE ACCEPTED. Sync restored. Opening the L.O.G. report…"));
   renderBadges();
   renderCoordinate();
   setTimeout(() => showReport(n, true), 900);
@@ -1187,35 +1249,35 @@ function showReport(n, fresh = false) {
   const metric = (label, value) => `<div><dt>${label}</dt><dd>${value}</dd></div>`;
   const lines = (list) => list.map((l) => `<p>${escapeHtml(l)}</p>`).join("");
   el.reportContent.innerHTML = `
-    <span class="eyebrow">Relatório de Missão L.O.G. · Nº ${pad(n)}</span>
+    <span class="eyebrow">${L("Relatório de Missão L.O.G. · Nº", "L.O.G. Mission Report · No.")} ${pad(n)}</span>
     <h3>${escapeHtml(data.title)}</h3>
     <div class="report-split">
       <section class="report-side">
-        <h4>Unidade LUNA-07</h4>
-        <small>Operador de nave · Jogador 1</small>
+        <h4>${L("Unidade LUNA-07", "Unit LUNA-07")}</h4>
+        <small>${L("Operador de nave · Jogador 1", "Ship operator · Player 1")}</small>
         <dl class="report-metrics">
-          ${metric("Integridade", `${s.lives} / ${MAX_LIVES}`)}
-          ${metric("XP gasta", s.xpSpent)}
-          ${metric("Dicas usadas", s.hints)}
-          ${metric("Coordenadas erradas", s.mistakes)}
-          ${metric("Tempo", s.time)}
-          ${metric("Objetos", s.found)}
+          ${metric(L("Integridade", "Integrity"), `${s.lives} / ${MAX_LIVES}`)}
+          ${metric(L("XP gasta", "XP spent"), s.xpSpent)}
+          ${metric(L("Dicas usadas", "Hints used"), s.hints)}
+          ${metric(L("Coordenadas erradas", "Wrong coordinates"), s.mistakes)}
+          ${metric(L("Tempo", "Time"), s.time)}
+          ${metric(L("Objetos", "Objects"), s.found)}
         </dl>
         <div class="report-log">${lines(data.unit)}</div>
       </section>
       <section class="report-side is-right">
-        <h4>Analista de Campo</h4>
-        <small>Base L.O.G. · Jogador 2</small>
+        <h4>${L("Analista de Campo", "Field Analyst")}</h4>
+        <small>${L("Base L.O.G. · Jogador 2", "L.O.G. Base · Player 2")}</small>
         <dl class="report-metrics">
-          ${metric("Cartas processadas", n)}
-          ${metric("Objetos verificados", s.found)}
-          ${metric("Intervenções da unidade", s.hints + s.mistakes)}
-          ${metric("Observação", "Contínua")}
+          ${metric(L("Cartas processadas", "Cards processed"), n)}
+          ${metric(L("Objetos verificados", "Objects checked"), s.found)}
+          ${metric(L("Intervenções da unidade", "Unit interventions"), s.hints + s.mistakes)}
+          ${metric(L("Observação", "Observation"), L("Contínua", "Ongoing"))}
         </dl>
         <div class="report-log">${lines(data.analyst)}</div>
       </section>
     </div>`;
-  el.btnReportClose.textContent = fresh ? "Continuar" : "Voltar à lista";
+  el.btnReportClose.textContent = fresh ? L("Continuar", "Continue") : L("Voltar à lista", "Back to list");
   if (!isOpen("report")) openMonitor("report");
   const scroller = el.reportContent.closest(".monitor-body");
   if (scroller) scroller.scrollTop = 0;
@@ -1249,7 +1311,7 @@ function renderReportList() {
           </button>`,
         )
         .join("")
-    : '<p class="modal-text">Nenhum relatório ainda.</p>';
+    : `<p class="modal-text">${L("Nenhum relatório ainda.", "No reports yet.")}</p>`;
 }
 
 // ===== Mission flow =====
@@ -1306,14 +1368,14 @@ function showMissionEnd() {
 
   el.endEyebrow.textContent =
     state.missionIndex >= MISSIONS.length - 1
-      ? "Arquivo central restaurado"
-      : "Missão concluída";
+      ? L("Arquivo central restaurado", "Central archive restored")
+      : L("Missão concluída", "Mission complete");
   el.endTitle.textContent = mission.title;
   el.endSummary.innerHTML = `
-    <div><span>Pontuação</span><b>${state.missionSummary.score}</b></div>
-    <div><span>Integridade</span><b>${state.missionSummary.lives} / ${MAX_LIVES}</b></div>
-    <div><span>Tempo</span><b>${state.missionSummary.time}</b></div>
-    <div><span>Objetos</span><b>${state.missionSummary.found}</b></div>
+    <div><span>${L("Pontuação", "Score")}</span><b>${state.missionSummary.score}</b></div>
+    <div><span>${L("Integridade", "Integrity")}</span><b>${state.missionSummary.lives} / ${MAX_LIVES}</b></div>
+    <div><span>${L("Tempo", "Time")}</span><b>${state.missionSummary.time}</b></div>
+    <div><span>${L("Objetos", "Objects")}</span><b>${state.missionSummary.found}</b></div>
   `;
   closeAllMonitors();
   hideTarget();
@@ -1332,7 +1394,7 @@ function nextMission() {
   state.selectedId = null;
   resetTutorialTip();
   state.lives = MAX_LIVES; // integridade é restaurada ao concluir cada missão
-  state.terminalLines.push("Missão concluída. Integridade do casco restaurada.");
+  state.terminalLines.push(L("Missão concluída. Integridade do casco restaurada.", "Mission complete. Hull integrity restored."));
   state.score = MAX_SCORE; // XP é restaurada a cada nova missão
   state.missionStartScore = MAX_SCORE;
   state.hintsUsed = 0;
@@ -1376,7 +1438,7 @@ function startClock() {
 }
 
 // ===== Mensagens (uma conversa por missão) =====
-const ROLE = "L.O.G. // Transmissão";
+const roleName = () => L("L.O.G. // Transmissão", "L.O.G. // Transmission");
 const typingRuns = new WeakMap(); // cancela a digitação de um contêiner sem afetar os outros
 let openThread = null; // índice da missão cuja conversa está aberta (null = lista)
 
@@ -1415,7 +1477,7 @@ function markRead(index, count) {
   renderBadges();
 }
 
-function bubbleHtml(text, role = ROLE) {
+function bubbleHtml(text, role = roleName()) {
   return `<div class="chat-bubble"><div class="chat-role">${escapeHtml(role)}</div><div class="chat-body">${escapeHtml(text)}</div></div>`;
 }
 
@@ -1434,10 +1496,10 @@ function renderThreadList() {
         <span class="thread-avatar">${pad(mission.id)}</span>
         <span class="thread-info">
           <b>${escapeHtml(missionShortName(mission))}</b>
-          <small>${escapeHtml(lines.length ? lines[lines.length - 1] : "Sem mensagens")}</small>
+          <small>${escapeHtml(lines.length ? lines[lines.length - 1] : L("Sem mensagens", "No messages"))}</small>
         </span>
         <span class="thread-meta">
-          <em class="${done ? "is-done" : ""}">${done ? "Concluída" : "Em andamento"}</em>
+          <em class="${done ? "is-done" : ""}">${done ? L("Concluída", "Complete") : L("Em andamento", "In progress")}</em>
           ${unread ? `<i class="thread-unread">${unread}</i>` : ""}
         </span>
       </button>`);
@@ -1485,7 +1547,7 @@ function playTransmission(lines, container, onLine) {
   (async () => {
     for (let i = 0; i < lines.length; i++) {
       if (!live()) return;
-      const body = appendChatBubble(container, ROLE);
+      const body = appendChatBubble(container, roleName());
       await typewrite(body, lines[i], live, skipped);
       if (!live()) return;
       onLine?.(i + 1);
@@ -1551,7 +1613,7 @@ function runCommand(raw) {
 
   const cmd = HINT_COMMANDS[clean];
   if (!cmd) {
-    return appendTerminal(`Comando não reconhecido: ${clean}. Digite "help" para a lista.`);
+    return appendTerminal(L(`Comando não reconhecido: ${clean}. Digite "help" para a lista.`, `Unknown command: ${clean}. Type "help" to see the list.`));
   }
 
   if (["help", "scan", "status"].includes(clean)) {
@@ -1601,7 +1663,7 @@ function runCommand(raw) {
   
 
   if (!relic) {
-    return appendTerminal("NENHUM ALVO SELECIONADO. Escolha um objetivo na seleção de missão.");
+    return appendTerminal(L("NENHUM ALVO SELECIONADO. Escolha um objetivo na seleção de missão.", "NO TARGET SELECTED. Choose a target in the Mission panel."));
   }
 
   // Dica difícil (XP > 2000, custa 500) ou fácil (XP <= 2000, custa 1000)
@@ -1623,7 +1685,7 @@ function showCatalogBrowse() {
 
 // Filtro de tipo usa só o ícone (nome completo em title/aria-label); Local e "Todos" ficam com texto.
 function chipsHtml(options, active, attr, withIcons = false) {
-  return [{ id: "all", label: "Todos" }, ...options]
+  return [{ id: "all", label: L("Todos", "All") }, ...options]
     .map((o) => {
       const icon = withIcons ? typeIconSvg(o.id, 18) : "";
       const label = escapeHtml(o.label);
@@ -1663,7 +1725,7 @@ function renderCatalog() {
   const items = filteredRelics();
   el.catalogList.innerHTML = items.length
     ? items.map(cardHtml).join("")
-    : `<p class="catalog-empty">${state.cataloged.length ? "Nenhum objeto neste filtro." : "Nenhum objeto catalogado ainda."}</p>`;
+    : `<p class="catalog-empty">${state.cataloged.length ? L("Nenhum objeto neste filtro.", "No objects match this filter.") : L("Nenhum objeto catalogado ainda.", "No objects cataloged yet.")}</p>`;
 }
 
 function cardHtml(relic) {
@@ -1689,12 +1751,12 @@ function openCatalogCard(id) {
       <div class="card-info">
       <p>${escapeHtml(relic.description)}</p>
       <dl class="card-specs">
-        <div><dt>Peso</dt><dd>${escapeHtml(relic.weight)}</dd></div>
-        <div><dt>Altura</dt><dd>${escapeHtml(relic.height)}</dd></div>
-        <div><dt>Ano</dt><dd>${escapeHtml(relic.fields.ano)}</dd></div>
-        <div><dt>Missão</dt><dd>${escapeHtml(relic.fields.missao)}</dd></div>
-        <div><dt>Local</dt><dd>${escapeHtml(placeName(relic.location))}</dd></div>
-        <div><dt>Categoria</dt><dd>${escapeHtml(relic.category)}</dd></div>
+        <div><dt>${L("Peso", "Weight")}</dt><dd>${escapeHtml(relic.weight)}</dd></div>
+        <div><dt>${L("Altura", "Height")}</dt><dd>${escapeHtml(relic.height)}</dd></div>
+        <div><dt>${L("Ano", "Year")}</dt><dd>${escapeHtml(relic.fields.ano)}</dd></div>
+        <div><dt>${L("Missão", "Mission")}</dt><dd>${escapeHtml(relic.fields.missao)}</dd></div>
+        <div><dt>${L("Local", "Location")}</dt><dd>${escapeHtml(placeName(relic.location))}</dd></div>
+        <div><dt>${L("Categoria", "Category")}</dt><dd>${escapeHtml(relic.category)}</dd></div>
       </dl>
       </div>
     </article>`;
@@ -1724,7 +1786,7 @@ function renderObjectives() {
         <button type="button" class="objective-row${selected ? " is-selected" : ""}${done ? " is-done" : ""}" data-select="${id}" ${done ? "disabled" : ""}>
           <img src="${escapeHtml(imgSrc(relic))}" alt="" />
           <span><b>${escapeHtml(relicCode(relic))}</b><small></small></span>
-          <em>${done ? "Concluído" : selected ? "Alvo" : "Selecionar"}</em>
+          <em>${done ? L("Concluído", "Done") : selected ? L("Alvo", "Target") : L("Selecionar", "Select")}</em>
         </button>`;
     })
     .join("");
@@ -1771,7 +1833,8 @@ function renderExperience() {
     (_, i) => `<span class="integrity-cell${i < filled ? " is-on" : ""}"></span>`,
   ).join("");
   el.xpReadout.textContent = `${state.score} XP`;
-  el.xpRank.textContent = XP_RANKS.find(([min]) => state.score >= min)[1];
+  const rank = XP_RANKS.find(([min]) => state.score >= min);
+  el.xpRank.textContent = L(rank[1], rank[2]);
   el.xpBlock.classList.toggle("is-low", state.score <= 2000);
   if (lastXp !== null && state.score < lastXp) {
     el.xpBlock.classList.remove("is-drain");
@@ -1784,10 +1847,10 @@ function renderExperience() {
 function renderBadges() {
   const story = isLocked(); // transmissão não lida
   const warn = isWarning(); // erro de sincronização
-  const storyMsg = "Leia as mensagens da L.O.G. primeiro";
-  const warnMsg = "Resolva o erro de sincronização primeiro";
+  const storyMsg = L("Leia as mensagens da L.O.G. primeiro", "Read the L.O.G. messages first");
+  const warnMsg = L("Resolva o erro de sincronização primeiro", "Fix the sync error first");
   const modal = isGlassModalOpen(); // cartão aberto no vidro
-  const modalMsg = "Responda ao aviso no visor primeiro";
+  const modalMsg = L("Responda ao aviso no visor primeiro", "Answer the alert on the screen first");
   const lock = (btn, locked, reason) => {
     btn.disabled = locked;
     btn.classList.toggle("is-locked", locked);
@@ -1833,21 +1896,28 @@ function renderCoordinate() {
   el.coordMode.disabled = !active;
   // o tipo vem do botão do Navegador (não do alvo): UA = um campo; senão latitude (N/S) e longitude (L/O)
   const inSpace = coordMode === "dist";
-  el.coordModeLabel.textContent = inSpace ? "UA" : "N/L";
+  el.coordModeLabel.textContent = inSpace ? L("UA", "AU") : L("N/L", "N/E");
   el.coordMode.setAttribute(
     "aria-label",
     inSpace
-      ? "Tipo de coordenada: distância em UA. Aperte para usar latitude e longitude."
-      : "Tipo de coordenada: latitude e longitude. Aperte para usar distância em UA.",
+      ? L("Tipo de coordenada: distância em UA. Aperte para usar latitude e longitude.", "Coordinate type: distance in AU. Press to use latitude and longitude.")
+      : L("Tipo de coordenada: latitude e longitude. Aperte para usar distância em UA.", "Coordinate type: latitude and longitude. Press to use distance in AU."),
   );
-  el.coordMode.title = inSpace ? "Trocar para latitude/longitude" : "Trocar para distância (UA)";
+  el.coordMode.title = inSpace ? L("Trocar para latitude/longitude", "Switch to latitude/longitude") : L("Trocar para distância (UA)", "Switch to distance (AU)");
   updateTutorialTip();
-  el.coordLatLabel.textContent = inSpace ? "UA" : "      N";
-  el.coordInputs[0].placeholder = inSpace ? " 2,64" : " 0,67";
-  el.coordInputs[0].setAttribute("aria-label", inSpace ? "Distância em UA" : "Latitude (N/S)");
+  el.coordLatLabel.textContent = inSpace ? L("UA", "AU") : "      N";
+  el.coordInputs[0].placeholder = inSpace ? L(" 2,64", " 2.64") : L(" 0,67", " 0.67");
+  el.coordInputs[0].setAttribute("aria-label", inSpace ? L("Distância em UA", "Distance in AU") : "Latitude (N/S)");
+  if (isEnglish()) {
+    // longitude em inglês: E/W e ponto decimal, como nas cartas em inglês
+    el.coordInputs[1].placeholder = "23.47";
+    const lonLabel = el.coordLonWrap.querySelector("span");
+    if (lonLabel) lonLabel.textContent = " E";
+    el.coordInputs[1].setAttribute("aria-label", "Longitude (E/W)");
+  }
   el.coordLonWrap.style.display = inSpace ? "none" : "";
   el.btnTarget.disabled = !hasTarget || isLocked() || isWarning() || isGlassModalOpen();
-  if (!hasTarget && !traveling) setFeedback("Sem alvo ativo", true);
+  if (!hasTarget && !traveling) setFeedback(L("Sem alvo ativo", "No active target"), true);
   else if (hasTarget && el.coordFeedback.classList.contains("is-idle") && !traveling) setFeedback();
 }
 
@@ -1869,7 +1939,7 @@ let lightsTimer = null;
 
 function applyLights(animate = false) {
   const off = !state.lightsOn;
-  const label = off ? "Acender a luz da cabine" : "Apagar a luz da cabine";
+  const label = off ? L("Acender a luz da cabine", "Turn on the cabin light") : L("Apagar a luz da cabine", "Turn off the cabin light");
   el.btnLight.setAttribute("aria-pressed", String(!off));
   el.btnLight.setAttribute("aria-label", label);
   el.btnLight.title = label;

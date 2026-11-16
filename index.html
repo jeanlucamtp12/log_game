@@ -5,10 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>L.O.G</title>
+    <script src="./js/idioma.js"></script>
     <link rel="stylesheet" href="./home/index.css">
     <link rel="stylesheet" href="./home/hibrido.css">
     <link rel="stylesheet" href="./home/catalog/catalogo.css">
-    <link rel="stylesheet" href="./home/catalog/catalogo-jogo.css">
+    <link rel="stylesheet" href="./home/catalog/catalogo.css">
 </head>
 
 <body>
@@ -37,15 +38,17 @@
         <div class="opcoes-menu">
 
             <button type="button" id="btnHistoria" class="opcao-menu">
-                <img src="./home/img/historia.png" alt="História">
+                <!-- "HISTORY" (falso cognato de "História") virou "STORY", recortado do próprio historia.png -->
+                <img src="./home/img/historia_en.png" alt="História">
             </button>
 
             <button type="button" id="btnCatalogo" class="opcao-menu">
                 <img src="./home/img/catalogo.png" alt="Catálogo">
             </button>
 
-            <button type="button" class="opcao-menu">
+            <button type="button" id="btnIdioma" class="opcao-menu opcao-idioma">
                 <img src="./home/img/linguagem.png" alt="Linguagem">
+                <span class="idioma-indicador" aria-hidden="true"><b data-idioma="en">EN</b><i>|</i><b data-idioma="pt">PT</b></span>
             </button>
 
             <button type="button" id="btnCreditos" class="opcao-menu">
@@ -228,6 +231,7 @@
     </script>
 
     <script src="./js/portrait.js"></script>
+    <script src="./home/idioma-capa.js"></script>
     <script type="module" src="./home/audio-menu.js"></script>
     <script type="module" src="./home/home.js"></script>
     <script type="module" src="./home/catalog/catalogo.js"></script>

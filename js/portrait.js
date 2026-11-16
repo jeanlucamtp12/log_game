@@ -25,6 +25,14 @@
   aviso.setAttribute("role", "alert");
   aviso.innerHTML =
     '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg>' +
-    "<span>Gire o celular para ficar em pé</span>";
+    "<span></span>";
+  // texto no idioma escolhido (js/idioma.js); acompanha a troca feita na capa
+  var texto = aviso.querySelector("span");
+  function escreve() {
+    var en = window.LOG_IDIOMA && window.LOG_IDIOMA.get() === "en";
+    texto.textContent = en ? "Turn your phone upright" : "Gire o celular para ficar em pé";
+  }
+  escreve();
+  document.addEventListener("log-idioma", escreve);
   document.body.appendChild(aviso);
 })();
