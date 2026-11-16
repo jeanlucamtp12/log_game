@@ -1,3 +1,5 @@
+/* Generated with the assistance of: Claude Code */
+
 document.addEventListener('DOMContentLoaded', () => {
     // lado da TELA: joga controlando a nave (Alex)
     // lado da MESA: joga com as cartas (deck virtual, papel do Neil)

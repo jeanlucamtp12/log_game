@@ -18,3 +18,5 @@ function iniciar() {
 document.addEventListener("pointerdown", iniciar);
 document.addEventListener("keydown", iniciar);
 iniciar();
+
+/* Generated with the assistance of: Claude Code */
